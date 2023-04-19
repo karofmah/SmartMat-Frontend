@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import ShoppingListView from '../views/ShoppingListView.vue'
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: SettingsView
+  },
+  {
+    path: '/list',
+    name: 'shoppingList',
+    component: ShoppingListView
   },
 ]
 
