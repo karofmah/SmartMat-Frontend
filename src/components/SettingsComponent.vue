@@ -3,17 +3,21 @@
     <div id="information">
       <h1>Your information:</h1>
       <h4>Email: {{ email }}</h4>
-      <h4 v-if="!change">First name: {{ firstname }}</h4>
-      <div><input v-if="change" placeholder="First name" v-model="firstname"></div>
-      <h4 v-if="!change">Last name: {{ lastname }}</h4>
-      <div><input v-if="change" placeholder="Last name" v-model="lastname"></div>
-      <h4 v-if="!change">Phone number: {{ phone }}</h4>
-      <div><input v-if="change" placeholder="Phone number" v-model="phone"></div>
-      <h4 v-if="!change">Household: {{ household }}</h4>
-      <div><input v-if="change" placeholder="Household" v-model="household"></div>
+      <div v-if="!change">
+        <h4>First name: {{ firstname }}</h4>
+        <h4>Last name: {{ lastname }}</h4>
+        <h4>Phone number: {{ phone }}</h4>
+        <h4>Household: {{ household }}</h4>
+      </div>
+      <div v-if="change">
+        <div><v-text-field label="First name" v-model="firstname"></v-text-field></div>
+        <div><v-text-field label="Last name" v-model="lastname"></v-text-field></div>
+        <div><v-text-field label="Phone number" v-model="phone"></v-text-field></div>
+        <div><v-text-field label="Household number" v-model="household"></v-text-field></div>
+      </div>
     </div>
-    <div><button id="info-button" @click="changeInfo">{{ picked }}</button></div>
-    <div><button id="add-new-user" @click="addNewUser">Add new user</button></div>
+    <div><v-btn id="info-button" @click="changeInfo">{{ picked }}</v-btn></div>
+    <div><v-btn id="add-new-user" @click="addNewUser">Add new user</v-btn></div>
   </div>
   <div id="users">
     <div><UserComponent v-for="user in users" :key="user.id" :user="user"/></div>
