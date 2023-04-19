@@ -1,9 +1,11 @@
 <script setup>
- import LoginView from "./views/LoginView.vue";
+//insert menubar
 </script>
 
 <template>
-  <LoginView/>
+  <div>
+    <RouterView />
+  </div>
 </template>
 
 <style>
