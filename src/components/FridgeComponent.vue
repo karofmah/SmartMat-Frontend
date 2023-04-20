@@ -2,7 +2,7 @@
   <div id="container-categories">
     <div id="categories">
       <ul id="category-list">
-        <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.desc" :desc="desc"/></li>
+        <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.desc" :desc="category.desc" :items="category.items"/></li>
       </ul>
     </div>
     <div id="searchbar">
@@ -28,7 +28,11 @@ export default {
       recipe: null,
       show: false,
       categories: [
-        {desc: "Dairy"},
+        {desc: "Dairy", items: [
+            { title: ' One' },
+            { title: ' Two' },
+            { title: ' Three' },
+            { title: ' Four' }]},
         {desc: "Meat"},
         {desc: "Vegetables"},
         {desc: "Dairy"},

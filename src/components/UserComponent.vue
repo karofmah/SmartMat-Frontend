@@ -7,24 +7,27 @@
         <p>user level: {{ type }}</p>
       </div>
       <div v-if="edit">
-        <input v-model="name" >
-        <select v-model="type" >
-          <option v-for="type in types">{{type.name}}</option>
-        </select>
+         <input :name="name" >
+         <select :type="type" >
+           <option v-for="type in types">{{type.name}}</option>
+         </select>
       </div>
     </div>
-    <div><button @click="editInfo">Edit user</button></div>
+    <div v-if="!edit"><v-btn @click="editInfo">Edit user</v-btn></div>
+    <div v-if="edit"><v-btn @click="editInfo">Save changes</v-btn></div>
   </div>
 </template>
 
 <script>
 export default {
   name: "user-component",
+  props: {
+    name: String,
+    type: String,
+  },
   data() {
     return {
       edit: false,
-      name: "brukernavn",
-      type: "superbruker",
       types: [{name: "superbruker"}, {name: "vanlig bruker"}]
     }
   },

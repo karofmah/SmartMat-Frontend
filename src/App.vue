@@ -6,7 +6,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div v-if="$route.name !== 'login'">
     <ToolbarComponent/>
   </div>
   <div>

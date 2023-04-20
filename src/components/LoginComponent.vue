@@ -1,5 +1,23 @@
 <template>
-  <div id="container">
+  <v-sheet width="300" class="mx-auto">
+    <v-form fast-fail @submit.prevent>
+      <v-text-field
+          v-model="email"
+          label="Email"
+          :rules="emailRules"
+      ></v-text-field>
+
+      <v-text-field
+          v-model="password"
+          label="Password"
+          :rules="passwordRules"
+      ></v-text-field>
+
+      <v-btn type="submit" block class="mt-2">Submit</v-btn>
+    </v-form>
+  </v-sheet>
+
+  <!--<div id="container">
     <div id="inputFields">
       <div id="loginFields" v-if="show">
         <div><input id="login-email" placeholder="Email" v-model="email"></div>
@@ -22,11 +40,11 @@
       <div><button id="submitButton" @click="submit()">{{ picked }}</button></div>
       <div><label class="error-message" id="error-message"></label></div>
     </div>
-  </div>
+  </div>-->
 </template>
 
 <script>
-export default {
+/*export default {
   data() {
     return {
       picked: "Login",
@@ -76,6 +94,26 @@ export default {
       }
     }
   }
+}*/
+export default {
+  data: () => ({
+    email: '',
+    emailRules: [
+      value => {
+        if (value?.length > 3) return true
+
+        return 'Email must be at least 3 characters.'
+      },
+    ],
+    password: '',
+    passwordRules: [
+      value => {
+        if (value?.length > 8) return true
+
+        return 'Password must be at least 8 characters.'
+      },
+    ],
+  }),
 }
 </script>
 
