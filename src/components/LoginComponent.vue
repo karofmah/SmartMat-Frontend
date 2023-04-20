@@ -1,81 +1,132 @@
 <template>
-  <div id="container">
-    <div id="inputFields">
-      <div id="loginFields" v-if="show">
-        <div><input id="login-email" placeholder="Email" v-model="email"></div>
-        <div><input id="login-password" type="password" placeholder="Password" v-model="password"></div>
-      </div>
-      <div id="registerFields" v-else>
-        <div><input id="email" placeholder="Email" v-model="email"></div>
-        <div><input id="password"  type="password" placeholder="Password" v-model="password"></div>
-        <div><input id="firstName" placeholder="First name" v-model="firstname"></div>
-        <div><input id="lastName" placeholder="Last name" v-model="lastname"></div>
-        <div><input id="phone" placeholder="Phone number" v-model="phone"></div>
-        <div><input id="household" placeholder="Household" v-model="household"></div>
-        <div><input id="age" placeholder="Age" v-model="age"></div>
-      </div>
+  <v-sheet width="300" class="mx-auto" >
+    <v-form fast-fail @submit.prevent>
+      <div id="input-form">
+  <div id="login-form">
+      <v-text-field
+          v-model="email"
+          label="Email"
+          :rules="emailRules"
+      ></v-text-field>
+
+      <v-text-field
+          type="password"
+          v-model="password"
+          label="Password"
+          :rules="passwordRules"
+      ></v-text-field>
+  </div><div id="register-form" v-if="!show">
+          <v-text-field
+              label="First name"
+              v-model="firstname"
+              :rules="firstNameRules"
+          >
+          </v-text-field>
+          <v-text-field
+              label="Last name"
+              v-model="lastname"
+              :rules="lastnameRules"
+          >
+          </v-text-field>
+          <v-text-field
+              label="Phone number"
+              v-model="phoneNumber"
+              :rules="phoneNumberRules"
+          >
+          </v-text-field>
+          <v-text-field
+              label="Household amount"
+              v-model="household"
+              :rules="householdRules"
+          >
+          </v-text-field>
+          <v-text-field
+              label="Age"
+              v-model="age"
+              :rules="ageRules"
+          >
+          </v-text-field>
+        </div>
     </div>
     <div id="buttons">
-      <div>
-        <input type="radio" id="login" value="Login" v-model="picked" @click="show = !show"><label for="login">Login</label>
-        <input type="radio" id="register" value="Register new user" v-model="picked" @click="show = !show"><label for="register">Register new user</label></div>
-      <div><button id="submitButton" @click="submit()">{{ picked }}</button></div>
-      <div><label class="error-message" id="error-message"></label></div>
+      <div ><v-radio-group inline v-model="value">
+        <v-radio
+            label="Login"
+            value="Login"
+            @click="show=true"
+        >
+        </v-radio>
+        <v-radio
+            label="Register"
+            value="Register"
+            @click="show=false"
+        >
+        </v-radio>
+      </v-radio-group></div>
+      <v-btn type="submit" block class="mt-2">{{ value }}</v-btn>
     </div>
-  </div>
+    </v-form>
+  </v-sheet>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      picked: "Login",
-      show: true,
-      email: null,
-      password: null,
-      firstname: null,
-      lastname: null,
-      phone: null,
-      household: null,
-      age: null
-    }
-  },
-  methods: {
-    login() {
-      if (this.email === null || this.password === null) {
-        document.getElementById("error-message").innerHTML = "Email and password cannot be empty! >:O";
-      } else if (!this.validateEmail(this.email)) {
-        document.getElementById("error-message").innerHTML = "You have to enter a valid email address";
-      } else {
-        document.getElementById("error-message").innerHTML = "Sick! >:D";
-      }
+  data: () => ({
+    show: true,
+    value: "Login",
+    email: '',
+    emailRules: [
+      value => {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) ) return true
+
+        return 'You must enter a valid email.'
+      },
+    ],
+    password: '',
+    passwordRules: [
+      value => {
+        if (value?.length > 7) return true
+
+        return 'Password must be at least 8 characters.'
+      },
+    ],
+    firstname:'',
+    firstNameRules: [value => {
+      if (value?.length > 0) return true
+
+      return 'First name cannot be empty.'
     },
-    register() {
-      if (this.email === null || this.password === null || this.firstname === null || this.lastname === null || this.phone === null || this.household === null || this.age === null) {
-        document.getElementById("error-message").innerHTML = "None of the fields can be empty <br> when trying to create a new user! >:O";
-      } else if (!this.validateEmail(this.email)) {
-        document.getElementById("error-message").innerHTML = "You have to enter a valid email address";
-      } else if (this.password.length < 8) {
-        document.getElementById("error-message").innerHTML = "Your password have to be over 8 characters";
-      } else {
-        document.getElementById("error-message").innerHTML = "Sickoo! >:D";
-      }
+    ],
+    lastname:'',
+    lastnameRules:[value => {
+      if (value?.length > 0) return true
+
+      return 'Last name cannot be empty.'
     },
-    submit() {
-      if (this.show) {
-        this.login()
-      } else {
-        this.register()
-      }
+    ],
+    phoneNumber:'',
+    phoneNumberRules:[
+      value => {
+        if (value?.length === 8) return true
+
+        return 'Number must be 8 digits.'
+      },
+    ],
+    household:'',
+    householdRules:[value => {
+      if (value > 0) return true
+
+      return 'There must be at least 1 household member.'
     },
-    validateEmail(email) {
-      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
+    ],
+    age:'',
+    ageRules:[value => {
+      if (value >= 16 && value < 123) return true
+
+      return 'You must be between 16-123 years old to use SmartMat.'
+    },]
+
+  }),
 }
 </script>
 
@@ -86,17 +137,19 @@ export default {
   flex-direction: column;
   margin-top: 150px;
 }
-#inputFields{
-  height: 250px;
-}
-#loginFields{
-  margin-top: 70%;
-}
-#registerFields{
+#input-form{
+  display: grid;
+  height: 600px;
+  float: bottom;
   margin-top: 10%;
+  align-content: center;
+}
+#login-form{
 }
 #buttons{
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 input{
   margin-bottom: 10px;
