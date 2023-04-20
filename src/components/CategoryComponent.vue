@@ -25,15 +25,10 @@
 
 <script>
 export default {
-  data: () => ({
-    desc: "Category",
-    items: [
-      { title: 'Item One' },
-      { title: 'Item Two' },
-      { title: 'Item Three' },
-      { title: 'Item Four' },
-    ],
-  }),
+  props: {
+    desc: String,
+    items: Object
+  },
 }
 </script>
 

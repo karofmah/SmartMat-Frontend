@@ -20,7 +20,7 @@
     <div><v-btn id="add-new-user" @click="addNewUser">Add new user</v-btn></div>
   </div>
   <div id="users">
-    <div><UserComponent v-for="user in users" :key="user.id" :user="user"/></div>
+    <div><UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.type"/></div>
     <!--<UserComponent/><UserComponent/><UserComponent/><UserComponent/>-->
   </div>
 </template>
@@ -39,7 +39,7 @@ export default {
       lastname: "Normann",
       phone: "12345678",
       household: 5,
-      users: [{name: '1'},{name: '2'},{name: '3'},{name: '4'}]
+      users: [{name: '1', type:'superbruker'},{name: '2', type:'superbruker'},{name: '3', type:'barn'},{name: '4', type:'vanlig bruker'}]
     };
   },
   methods: {
