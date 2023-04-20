@@ -1,21 +1,17 @@
 <template>
-  <div class="user">
+  <v-card variant="outlined" class="user-card" >
+    <v-card-title v-if="!edit">{{ name }} </v-card-title>
+    <v-card-subtitle v-if="!edit">{{ type }}</v-card-subtitle>
+    <input v-if="edit" id="edit-name-input">
+    <select :type="type" v-if="edit">
+      <option v-for="type in types">{{type.name}}</option>
+    </select>
     <div><img src="../assets/logo.png" id="user-image"></div>
-    <div id="felt">
-      <div v-if="!edit">
-        <p>{{ name }}</p>
-        <p>user level: {{ type }}</p>
-      </div>
-      <div v-if="edit">
-         <input :name="name" >
-         <select :type="type" >
-           <option v-for="type in types">{{type.name}}</option>
-         </select>
-      </div>
-    </div>
-    <div v-if="!edit"><v-btn @click="editInfo">Edit user</v-btn></div>
-    <div v-if="edit"><v-btn @click="editInfo">Save changes</v-btn></div>
-  </div>
+    <v-card-actions>
+      <v-btn v-if="!edit" @click="editInfo">Change info</v-btn>
+      <v-btn v-if="edit" @click="editInfo">Save info</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -40,16 +36,15 @@ export default {
 </script>
 
 <style>
-.user {
+.user-card {
   display: inline-block;
   margin: 20px;
   width: 200px;
-  height: 200px;
+  height: 250px;
   cursor: pointer;
   border: 1px solid #39495c;
   text-align: center;
 }
-
 .user:hover {
   transform: scale(1.01);
   box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
@@ -58,8 +53,7 @@ export default {
   width: 100px;
   height: 100px;
 }
-#felt {
-  height: 100px;
-  border: 1px solid white;
+#edit-name-input {
+  margin-top: 10px;
 }
 </style>
