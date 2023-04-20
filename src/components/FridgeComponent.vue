@@ -1,7 +1,7 @@
 <template>
   <div id="container-categories">
     <div id="searchbar">
-    <input id="search" placeholder="search your fridge...">
+    <v-autocomplete id="search" placeholder="search your fridge..." :items="items" ></v-autocomplete>
   </div>
     <div id="category-recipe">
     <div id="categories">
@@ -30,6 +30,9 @@ export default {
     return {
       recipe: null,
       show: false,
+      items: [
+          "Egg", "Milk", "Entrecote"
+      ],
       categories: [
         {desc: "Dairy", items: [
             { title: ' One' },
@@ -71,7 +74,8 @@ export default {
   display: inline-block;
   flex-wrap: wrap;
   text-align: center;
-  width: 50%;
+  justify-content: center;
+  width: 49%;
 }
 
 #category-recipe {
@@ -85,15 +89,14 @@ export default {
 }
 
 #searchbar {
-  width: 100%;
+  width: 30%;
 }
 #search {
-  border: solid black;
 }
 
 #generate {
   margin: 10px;
-  width: 50%;
+  width: 49%;
   text-align: center;
 }
 #generateButton {
@@ -109,6 +112,7 @@ export default {
 #recipe {
   height: 200px;
   border: solid black;
+  width: 90%;
 }
 
 ul#category-list {
