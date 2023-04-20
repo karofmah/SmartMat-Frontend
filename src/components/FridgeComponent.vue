@@ -1,20 +1,23 @@
 <template>
   <div id="container-categories">
+    <div id="searchbar">
+    <v-autocomplete id="search" placeholder="search your fridge..." :items="items" ></v-autocomplete>
+  </div>
+    <div id="category-recipe">
     <div id="categories">
       <ul id="category-list">
         <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.desc" :desc="category.desc" :items="category.items"/></li>
       </ul>
     </div>
-    <div id="searchbar">
-      <input id="search" placeholder="search your fridge...">
-    </div>
+
     <div id="generate">
-      <button id="generateButton">Generate recipe</button>
-    </div>
-    <div id="recipe-box">
+      <v-btn id="generateButton">Generate recipe</v-btn>
+      <div id="recipe-box">
       <textarea v-model="recipe" id="recipe">
       </textarea>
     </div>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -27,6 +30,9 @@ export default {
     return {
       recipe: null,
       show: false,
+      items: [
+          "Egg", "Milk", "Entrecote"
+      ],
       categories: [
         {desc: "Dairy", items: [
             { title: ' One' },
@@ -59,19 +65,23 @@ export default {
 
 <style>
 #container-categories {
-  display: grid;
+  display: flex;
   padding: 50px;
-  grid-column-gap: 70px;
+  flex-wrap: wrap;
 }
 
 #categories {
-  grid-column-start: 1;
-  grid-column-end: 2;
   display: inline-block;
-  align-items: center;
   flex-wrap: wrap;
-  justify-content: space-between;
-  grid-area: 1 / 1 / span 3 / span 1
+  text-align: center;
+  justify-content: center;
+  width: 49%;
+}
+
+#category-recipe {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 #category-list {
@@ -79,36 +89,30 @@ export default {
 }
 
 #searchbar {
-  grid-column-start: 2;
-  grid-column-end: 3;
+  width: 30%;
 }
 #search {
-  border: solid black;
 }
 
 #generate {
-  grid-column-start: 3;
-  grid-column-end: 4;
   margin: 10px;
-  display: grid;
-  justify-items: center;
+  width: 49%;
+  text-align: center;
 }
 #generateButton {
   border: solid black;
+  margin: 5px;
 }
 
 #recipe-box {
-  grid-column-start: 3;
-  grid-column-end: 4;
   margin: 10px;
-  display: grid;
-  justify-items: center;
 }
 
 
 #recipe {
   height: 200px;
   border: solid black;
+  width: 90%;
 }
 
 ul#category-list {

@@ -1,3 +1,5 @@
+
+
 <template>
   <div id="settings-container">
   <div id="user-information">
@@ -26,6 +28,7 @@
   </div>
   <div id="users">
     <UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.type"/>
+  </div>
   </div>
   </div>
 </template>

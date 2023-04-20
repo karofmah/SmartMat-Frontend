@@ -5,8 +5,9 @@
     >
       <template v-slot:activator="{ props }">
         <v-btn
-            color="primary"
+            color="green"
             v-bind="props"
+            id="category-button"
         >{{ desc }}
         </v-btn>
       </template>
@@ -36,12 +37,14 @@ export default {
 .text-center {
   display: inline-block;
   margin-right: 20px;
-  padding: 20px;
-  width: 130px;
+  min-width: 140px;
   height: 50px;
   cursor: pointer;
   margin-bottom: 18px;
-  text-align: left;
+}
+
+#category-button {
+  width: 150px;
 }
 
 </style>
