@@ -147,43 +147,49 @@ export default {
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
+    async login(){
+      const info = {
+        "email": this.email,
+        "password": this.password
+      }
+      await loginService.login(info).then(function (response) {
+        console.log(response)
+        if (response.status === 200){
+          router.push("/user")
+        } else {
+          document.getElementById("error-message-submit").innerHTML = response.data
+        }
+      }).catch(function (err) {
+        console.log(err.response.status)
+        console.log(err)
+      })
+    },
+    async register(){
+      const info = {
+        "email": this.email,
+        "password": this.password,
+        "firstName": this.firstname,
+        "lastName": this.lastname,
+        "household": this.household,
+        "age": this.age,
+        "phoneNumber": this.phoneNumber
+      }
+      await loginService.registerUser(info).then(function (response) {
+        console.log(response.status)
+        if (response.status === 200){
+          router.push("/user")
+        } else {
+          document.getElementById("error-message-submit").innerHTML = response.data
+        }
+      }).catch(function (err) {
+        console.log(err)
+      })
+    },
     async submit(){
       if (this.value === "Login" && this.emailCheck && this.passwordCheck) {
-        const info = {
-          "email": this.email,
-          "password": this.password
-        }
-        await loginService.login(info).then(function (response) {
-          console.log(response)
-          if (response.status === 200){
-            router.push("/user")
-          } else {
-            document.getElementById("error-message-submit").innerHTML = response.data
-          }
-        }).catch(function (err) {
-          console.log(err.response.status)
-          console.log(err)
-        })
+        await this.login()
       } else if (this.value === "Register" && this.emailCheck && this.passwordCheck && this.firstNameCheck && this.lastNameCheck && this.phoneCheck && this.householdCheck && this.ageCheck) {
-        const info = {
-          "email": this.email,
-          "password": this.password,
-          "firstName": this.firstname,
-          "lastName": this.lastname,
-          "household": this.household,
-          "age": this.age,
-          "phoneNumber": this.phoneNumber
-        }
-        await loginService.registerUser(info).then(function (response) {
-          console.log(response.status)
-          if (response.status === 200){
-            router.push("/user")
-          } else {
-            document.getElementById("error-message-submit").innerHTML = response.data
-          }
-        }).catch(function (err) {
-          console.log(err)
-        })
+        await this.register()
       }
     }
   },
