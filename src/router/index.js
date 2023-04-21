@@ -4,6 +4,7 @@ import SettingsView from '../views/SettingsView.vue'
 import ShoppingListView from '../views/ShoppingListView.vue'
 import FridgeView from '../views/FridgeView.vue'
 import RecipeView from '../views/RecipeView.vue'
+import ChooseUserView from '../views/ChooseUserView.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/recipe',
     name: 'recipe',
     component: RecipeView
+  },
+  {
+    path: '/user',
+    name: 'chooseUser',
+    component: ChooseUserView
   }
 ]
 
