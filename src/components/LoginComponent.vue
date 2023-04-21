@@ -73,6 +73,7 @@
         </v-radio>
       </v-radio-group></div>
       <v-btn id="submit-button" type="submit" block class="mt-2" @click="submit">{{ value }}</v-btn>
+      <p id="error-message-submit" class="error-message"></p>
     </div>
     </v-form>
   </v-sheet>
@@ -80,6 +81,7 @@
 
 <script>
 import router from "@/router";
+import loginService from "@/services/loginService.js";
 export default {
   methods:{
     checkEmail(value){
@@ -145,11 +147,43 @@ export default {
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
-    submit(){
+    async submit(){
       if (this.value === "Login" && this.emailCheck && this.passwordCheck) {
-        router.push("/user")
+        const info = {
+          "email": this.email,
+          "password": this.password
+        }
+        await loginService.login(info).then(function (response) {
+          console.log(response.status)
+          if (response.status === 200){
+            router.push("/user")
+          } else {
+            document.getElementById("error-message-submit").innerHTML = response.data
+          }
+        }).catch(function (err) {
+          console.log(err.response.status)
+          console.log(err)
+        })
       } else if (this.value === "Register" && this.emailCheck && this.passwordCheck && this.firstNameCheck && this.lastNameCheck && this.phoneCheck && this.householdCheck && this.ageCheck) {
-        router.push("/user")
+        const info = {
+          "email": this.email,
+          "password": this.password,
+          "firstName": this.firstname,
+          "lastName": this.lastname,
+          "household": this.household,
+          "age": this.age,
+          "phoneNumber": this.phoneNumber
+        }
+        await loginService.registerUser(info).then(function (response) {
+          console.log(response.status)
+          if (response.status === 200){
+            router.push("/user")
+          } else {
+            document.getElementById("error-message-submit").innerHTML = response.data
+          }
+        }).catch(function (err) {
+          console.log(err)
+        })
       }
     }
   },
@@ -163,13 +197,13 @@ export default {
     ageCheck: false,
     show: true,
     value: "Login",
-    email: '',
-    password: '',
-    firstname:'',
-    lastname:'',
-    phoneNumber:'',
-    household:'',
-    age:'',
+    email: 'test@mail.com',
+    password: '123456789',
+    firstname:'hei',
+    lastname:'heihei',
+    phoneNumber:'12345678',
+    household:'6',
+    age:'100',
   }),
 }
 </script>
