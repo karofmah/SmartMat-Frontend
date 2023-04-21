@@ -154,7 +154,7 @@ export default {
           "password": this.password
         }
         await loginService.login(info).then(function (response) {
-          console.log(response.status)
+          console.log(response)
           if (response.status === 200){
             router.push("/user")
           } else {
