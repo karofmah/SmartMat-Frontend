@@ -14,10 +14,10 @@
       </div>
       <div v-if="change">
         <v-sheet width="300">
-        <div><v-text-field label="First name" v-model="firstname"></v-text-field></div>
-        <div><v-text-field label="Last name" v-model="lastname"></v-text-field></div>
-        <div><v-text-field label="Phone number" v-model="phone"></v-text-field></div>
-        <div><v-text-field label="Household number" v-model="household"></v-text-field></div>
+        <div><v-text-field label="First name" v-model="firstname" :rules="[ checkName(firstname) ]"></v-text-field></div>
+        <div><v-text-field label="Last name" v-model="lastname" :rules="[ checkLastName(lastname) ]"></v-text-field></div>
+        <div><v-text-field label="Phone number" v-model="phone" :rules="[ checkPhoneNumber(phone) ]"></v-text-field></div>
+        <div><v-text-field label="Household number" v-model="household" :rules="[ checkHousehold(household) ]"></v-text-field></div>
         </v-sheet>
       </div>
     </div>
@@ -41,27 +41,79 @@ export default {
       picked: "Change your information",
       change: false,
       edit: false,
+      editing: false,
       email: "ola_normann@mail.com",
       firstname: "Ola",
       lastname: "Normann",
       phone: "12345678",
       household: 5,
-      users: [{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'barn'},{name: 'Brukernavn1', type:'vanlig bruker'}]
+      users: [{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'barn'},{name: 'Brukernavn1', type:'vanlig bruker'}],
+      nameValid: false,
+      lastNameValid: false,
+      phoneValid: false,
+      householdValid: false,
     };
   },
   methods: {
     changeInfo(){
-      this.change = !this.change
-      if (this.change){this.picked = "Save your new information"}
-      else {this.picked = "Change your information"}
+      if(!this.editing){
+        this.change = !this.change
+        this.editing = !this.editing
+        this.picked = "Save your new information"
+        console.log(this.editing)
+      } else {
+        if(this.nameValid && this.lastNameValid && this.householdValid && this.phoneValid) {
+          this.change = !this.change
+          this.editing = !this.editing
+          this.picked = "Change your information"
+          console.log(this.editing)
+        }
+      }
+
     },
     addNewUser(){
       this.users.push(this.users.length + 1)
     },
     editUsers(){
       this.edit = !this.edit
+    },
+    checkName(value) {
+      if (value?.length > 0) {
+        this.nameValid = true
+        return true
+      } else {
+        this.nameValid = false
+        return 'First name cannot be empty.'
+      }
+    },
+    checkLastName(value) {
+      if (value?.length > 0) {
+        this.lastNameValid = true
+        return true
+      } else {
+        this.lastNameValid = false
+        return 'Last name cannot be empty.'
+      }
+    },
+    checkPhoneNumber(value) {
+      if (value?.length === 8) {
+        this.phoneValid = true
+        return true
+      } else {
+        this.phoneValid = false
+        return 'Number must be 8 digits.'
+      }
+    },
+    checkHousehold(value) {
+      if (value > 0) {
+        this.householdValid = true
+        return true
+      } else {
+        this.householdValid = false
+        return 'There must be at least 1 household member.'
+      }
     }
-  }
+    }
 }
 </script>
 
