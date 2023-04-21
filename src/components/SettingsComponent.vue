@@ -7,17 +7,17 @@
       <h1 id="title-settings">Your information:</h1>
       <p class="settings-text"><span class="font-weight-bold">Email: </span><span>{{ email }}</span></p>
       <div v-if="!change">
-        <p class="settings-text"><span class="font-weight-bold">First name: </span><span>{{ firstname }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Last name: </span><span>{{ lastname }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Phone number: </span><span>{{ phone }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Household: </span><span>{{ household }}</span></p>
+        <p class="settings-text"><span class="font-weight-bold">First name: </span><span id="first-name-display">{{ firstname }}</span></p>
+        <p class="settings-text"><span class="font-weight-bold">Last name: </span><span id="last-name-display">{{ lastname }}</span></p>
+        <p class="settings-text"><span class="font-weight-bold">Phone number: </span><span id="phone-number-display">{{ phone }}</span></p>
+        <p class="settings-text"><span class="font-weight-bold">Household: </span><span id="household-display">{{ household }}</span></p>
       </div>
       <div v-if="change">
         <v-sheet width="300">
-        <div><v-text-field label="First name" v-model="firstname" :rules="[ checkName(firstname) ]"></v-text-field></div>
-        <div><v-text-field label="Last name" v-model="lastname" :rules="[ checkLastName(lastname) ]"></v-text-field></div>
-        <div><v-text-field label="Phone number" v-model="phone" :rules="[ checkPhoneNumber(phone) ]"></v-text-field></div>
-        <div><v-text-field label="Household number" v-model="household" :rules="[ checkHousehold(household) ]"></v-text-field></div>
+        <div><v-text-field id="first-name-input" label="First name" v-model="firstname" :rules="[ checkName(firstname) ]"></v-text-field></div>
+        <div><v-text-field id="last-name-input" label="Last name" v-model="lastname" :rules="[ checkLastName(lastname) ]"></v-text-field></div>
+        <div><v-text-field id="phone-number-input" label="Phone number" v-model="phone" :rules="[ checkPhoneNumber(phone) ]"></v-text-field></div>
+        <div><v-text-field id="household-input" label="Household number" v-model="household" :rules="[ checkHousehold(household) ]"></v-text-field></div>
         </v-sheet>
       </div>
     </div>
