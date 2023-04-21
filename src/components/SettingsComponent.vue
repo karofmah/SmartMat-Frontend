@@ -34,19 +34,23 @@
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
+import settingsService from "@/services/settingsService.js";
 export default {
   components: {UserComponent},
+  beforeMount(){
+    this.getInformation()
+  },
   data(){
     return {
       picked: "Change your information",
       change: false,
       edit: false,
       editing: false,
-      email: "ola_normann@mail.com",
-      firstname: "Ola",
-      lastname: "Normann",
-      phone: "12345678",
-      household: 5,
+      email: localStorage.getItem("email"),
+      firstname: localStorage.getItem("firstname"),
+      lastname: localStorage.getItem("lastname"),
+      phone: localStorage.getItem("phone"),
+      household: localStorage.getItem("household"),
       users: [{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'barn'},{name: 'Brukernavn1', type:'vanlig bruker'}],
       nameValid: false,
       lastNameValid: false,
@@ -55,6 +59,14 @@ export default {
     };
   },
   methods: {
+    async getInformation(){
+      const information = await settingsService.getUserInfo(localStorage.getItem("email"))
+      console.log(information)
+      localStorage.setItem("firstname", information.firstName)
+      localStorage.setItem("lastname", information.lastName)
+      localStorage.setItem("phone", information.phoneNumber)
+      localStorage.setItem("household", information.household)
+    },
     changeInfo(){
       if(!this.editing){
         this.change = !this.change
