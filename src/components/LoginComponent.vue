@@ -87,6 +87,7 @@ export default {
         this.emailCheck = true;
         return true;
       } else {
+        this.emailCheck = false;
         return 'You must enter a valid email.'
       }
     },
@@ -95,6 +96,7 @@ export default {
         this.passwordCheck = true;
         return true
       } else {
+        this.passwordCheck = false;
         return 'Password must be at least 8 characters.'
       }
     },
@@ -103,6 +105,7 @@ export default {
         this.firstNameCheck = true;
         return true
       } else {
+        this.firstNameCheck = false;
         return 'First name cannot be empty.'
       }
     },
@@ -111,6 +114,7 @@ export default {
         this.lastNameCheck = true;
         return true
       } else {
+        this.lastNameCheck = false;
         return 'Last name cannot be empty.'
       }
     },
@@ -119,6 +123,7 @@ export default {
         this.phoneCheck = true;
         return true
       } else {
+        this.phoneCheck = false;
         return 'Number must be 8 digits.'
       }
     },
@@ -127,6 +132,7 @@ export default {
         this.householdCheck = true;
         return true
       } else {
+        this.householdCheck = false;
         return 'There must be at least 1 household member.'
       }
     },
@@ -135,6 +141,7 @@ export default {
         this.ageCheck = true;
         return true
       } else {
+        this.ageCheck = false;
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
