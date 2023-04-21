@@ -8,7 +8,7 @@
     </select>
     <div><img src="../assets/logo.png" id="user-image"></div>
     <v-card-actions>
-      <v-btn v-if="!edit" @click="editInfo">Change info</v-btn>
+      <v-btn v-if="!edit && $route.name !== 'chooseUser'" @click="editInfo">Change info</v-btn>
       <v-btn v-if="edit" @click="editInfo">Save info</v-btn>
     </v-card-actions>
   </v-card>
@@ -40,7 +40,7 @@ export default {
   display: inline-block;
   margin: 20px;
   width: 200px;
-  height: 250px;
+  height: 230px;
   cursor: pointer;
   border: 1px solid #39495c;
   text-align: center;
