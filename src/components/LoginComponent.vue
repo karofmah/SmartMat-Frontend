@@ -155,12 +155,13 @@ export default {
       await loginService.login(info).then(function (response) {
         console.log(response)
         if (response.status === 200){
+          localStorage.setItem("email", info.email)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
         }
       }).catch(function (err) {
-        console.log(err.response.status)
+        console.log(err.response)
         console.log(err)
       })
     },
@@ -177,6 +178,7 @@ export default {
       await loginService.registerUser(info).then(function (response) {
         console.log(response.status)
         if (response.status === 200){
+          localStorage.setItem("email", info.email)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
