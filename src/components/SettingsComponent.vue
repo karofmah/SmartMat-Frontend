@@ -37,14 +37,10 @@ import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
 export default {
   components: {UserComponent},
-  beforeMount(){
-    this.getInformation()
-  },
   data(){
     return {
       picked: "Change your information",
       change: false,
-      edit: false,
       editing: false,
       email: localStorage.getItem("email"),
       firstname: localStorage.getItem("firstname"),
@@ -67,6 +63,9 @@ export default {
       localStorage.setItem("phone", information.phoneNumber)
       localStorage.setItem("household", information.household)
     },
+    beforeMount(){
+      this.getInformation()
+    },
     changeInfo(){
       if(!this.editing){
         this.change = !this.change
@@ -85,9 +84,6 @@ export default {
     },
     addNewUser(){
       this.users.push(this.users.length + 1)
-    },
-    editUsers(){
-      this.edit = !this.edit
     },
     checkName(value) {
       if (value?.length > 0) {
