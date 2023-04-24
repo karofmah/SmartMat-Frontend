@@ -11,7 +11,7 @@
     </div>
 
     <div id="generate">
-      <v-btn id="generateButton">Generate recipe</v-btn>
+      <v-btn id="generateButton" @click="generateRecipe()">Generate recipe</v-btn>
       <div id="recipe-box">
       <textarea v-model="recipe" id="recipe">
       </textarea>
@@ -54,8 +54,8 @@ export default {
     }
   },
   methods: {
-    showIngredients() {
-      this.show = !this.show;
+    generateRecipe() {
+      this.recipe = "This is a test recipe";
     }
   }
 }
