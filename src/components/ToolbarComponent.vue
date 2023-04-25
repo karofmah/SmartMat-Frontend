@@ -2,8 +2,8 @@
   <nav>
     <v-toolbar flat app>
       <v-toolbar-title class="text-uppercase grey--text">
-        <span class="font-weight-light">Smart</span>
-        <span>Mat</span>
+        <div @click="route"><span class="font-weight-light">Smart</span>
+          <span>Mat</span></div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tab flat color="grey" to="/fridge">Fridge<v-icon icon="mdi-fridge"></v-icon></v-tab>
@@ -16,7 +16,12 @@
 </template>
 
 <script>
+import router from "@/router"
 export default {
-
+  methods: {
+    route(){
+      router.push("/user")
+    }
+  }
 }
 </script>
