@@ -11,9 +11,9 @@
     </div>
 
     <div id="generate">
-      <v-btn id="generateButton">Generate recipe</v-btn>
+      <v-btn id="generateButton" @click="generateRecipe">Generate recipe</v-btn>
       <div id="recipe-box">
-      <textarea v-model="recipe" id="recipe">
+      <textarea v-model="recipe" id="recipe" disabled>
       </textarea>
     </div>
     </div>
@@ -23,6 +23,8 @@
 
 <script>
 import CategoryComponent from "@/components/CategoryComponent.vue";
+import recipeService from "@/services/recipeService.js";
+
 
 export default {
   components: {CategoryComponent},
@@ -56,7 +58,12 @@ export default {
   methods: {
     showIngredients() {
       this.show = !this.show;
-    }
+    },
+    async generateRecipe(){
+      this.recipe = "Generating recipe..."
+      const recipe = await recipeService.getRecipe(1) // TODO Change 1 to actual fridge ID
+      this.recipe = recipe
+    },
   }
 }
 
