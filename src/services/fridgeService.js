@@ -19,10 +19,18 @@ export default {
             return response.data
         })
     },
-    getAllItemsInFridge(id){
-        return axios.get("http://localhost:8080/api/refrigerators/getItemsInRefrigerator/" + id).then((response) => {
+    getAllItemsInFridge(){
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=jens@mail.com").then((response) => {
             console.log("Getting all items in fridge")
-            return response
+            console.log(response.data.items)
+            return response.data.items
+        })
+    },
+    addNewItemToFridge(item){
+        return axios.post("http://localhost:8080/api/refrigerators/addItemInRefrigerator", item).then((response) => {
+            console.log("adding items to fridge")
+            console.log(response.data)
+            return response.data
         })
     }
 }

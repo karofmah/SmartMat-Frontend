@@ -82,6 +82,7 @@
 <script>
 import router from "@/router";
 import loginService from "@/services/loginService.js";
+import settingsService from "@/services/settingsService";
 export default {
   methods:{
     checkEmail(value){
@@ -152,10 +153,15 @@ export default {
         "email": this.email,
         "password": this.password
       }
-      await loginService.login(info).then(function (response) {
+      await loginService.login(info).then(async function (response) {
         console.log(response)
         if (response.status === 200){
           localStorage.setItem("email", info.email)
+          const information = await settingsService.getUserInfo(localStorage.getItem("email"))
+          localStorage.setItem("firstname", information.firstName)
+          localStorage.setItem("lastname", information.lastName)
+          localStorage.setItem("phone", information.phoneNumber)
+          localStorage.setItem("household", information.household)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
@@ -175,10 +181,24 @@ export default {
         "age": this.age,
         "phoneNumber": this.phoneNumber
       }
-      await loginService.registerUser(info).then(function (response) {
+
+      const firstname = this.firstname
+
+      await loginService.registerUser(info).then(async function (response) {
         console.log(response.status)
         if (response.status === 201){
           localStorage.setItem("email", info.email)
+          const subuser = {
+            "name": firstname,
+            "accessLevel": true,
+            "masterUser": localStorage.getItem("email")
+          }
+          await settingsService.addNewSubuser(subuser)
+          const information = await settingsService.getUserInfo(localStorage.getItem("email"))
+          localStorage.setItem("firstname", information.firstName)
+          localStorage.setItem("lastname", information.lastName)
+          localStorage.setItem("phone", information.phoneNumber)
+          localStorage.setItem("household", information.household)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
@@ -193,7 +213,15 @@ export default {
       } else if (this.value === "Register" && this.emailCheck && this.passwordCheck && this.firstNameCheck && this.lastNameCheck && this.phoneCheck && this.householdCheck && this.ageCheck) {
         await this.register()
       }
-    }
+    },
+    async getInformation(){
+      console.log(await settingsService.getUserInfo(localStorage.getItem("email")))
+      const information = await settingsService.getUserInfo(localStorage.getItem("email"))
+      localStorage.setItem("firstname", information.firstName)
+      localStorage.setItem("lastname", information.lastName)
+      localStorage.setItem("phone", information.phoneNumber)
+      localStorage.setItem("household", information.household)
+    },
   },
   data: () => ({
     emailCheck: false,
@@ -205,11 +233,11 @@ export default {
     ageCheck: false,
     show: true,
     value: "Login",
-    email: 'test@mail.com',
-    password: '123456789',
-    firstname:'hei',
-    lastname:'heihei',
-    phoneNumber:'12345678',
+    email: null,
+    password: null,
+    firstname:'',
+    lastname:'',
+    phoneNumber:'',
     household:'6',
     age:'100',
   }),

@@ -132,13 +132,6 @@ export default {
         this.betaUser = false;
       }
     },
-    async getInformation(){
-      const information = await settingsService.getUserInfo(localStorage.getItem("email"))
-      localStorage.setItem("firstname", information.firstName)
-      localStorage.setItem("lastname", information.lastName)
-      localStorage.setItem("phone", information.phoneNumber)
-      localStorage.setItem("household", information.household)
-    },
     async getSubusers(){
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
@@ -166,9 +159,6 @@ export default {
         }
       }
 
-    },
-    addNewUser(){
-      this.users.push(this.users.length + 1)
     },
     checkName(value) {
       if (value?.length > 0) {
@@ -208,7 +198,6 @@ export default {
     }
   },
   beforeMount(){
-    this.getInformation()
     this.getSubusers()
     this.setUserLevel()
   }
