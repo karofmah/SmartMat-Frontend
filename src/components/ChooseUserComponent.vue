@@ -1,29 +1,26 @@
 <template>
   <div id="choose-users">
-    <UserComponent class="choose-card" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.type"/>
+    <UserComponent class="choose-card" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel"/>
   </div>
 </template>
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
+import settingsService from "@/services/settingsService";
 export default {
   components: {UserComponent},
   data() {
     return {
-      picked: "Change your information",
-      change: false,
-      edit: false,
-      email: "ola_normann@mail.com",
-      firstname: "Ola",
-      lastname: "Normann",
-      phone: "12345678",
-      household: 5,
-      users: [
-          {name: 'Brukernavn1', type: 'superbruker'},
-          {name: 'Brukernavn2', type: 'superbruker'},
-          {name: 'Brukernavn3', type: 'barn'},
-          {name: 'Brukernavn4', type: 'vanlig bruker'}]
-    };
+      users: null
+    }
+  },
+  methods: {
+    async getSubusers(){
+      this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
+    }
+  },
+  beforeMount(){
+    this.getSubusers()
   }
 }
 </script>

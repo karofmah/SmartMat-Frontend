@@ -1,17 +1,17 @@
 <template>
   <div id="container-categories">
     <div id="searchbar">
-    <v-autocomplete id="search" placeholder="search your fridge..." :items="items" ></v-autocomplete>
+    <v-autocomplete id="search" placeholder="search your fridge..." :items="items.name" ></v-autocomplete>
   </div>
     <div id="category-recipe">
     <div id="categories">
       <ul id="category-list">
-        <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.desc" :desc="category.desc" :items="category.items"/></li>
+        <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
       </ul>
     </div>
 
     <div id="generate">
-      <v-btn id="generateButton" @click="generateRecipe()">Generate recipe</v-btn>
+      <v-btn id="generateButton">Generate recipe</v-btn>
       <div id="recipe-box">
       <textarea v-model="recipe" id="recipe">
       </textarea>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import fridgeService from "@/services/fridgeService";
 import CategoryComponent from "@/components/CategoryComponent.vue";
 
 export default {
@@ -30,33 +31,26 @@ export default {
     return {
       recipe: null,
       show: false,
-      items: [
-          "Egg", "Milk", "Entrecote"
-      ],
-      categories: [
-        {desc: "Dairy", items: [
-            { title: ' One' },
-            { title: ' Two' },
-            { title: ' Three' },
-            { title: ' Four' }]},
-        {desc: "Meat"},
-        {desc: "Vegetables"},
-        {desc: "Dairy"},
-        {desc: "Meat"},
-        {desc: "Vegetables"},
-        {desc: "Dairy"},
-        {desc: "Meat"},
-        {desc: "Vegetables"},
-        {desc: "Dairy"},
-        {desc: "Meat"},
-        {desc: "Vegetables"}
-      ]
+      items: null,
+      categories: null
     }
   },
   methods: {
-    generateRecipe() {
-      this.recipe = "This is a test recipe";
+    showIngredients() {
+      this.show = !this.show;
+    },
+    async getAllCategories(){
+      console.log(await fridgeService.getAllCategories())
+      this.categories = await fridgeService.getAllCategories()
+    },
+    async getAllItems(){
+      this.items = await fridgeService.getAllItemsInFridge(1)
+      console.log(this.items)
     }
+  },
+  beforeMount(){
+    this.getAllCategories()
+    this.getAllItems()
   }
 }
 

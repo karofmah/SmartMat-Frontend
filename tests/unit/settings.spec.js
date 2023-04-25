@@ -67,13 +67,6 @@ describe('Settings component', () => {
         await expect(wrapper.vm.picked).toBe('Change your information')
     })
 
-    it('adds a new user to the users array on click of the add-new-user button', async () => {
-        const wrapper = mount(Settings)
-        await expect(wrapper.vm.users.length).toBe(4)
-        await wrapper.find('#add-new-user').trigger('click')
-        await expect(wrapper.vm.users.length).toBe(5)
-    })
-
     it('validates the first name field correctly', async () => {
         const wrapper = mount(Settings)
         await expect(wrapper.vm.nameValid).toBe(false)

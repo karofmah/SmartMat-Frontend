@@ -177,7 +177,7 @@ export default {
       }
       await loginService.registerUser(info).then(function (response) {
         console.log(response.status)
-        if (response.status === 200){
+        if (response.status === 201){
           localStorage.setItem("email", info.email)
           router.push("/user")
         } else {
