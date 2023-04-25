@@ -17,7 +17,7 @@
             v-for="(item, index) in items"
             :key="index"
         >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -25,11 +25,23 @@
 </template>
 
 <script>
+import fridgeService from "@/services/fridgeService";
 export default {
   props: {
+    id: Number,
     desc: String,
-    items: Object
   },
+  data(){
+    items: null
+  },
+  methods: {
+    async getAllItemsByCategory(){
+      this.items = await fridgeService.getAllItemsByCategory(this.id)
+    }
+  },
+  beforeMount(){
+    this.getAllItemsByCategory()
+  }
 }
 </script>
 
