@@ -11,7 +11,7 @@
     </div>
 
     <div id="generate">
-      <v-btn id="generateButton" @click="generateRecipe">Generate recipe</v-btn>
+      <v-btn id="generateButton" @click="generateRecipe()">Generate recipe</v-btn>
       <div id="recipe-box">
       <textarea v-model="recipe" id="recipe" disabled>
       </textarea>
