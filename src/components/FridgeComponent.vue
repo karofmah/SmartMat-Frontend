@@ -1,8 +1,78 @@
 <template>
   <div id="container-categories">
     <div id="searchbar">
-    <v-autocomplete id="search" placeholder="search your fridge..." :items="items.name" ></v-autocomplete>
-  </div>
+    <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
+      <v-row justify="center">
+        <v-dialog
+            v-model="dialog"
+            persistent
+            width="400"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+                color="primary"
+                v-bind="props"
+            >
+              Add to fridge
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">User Profile</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-autocomplete type="text" placeholder="Select food" clearable :items="items" v-model="newItemName" :rules="[ checkName ]"></v-autocomplete>
+                  </v-col>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-text-field
+                        label="Amount*"
+                        v-model="newItemAmount"
+                        :rules="[ checkAmount ]"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-autocomplete
+                        :items="['KG', 'DL', 'L']"
+                        label="Measurement type*"
+                        v-model="newItemMeasurement"
+                        :rules="[ checkMeasurement ]"
+                    ></v-autocomplete>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <small>*indicates required field</small>
+              <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="dialog = false"
+              >
+                Close
+              </v-btn>
+              <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="addToFridge"
+              >
+                Add
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </div>
     <div id="category-recipe">
     <div id="categories">
       <ul id="category-list">
@@ -29,28 +99,90 @@ export default {
   components: {CategoryComponent},
   data() {
     return {
+      dialog: false,
+      newItemName: null,
+      newItemAmount: null,
+      newItemMeasurement: null,
       recipe: null,
       show: false,
-      items: null,
-      categories: null
+      items: [],
+      myItems: [],
+      categories: null,
+      nameCheck: false,
+      amountCheck: false,
+      measurementCheck: false,
+      error: false
     }
   },
   methods: {
-    showIngredients() {
-      this.show = !this.show;
+    async addToFridge(){
+      if(this.nameCheck && this.amountCheck && this.measurementCheck) {
+        this.error = false
+        this.myItems = [];
+        const item = {
+          "itemName": this.newItemName,
+          "refrigeratorId": "1",
+          "amount": this.newItemAmount,
+          "measurementType": this.newItemMeasurement
+        }
+        await fridgeService.addNewItemToFridge(item)
+        this.dialog = false
+        await this.getAllFridgeItems()
+      } else {
+        this.error = true
+      }
+
     },
     async getAllCategories(){
       console.log(await fridgeService.getAllCategories())
       this.categories = await fridgeService.getAllCategories()
     },
+    async getAllFridgeItems(){
+      const list = await fridgeService.getAllItemsInFridge()
+      console.log("getting all items in my fridge")
+      for(let i = 0; i < list.length; i++){
+        this.myItems.push(list[i].item.name)
+      }
+    },
     async getAllItems(){
-      this.items = await fridgeService.getAllItemsInFridge(1)
-      console.log(this.items)
-    }
+      const list = await fridgeService.getAllItems()
+      console.log("getting all items")
+      for(let i = 0; i < list.length; i++){
+        this.items.push(list[i].name)
+      }
+    },
+    checkName(value){
+      if (value?.length > 0) {
+        this.nameCheck = true;
+        return true
+      } else {
+        this.nameCheck = false;
+        return 'Name cannot be empty.'
+      }
+    },
+    checkAmount(value){
+      if (value > 0) {
+        this.amountCheck = true;
+        return true
+      } else {
+        this.amountCheck = false;
+        return 'Amount cannot be below 0.'
+      }
+    },
+    checkMeasurement(value){
+      if (value?.length > 0) {
+        this.measurementCheck = true;
+        return true
+      } else {
+        this.measurementCheck = false;
+        return 'Measurement cannot me empty.'
+      }
+    },
   },
   beforeMount(){
     this.getAllCategories()
     this.getAllItems()
+    this.getAllFridgeItems()
   }
 }
 
@@ -83,9 +215,17 @@ export default {
 }
 
 #searchbar {
-  width: 30%;
+  width: 50%;
+  display: flex;
 }
 #search {
+  width: 45%;
+  margin-right: 10px;
+}
+
+#add{
+  width: 45%;
+  margin-right: 10px;
 }
 
 #generate {
