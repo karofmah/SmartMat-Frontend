@@ -1,5 +1,3 @@
-
-
 <template>
   <div id="settings-container">
   <div id="user-information">
@@ -22,12 +20,79 @@
       </div>
     </div>
     <div>
-    <div class="settings-buttons"><v-btn id="info-button" @click="changeInfo">{{ picked }}</v-btn></div>
-    <div class="settings-buttons"><v-btn id="add-new-user" @click="addNewUser">Add new user</v-btn></div>
+    <div class="settings-buttons"><v-btn id="info-button" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
+    <div id="newSubUser" class="settings-buttons"> <v-row>
+      <v-dialog
+          v-model="dialog"
+          persistent
+          width="400"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+              id="addNewSubuserButton"
+              color="green"
+              v-bind="props"
+              :disabled="betaUser"
+          >
+            Add new user
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">New user</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                    cols="12"
+                >
+                  <v-text-field
+                      v-model="username"
+                      label="Username*"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                    cols="12"
+                >
+                  <v-select
+                      v-model="userType"
+                      :items="types"
+                      label="User level*"
+                      required
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="dialog = false"
+            >
+              Close
+            </v-btn>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="addSubuser"
+            >
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
     </div>
+    </div>
+    <div><p v-if="betaUser">You are not authorized to make changes</p></div>
   </div>
   <div id="users">
-    <UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.type"/>
+    <UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel"/>
   </div>
   </div>
 </template>
@@ -39,6 +104,11 @@ export default {
   components: {UserComponent},
   data(){
     return {
+      betaUser: true,
+      username: null,
+      userType: null,
+      types: ["true", "false"],
+      dialog: false,
       picked: "Change your information",
       change: false,
       editing: false,
@@ -47,7 +117,7 @@ export default {
       lastname: localStorage.getItem("lastname"),
       phone: localStorage.getItem("phone"),
       household: localStorage.getItem("household"),
-      users: [{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'superbruker'},{name: 'Brukernavn1', type:'barn'},{name: 'Brukernavn1', type:'vanlig bruker'}],
+      users: null,
       nameValid: false,
       lastNameValid: false,
       phoneValid: false,
@@ -55,16 +125,31 @@ export default {
     };
   },
   methods: {
+    async setUserLevel(){
+      if (localStorage.getItem("userType") === "false"){
+        this.betaUser = true;
+      } else {
+        this.betaUser = false;
+      }
+    },
     async getInformation(){
       const information = await settingsService.getUserInfo(localStorage.getItem("email"))
-      console.log(information)
       localStorage.setItem("firstname", information.firstName)
       localStorage.setItem("lastname", information.lastName)
       localStorage.setItem("phone", information.phoneNumber)
       localStorage.setItem("household", information.household)
     },
-    beforeMount(){
-      this.getInformation()
+    async getSubusers(){
+      this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
+    },
+    async addSubuser(){
+      const subuser = {
+        "name": this.username,
+        "accessLevel": this.userType,
+        "masterUser": localStorage.getItem("email")
+      }
+      await settingsService.addNewSubuser(subuser)
+      await this.getSubusers()
     },
     changeInfo(){
       if(!this.editing){
@@ -121,7 +206,12 @@ export default {
         return 'There must be at least 1 household member.'
       }
     }
-    }
+  },
+  beforeMount(){
+    this.getInformation()
+    this.getSubusers()
+    this.setUserLevel()
+  }
 }
 </script>
 
@@ -156,5 +246,10 @@ export default {
 
 .settings-buttons {
   margin-top: 20px;
+}
+
+#newSubUser {
+  margin-left: 10px;
+  margin-bottom: 12px;
 }
 </style>
