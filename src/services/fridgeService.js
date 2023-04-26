@@ -7,8 +7,8 @@ export default {
             return response.data
         })
     },
-    getAllItemsByCategory(id){
-        return axios.get("http://localhost:8080/api/items/getAllItemsByCategory?categoryId=" + id).then((response) => {
+    getAllItemsByCategory(fridgeId, categoryId){
+        return axios.get("http://localhost:8080/api/refrigerators/getItemInRefrigeratorByCategory/+" + fridgeId + "?categoryId=" + categoryId).then((response) => {
             console.log("Getting all by category")
             return response.data
         })
@@ -30,6 +30,13 @@ export default {
         return axios.post("http://localhost:8080/api/refrigerators/addItemInRefrigerator", item).then((response) => {
             console.log("adding items to fridge")
             console.log(response.data)
+            return response.data
+        })
+    },
+    deleteItem(item, waste){
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItemFromRefrigerator?waste=" + waste, {data: item}).then((response) => {
+            console.log("Deleting item from fridge")
+            console.log(response)
             return response.data
         })
     }
