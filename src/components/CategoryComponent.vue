@@ -2,6 +2,7 @@
   <div class="text-center">
     <v-menu
         open-on-click
+        :close-on-content-click="false"
     >
       <template v-slot:activator="{ props }">
         <v-btn
@@ -27,21 +28,21 @@
                   <v-col
                       cols="12"
                   >
-                    <v-text-field type="text" placeholder="Selected food" :items="items" v-model="selectedItem"></v-text-field>
+                    <v-text-field type="text" :items="items" :readOnly="true">{{name}}</v-text-field>
                   </v-col>
                   <v-col
                       cols="12"
-                  ><div ><v-radio-group inline>
+                  ><div ><v-radio-group inline v-model="waste">
                     <v-radio
                         id="throw-radiobutton"
-                        label="Throw"
-                        value="Throw"
+                        label="Throw:("
+                        value="true"
                     >
                     </v-radio>
                     <v-radio
                         id="eat-radiobutton"
-                        label="Eaten"
-                        value="Eaten"
+                        label="Eaten:)"
+                        value="false"
                     >
                     </v-radio>
                   </v-radio-group></div>
@@ -51,11 +52,14 @@
                       cols="12"
                   ><v-text-field
                       label="Amount*"
-                      :rules="[]"
+                      :rules="[ checkAmount ]"
+                      v-model="amount"
                   ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
+              <small>*indicates required field</small>
+              <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -69,20 +73,54 @@
               <v-btn
                   color="blue-darken-1"
                   variant="text"
-                  @click=""
+                  @click="removeItem"
               >
-                Add
+                Remove
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-row>
+
+      <v-row justify="center">
+        <v-dialog
+            v-model="addToShoppingList"
+            persistent
+            width="auto"
+        >
+          <v-card>
+            <v-card-title class="text-h5">
+              Add to shopping list
+            </v-card-title>
+            <v-card-text>{{ message }}</v-card-text>
+            <v-card-text>Do you want to add {{ name }} to your shopping list?</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                  color="green-darken-1"
+                  variant="text"
+                  @click="no"
+              >
+                No
+              </v-btn>
+              <v-btn
+                  color="green-darken-1"
+                  variant="text"
+                  @click="yes"
+              >
+                Yes
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+
       <v-list>
         <v-list-item
             v-for="(item, index) in items"
             :key="index"
         >
-          <div id="itemInfo"><v-list-item-title>{{ item.name }}</v-list-item-title><v-btn id="removeItem" @click="dialog = true">Remove</v-btn></div>
+          <div id="itemInfo"><div id="itemName"><v-list-item-title>{{ item.item.name }}</v-list-item-title></div><div id="ThrowButton"><v-btn id="removeItem" @click="(dialog = true) && (this.name = item.item.name)" variant="text" size="large" density="compact" icon="mdi-delete"></v-btn></div></div>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -98,18 +136,56 @@ export default {
   },
   data(){
     return {
+      name: null,
+      waste: "true",
+      amount: null,
       items: null,
-      dialog: false
+      dialog: false,
+      message: null,
+      addToShoppingList: false,
+      error: false,
+      amountCheck: false
     }
   },
   methods: {
-    async getAllItemsByCategory(){
-      this.items = await fridgeService.getAllItemsByCategory(this.id)
+    no(){
+      this.dialog = false
+      this.addToShoppingList = false
     },
-    removeItem() {
+    yes(){
+      this.dialog = false
+      this.addToShoppingList = false
+    },
+    async getAllItemsByCategory(){
+      this.items = await fridgeService.getAllItemsByCategory(1, this.id)
+    },
+    async removeItem() {
+      if (this.amountCheck) {
+        this.error = false
+        const item = {
+          "itemName": this.name,
+          "refrigeratorId": "1",
+          "amount": this.amount,
+          "measurementType": "KG"
+        }
+        this.message = await fridgeService.deleteItem(item, this.waste)
+        this.addToShoppingList = true
+      } else {
+        this.error = true
+      }
+
+    },
+    checkAmount(value){
+      if (value > 0) {
+        this.amountCheck = true;
+        return true
+      } else {
+        this.amountCheck = false;
+        return 'Amount cannot be below 0.'
+      }
     }
   },
-  beforeMount(){
+  created(){
     this.getAllItemsByCategory()
   }
 }
@@ -136,9 +212,16 @@ export default {
 }
 
 #itemInfo {
-  display: flex;
   width: 100%;
-  max-width: 200px;
+  max-width: 300px;
+}
+
+#itemName{
+  float: left;
+}
+
+#ThrowButton{
+  float: right;
 }
 
 </style>
