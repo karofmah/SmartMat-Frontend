@@ -82,9 +82,9 @@
     </div>
 
     <div id="generate">
-      <v-btn id="generateButton">Generate recipe</v-btn>
+      <v-btn id="generateButton" @click="generateRecipe">Generate recipe</v-btn>
       <div id="recipe-box">
-      <textarea v-model="recipe" id="recipe" disabled>
+      <textarea class="textarea" v-model="recipe" id="recipe" disabled>
       </textarea>
     </div>
     </div>
@@ -96,7 +96,6 @@
 import fridgeService from "@/services/fridgeService";
 import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
-
 
 export default {
   components: {CategoryComponent},
@@ -253,7 +252,7 @@ export default {
 
 
 #recipe {
-  height: 200px;
+  height: 300px;
   border: solid black;
   width: 90%;
 }
