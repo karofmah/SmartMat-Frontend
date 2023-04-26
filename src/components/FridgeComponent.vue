@@ -2,7 +2,7 @@
   <div id="container-categories">
     <div id="searchbar">
     <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
-      <v-row justify="center">
+      <div id="addNewItemButton"  ><v-row justify="center">
         <v-dialog
             v-model="dialog"
             persistent
@@ -10,15 +10,16 @@
         >
           <template v-slot:activator="{ props }">
             <v-btn
-                color="primary"
+
+                color=""
                 v-bind="props"
             >
-              Add to fridge
+              Add new item
             </v-btn>
           </template>
           <v-card>
             <v-card-title>
-              <span class="text-h5">User Profile</span>
+              <span class="text-h5">Add new item to fridge</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -71,7 +72,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-row>
+      </v-row></div>
     </div>
     <div id="category-recipe">
     <div id="categories">
@@ -83,7 +84,7 @@
     <div id="generate">
       <v-btn id="generateButton">Generate recipe</v-btn>
       <div id="recipe-box">
-      <textarea v-model="recipe" id="recipe">
+      <textarea class="textarea" v-model="recipe" id="recipe" :readOnly="true">
       </textarea>
     </div>
     </div>
@@ -141,7 +142,7 @@ export default {
       const list = await fridgeService.getAllItemsInFridge()
       console.log("getting all items in my fridge")
       for(let i = 0; i < list.length; i++){
-        this.myItems.push(list[i].item.name)
+        this.myItems.push(list[i].item.name + " (" + list[i].amount + ")")
       }
     },
     async getAllItems(){
@@ -179,7 +180,7 @@ export default {
       }
     },
   },
-  beforeMount(){
+  created(){
     this.getAllCategories()
     this.getAllItems()
     this.getAllFridgeItems()
@@ -208,6 +209,7 @@ export default {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 #category-list {
@@ -215,16 +217,13 @@ export default {
 }
 
 #searchbar {
-  width: 50%;
+  width: 100%;
   display: flex;
+  flex-wrap: wrap;
 }
 #search {
-  width: 45%;
-  margin-right: 10px;
-}
-
-#add{
-  width: 45%;
+  width: 100%;
+  max-width: 300px;
   margin-right: 10px;
 }
 
@@ -260,6 +259,13 @@ category-component{
 }
 li#category-component {
   float: left;
-  margin: 10px;;
+  margin: 10px;
+}
+#addNewItemButton{
+  margin: 20px;
+
+}
+.textarea{
+  resize: none;
 }
 </style>
