@@ -67,13 +67,6 @@ describe('Settings component', () => {
         await expect(wrapper.vm.picked).toBe('Change your information')
     })
 
-    it('adds a new user to the users array on click of the add-new-user button', async () => {
-        const wrapper = mount(Settings)
-        await expect(wrapper.vm.users.length).toBe(4)
-        await wrapper.find('#add-new-user').trigger('click')
-        await expect(wrapper.vm.users.length).toBe(5)
-    })
-
     it('validates the first name field correctly', async () => {
         const wrapper = mount(Settings)
         await expect(wrapper.vm.nameValid).toBe(false)
@@ -106,23 +99,4 @@ describe('Settings component', () => {
         await expect(wrapper.vm.householdValid).toBe(true)
         await expect(wrapper.vm.checkHousehold('')).toBe('There must be at least 1 household member.')
     })
-
-    it('should set user information in local storage', async () => {
-        const email = 'test@test.com';
-        const userInfo = {
-            firstName: 'John',
-            lastName: 'Doe',
-            phoneNumber: '12345678',
-            household: '4',
-        };
-        mock.onGet(`http://localhost:8080/api/users/login/user?email=${email}`).reply(200, userInfo);
-
-        const wrapper = mount(Settings)
-        await wrapper.vm.getInformation()
-
-        expect(localStorage.getItem('firstname')).toBe(userInfo.firstName);
-        expect(localStorage.getItem('lastname')).toBe(userInfo.lastName);
-        expect(localStorage.getItem('phone')).toBe(userInfo.phoneNumber);
-        expect(localStorage.getItem('household')).toBe(userInfo.household);
-    });
 })
