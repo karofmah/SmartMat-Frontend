@@ -13,6 +13,8 @@ export default {
             console.log("Getting subusers")
             //console.log(response)
             return response.data
+        }).catch(function (err) {
+            console.log(err.response)
         })
     },
     addNewSubuser(subuser){
@@ -20,6 +22,8 @@ export default {
             console.log("Adding subusers")
             console.log(response)
             return response.data
+        }).catch(function (err) {
+            console.log(err.response)
         })
     },
     deleteSubuser(subuser){
@@ -27,6 +31,8 @@ export default {
             console.log("Deleting subuser")
             console.log(response)
             return response.data
+        }).catch(function (err) {
+            console.log(err.response)
         })
     }
 }
