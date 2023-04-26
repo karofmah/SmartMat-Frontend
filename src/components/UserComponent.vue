@@ -2,8 +2,8 @@
   <v-card variant="outlined" class="user-card" @click="chooseUser">
     <v-card-title v-if="!edit">{{ name }} </v-card-title>
     <v-card-subtitle v-if="!edit">{{ type }}</v-card-subtitle>
-    <input v-if="edit" id="edit-name-input">
-    <select :type="type" v-if="edit">
+    <input v-if="edit" id="edit-name-input" placeholder="Your username">
+    <select :type="type" v-if="edit" id="edit-userlevel-input">
       <option v-for="type in types">{{type.name}}</option>
     </select>
     <div><img src="../assets/logo.png" id="user-image"></div>
@@ -22,7 +22,7 @@ export default {
   name: "user-component",
   props: {
     name: String,
-    type: Boolean,
+    type: Boolean
   },
   data() {
     return {
@@ -85,5 +85,10 @@ export default {
 }
 #edit-name-input {
   margin-top: 10px;
+  border: 1px solid #39495c;
+}
+#edit-userlevel-input {
+  border: 1px solid #39495c;
+  width: 85%;
 }
 </style>

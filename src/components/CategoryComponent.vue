@@ -6,7 +6,7 @@
     >
       <template v-slot:activator="{ props }">
         <v-btn
-            color="green"
+            color="teal"
             v-bind="props"
             id="category-button"
         >{{ desc }}
@@ -129,6 +129,7 @@
 
 <script>
 import fridgeService from "@/services/fridgeService";
+import shoppingListService from "@/services/shoppingListService";
 export default {
   props: {
     id: Number,
@@ -152,7 +153,14 @@ export default {
       this.dialog = false
       this.addToShoppingList = false
     },
-    yes(){
+    async yes(){
+      const itemToAdd = {
+        "itemName": this.name,
+        "shoppingListId": "1",
+        "amount": "10",
+        "measurementType": "2"
+      }
+      await shoppingListService.addShoppingListItems(itemToAdd)
       this.dialog = false
       this.addToShoppingList = false
     },
