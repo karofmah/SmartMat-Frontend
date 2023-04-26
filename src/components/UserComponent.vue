@@ -22,7 +22,7 @@ export default {
   name: "user-component",
   props: {
     name: String,
-    type: String,
+    type: Boolean,
   },
   data() {
     return {
@@ -59,7 +59,7 @@ export default {
       }
     }
   },
-  beforeMount(){
+  created(){
     this.setUserLevel()
   }
 }
