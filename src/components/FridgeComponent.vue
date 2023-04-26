@@ -84,7 +84,7 @@
     <div id="generate">
       <v-btn id="generateButton">Generate recipe</v-btn>
       <div id="recipe-box">
-      <textarea class="textarea" v-model="recipe" id="recipe" :readOnly="true">
+      <textarea v-model="recipe" id="recipe" disabled>
       </textarea>
     </div>
     </div>
@@ -95,6 +95,8 @@
 <script>
 import fridgeService from "@/services/fridgeService";
 import CategoryComponent from "@/components/CategoryComponent.vue";
+import recipeService from "@/services/recipeService.js";
+
 
 export default {
   components: {CategoryComponent},
@@ -178,6 +180,14 @@ export default {
         this.measurementCheck = false;
         return 'Measurement cannot me empty.'
       }
+    },
+    showIngredients() {
+      this.show = !this.show;
+    },
+    async generateRecipe(){
+      this.recipe = "Generating recipe..."
+      const recipe = await recipeService.getRecipe(1) // TODO Change 1 to actual fridge ID
+      this.recipe = recipe
     },
   },
   created(){
