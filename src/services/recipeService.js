@@ -1,15 +1,21 @@
 import axios from "axios";
 
 export default {
-    getRecipe(refrigeratorId){
+    async getRecipe(refrigeratorId){
         return axios.get("http://localhost:8080/api/recipes/generateRecipe?refrigeratorId=" + refrigeratorId).then((response) => {
             console.log("Generating recipe...")
             return response.data
         })
     },
-    getWeeklyMenu(numPeople){
-        return axios.get("http://localhost:8080/api/recipes/generateWeeklyMenu?numPeople=" + numPeople).then((response) => {
+    async generateWeeklyMenus(email, numPeople){
+        return axios.get("http://localhost:8080/api/recipes/generateWeeklyMenu/" + email + "?numPeople=" + numPeople).then((response) => {
             console.log("Generating recipe...")
+            return response.data
+        })
+    },
+    async getWeeklyMenu(email){
+        return axios.get("http://localhost:8080/api/recipes/getWeeklyMenu/" + email).then((response) => {
+            console.log("Getting recipe...")
             return response.data
         })
     }
