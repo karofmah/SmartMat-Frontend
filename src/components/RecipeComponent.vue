@@ -22,7 +22,6 @@
       >
         <template v-slot:append>
           <v-btn @click="generateRecipes(email, numPeople)">Generate recipes</v-btn>
-          <v-btn @click="getRecipes(email)">Get recipes</v-btn>
         </template>
       </v-slider>
       
