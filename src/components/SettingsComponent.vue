@@ -30,7 +30,7 @@
         <template v-slot:activator="{ props }">
           <v-btn
               id="addNewSubuserButton"
-              color="green"
+              color="teal"
               v-bind="props"
               :disabled="betaUser"
           >
