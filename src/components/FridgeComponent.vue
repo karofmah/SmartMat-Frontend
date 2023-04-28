@@ -79,7 +79,7 @@
     <div id="category-recipe">
     <div id="categories">
       <ul id="category-list">
-        <li id="category-component"><CategoryComponent v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
+        <li id="category-component"><CategoryComponent v-on:update-fridge="handleUpdate" v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
       </ul>
     </div>
 
@@ -149,8 +149,12 @@ export default {
         this.betaUser = false;
       }
     },
+    async handleUpdate() {
+      await this.getAllFridgeItems(localStorage.getItem("email"))
+    },
     async getAllFridgeItems(){
       try {
+        this.myItems = []
         const list = await fridgeService.getAllItemsInFridge(localStorage.getItem("email"))
         console.log("getting all items in my fridge")
         for(let i = 0; i < list.length; i++){

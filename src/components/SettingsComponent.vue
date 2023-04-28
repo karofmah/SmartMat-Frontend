@@ -33,7 +33,8 @@
                 id="addNewSubuserButton"
                 color="teal"
                 v-bind="props"
-                :disabled="betaUser || (users.length === parseInt(household) || users.length >= parseInt(household))"
+                :disabled="betaUser"
+                @click="maxSubusers"
             >
               Add new user
             </v-btn>
@@ -93,7 +94,7 @@
     <div><p v-if="betaUser">You are not authorized to make changes</p></div>
   </div>
   <div id="users">
-    <UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel"/>
+    <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
   </div>
   </div>
 </template>
@@ -123,9 +124,22 @@ export default {
       lastNameValid: false,
       phoneValid: false,
       householdValid: false,
+      max: false
     };
   },
   methods: {
+    maxSubusers(){
+      try {
+        if (this.users.length === parseInt(this.household)){
+          this.dialog = false
+          this.max = true
+        } else {
+          this.max = false
+        }
+      } catch (error){
+        console.log(error)
+      }
+    },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
         this.betaUser = true;
@@ -225,6 +239,14 @@ export default {
   beforeMount() {
     this.getSubusers()
     this.setUserLevel()
+  },
+  setup() {
+    const theme = useTheme()
+
+    return {
+      theme,
+      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+    }
   }
 }
 </script>

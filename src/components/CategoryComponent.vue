@@ -177,6 +177,8 @@ export default {
           "measurementType": "KG"
         }
         this.message = await fridgeService.deleteItem(item, this.waste)
+        await this.getAllItemsByCategory(1, this.id)
+        this.$emit('update-fridge')
         this.addToShoppingList = true
       } else {
         this.error = true

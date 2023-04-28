@@ -26,9 +26,18 @@ export default {
             console.log(err.response)
         })
     },
-    deleteSubuser(subuser){
-        return axios.delete("http://localhost:8080/api/subusers/deleteSubUser", {data: subuser}).then((response) => {
+    deleteSubuser(subuserID){
+        return axios.delete("http://localhost:8080/api/subusers/deleteSubUser/" + subuserID).then((response) => {
             console.log("Deleting subuser")
+            console.log(response)
+            return response.data
+        }).catch(function (err) {
+            console.log(err.response)
+        })
+    },
+    updateSubuser(update){
+        return axios.put("",  update).then((response) => {
+            console.log("updating subuser info")
             console.log(response)
             return response.data
         }).catch(function (err) {

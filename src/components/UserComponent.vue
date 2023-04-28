@@ -2,10 +2,11 @@
   <v-card variant="outlined" class="user-card" @click="chooseUser">
     <v-card-title v-if="!edit">{{ name }} </v-card-title>
     <v-card-subtitle v-if="!edit">{{ type }}</v-card-subtitle>
-    <input v-if="edit" id="edit-name-input" placeholder="Your username">
-    <select :type="type" v-if="edit" id="edit-userlevel-input">
+    <input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
+    <select :type="type" v-if="edit" v-model="newType" id="edit-userlevel-input">
       <option v-for="type in types">{{type.name}}</option>
     </select>
+    <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">
     <div><img src="../assets/logo.png" id="user-image"></div>
     <v-row justify="center">
       <v-dialog
@@ -63,7 +64,7 @@
     </v-row>
     <v-card-actions>
       <v-btn v-if="!edit && $route.name !== 'chooseUser'" @click="editInfo">Change info</v-btn>
-      <div v-if="edit"><v-btn @click="editInfo">Save info</v-btn></div><v-btn v-if="edit && !betaUser" @click="deleteSubuser">Delete</v-btn>
+      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser" @click="deleteSubuser">Delete</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -75,7 +76,9 @@ export default {
   name: "user-component",
   props: {
     name: String,
-    type: Boolean
+    type: Boolean,
+    pin: Number,
+    id: Number
   },
   data() {
     return {
@@ -85,18 +88,28 @@ export default {
       pinCheck: false,
       error: false,
       pinCode: "",
+      newName: "",
+      newType: "",
       types: [{name: "true"}, {name: "false"}]
     }
   },
   methods:{
     async deleteSubuser(){
-      const subuser = {
-        "name": this.name,
-        "accessLevel": this.type,
-        "masterUser": localStorage.getItem("email")
+      console.log(this.id)
+      await settingsService.deleteSubuser(this.id)
+      this.$emit('update-users')
+    },
+    async updateUser(){
+      const name = this.newName
+      const type = this.newType
+      const pinCode = this.pinCode
+
+      const update = {
+
       }
-      console.log(subuser)
-      await settingsService.deleteSubuser(subuser)
+
+      await settingsService.updateSubuser(update)
+      this.edit = !this.edit
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
@@ -168,5 +181,9 @@ export default {
 #edit-userlevel-input {
   border: 1px solid #39495c;
   width: 85%;
+}
+#edit-pincode-input {
+  margin-top: 10px;
+  border: 1px solid #39495c;
 }
 </style>
