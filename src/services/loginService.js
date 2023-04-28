@@ -18,5 +18,25 @@ export default {
         }).catch(function (err) {
             console.log(err.response)
         })
+    },
+    getFridgeId(email) {
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email).then((response) => {
+            console.log("Getting fridgeId")
+            localStorage.setItem("fridgeId", response.data.refrigeratorId)
+            console.log(response)
+            return response
+        }).catch(function (err) {
+            console.log(err)
+        })
+    },
+    getShoppingListId(email) {
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email).then((response) => {
+            console.log("Getting fridgeId")
+            localStorage.setItem("fridgeId", response.data.refrigeratorId)
+            console.log(response)
+            return response
+        }).catch(function (err) {
+            console.log(err)
+        })
     }
 }
