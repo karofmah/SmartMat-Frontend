@@ -33,7 +33,7 @@
                 id="addNewSubuserButton"
                 color="teal"
                 v-bind="props"
-                :disabled="betaUser || (users.length === parseInt(household))"
+                :disabled="betaUser || (users.length === parseInt(household) || users.length >= parseInt(household))"
             >
               Add new user
             </v-btn>
