@@ -2,20 +2,22 @@
   <div id="container-categories">
     <div id="searchbar">
     <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
-      <div id="addNewItemButton"  ><v-row justify="center">
+      <div ><v-row justify="center">
         <v-dialog
             v-model="dialog"
             persistent
             width="400"
         >
           <template v-slot:activator="{ props }">
-            <v-btn
+            <div id="addNewItemButton" ><v-btn
 
                 color=""
                 v-bind="props"
+                :disabled="betaUser"
             >
               Add new item
             </v-btn>
+            <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div></div>
           </template>
           <v-card>
             <v-card-title>
@@ -113,7 +115,8 @@ export default {
       nameCheck: false,
       amountCheck: false,
       measurementCheck: false,
-      error: false
+      error: false,
+      betaUser: null
     }
   },
   methods: {
@@ -138,6 +141,13 @@ export default {
     async getAllCategories(){
       console.log(await fridgeService.getAllCategories())
       this.categories = await fridgeService.getAllCategories()
+    },
+    async setUserLevel(){
+      if (localStorage.getItem("userType") === "false"){
+        this.betaUser = true;
+      } else {
+        this.betaUser = false;
+      }
     },
     async getAllFridgeItems(){
       try {
@@ -201,6 +211,7 @@ export default {
     this.getAllCategories()
     this.getAllItems()
     this.getAllFridgeItems()
+    this.setUserLevel()
   }
 }
 
@@ -242,6 +253,7 @@ export default {
   width: 100%;
   max-width: 300px;
   margin-right: 10px;
+  height: 100px;
 }
 
 #generate {
@@ -279,10 +291,14 @@ li#category-component {
   margin: 10px;
 }
 #addNewItemButton{
-  margin: 20px;
-
+  margin: 10px;
+  display: block;
+  text-align: center;
 }
 .textarea{
   resize: none;
+}
+#error-fridge {
+  margin: 10px;
 }
 </style>
