@@ -106,7 +106,7 @@
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
-import settingsService from "@/services/settingsService.js";7
+import settingsService from "@/services/settingsService.js";
 import { useTheme } from 'vuetify'
 export default {
   components: {UserComponent},
