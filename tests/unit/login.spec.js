@@ -111,7 +111,7 @@ describe('Login page', () => {
         const submitButton = wrapper.find('#submit-button');
         await submitButton.trigger('click');
 
-        mock.onPost('http://localhost:8080/api/v1/auth/register').reply(config => {
+        mock.onPost('http://localhost:8080/api/auth/register').reply(config => {
             const { email } = JSON.parse(config.data)
 
             if (email !== 'test@test.com') {
