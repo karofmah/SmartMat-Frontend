@@ -80,7 +80,7 @@ describe('Login page', () => {
         const submitButton = wrapper.find('#submit-button');
         await submitButton.trigger('click');
 
-        mock.onPost('http://localhost:8080/api/v1/auth/authenticate').reply(config => {
+        mock.onPost('http://localhost:8080/api/auth/authenticate').reply(config => {
             const { email, password } = JSON.parse(config.data)
 
             if (email === 'test@example.com' && password === 'password123') {
@@ -115,7 +115,7 @@ describe('Login page', () => {
             const { email } = JSON.parse(config.data)
 
             if (email !== 'test@test.com') {
-                return [200, { token: 'mock_token' }]
+                return [201, { token: 'mock_token' }]
             } else {
                 return [401, 'Email is already in use']
             }

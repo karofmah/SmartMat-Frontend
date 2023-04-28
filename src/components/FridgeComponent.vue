@@ -140,17 +140,25 @@ export default {
       this.categories = await fridgeService.getAllCategories()
     },
     async getAllFridgeItems(){
-      const list = await fridgeService.getAllItemsInFridge()
-      console.log("getting all items in my fridge")
-      for(let i = 0; i < list.length; i++){
-        this.myItems.push(list[i].item.name + " (" + list[i].amount + ")")
+      try {
+        const list = await fridgeService.getAllItemsInFridge(localStorage.getItem("email"))
+        console.log("getting all items in my fridge")
+        for(let i = 0; i < list.length; i++){
+          this.myItems.push(list[i].item.name + " (" + list[i].amount + ")")
+        }
+      } catch(err) {
+        console.log(err)
       }
     },
     async getAllItems(){
-      const list = await fridgeService.getAllItems()
-      console.log("getting all items")
-      for(let i = 0; i < list.length; i++){
-        this.items.push(list[i].name)
+      try {
+        const list = await fridgeService.getAllItems()
+        console.log("getting all items")
+        for(let i = 0; i < list.length; i++){
+          this.items.push(list[i].name)
+        }
+      } catch(err) {
+        console.log(err)
       }
     },
     checkName(value){

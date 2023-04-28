@@ -25,8 +25,8 @@ export default {
             console.log(err.response)
         })
     },
-    getAllItemsInFridge(){
-        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=jens@mail.com").then((response) => {
+    getAllItemsInFridge(email){
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail="+email).then((response) => {
             console.log("Getting all items in fridge")
             console.log(response.data.items)
             return response.data.items

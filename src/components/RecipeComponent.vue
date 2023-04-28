@@ -78,19 +78,24 @@ export default {
       this.getMenuCards(menuString)
     },
     getMenuCards(menuString) {
-      const menuArray = menuString.split('\n\n')
-      const menuCards = []
+      try {
+        const menuArray = menuString.split('\n\n')
+        const menuCards = []
 
-      for (let i = 0; i < this.numCards; i++) {
-        const res = menuArray[2*i]+ '\n\n' + menuArray[2*i+1]
-        const dayString = res.split(/\n(.*)/s).join('\n\n').split('\n\n')
-        const title = dayString.shift()
-        const subtitle = dayString.shift()
-        const content = dayString.shift()
-        menuCards.push({ title, subtitle, content })
+        for (let i = 0; i < this.numCards; i++) {
+          const res = menuArray[2*i]+ '\n\n' + menuArray[2*i+1]
+          const dayString = res.split(/\n(.*)/s).join('\n\n').split('\n\n')
+          const title = dayString.shift()
+          const subtitle = dayString.shift()
+          const content = dayString.shift()
+          menuCards.push({ title, subtitle, content })
+        }
+        this.loading = false
+        this.cards = menuCards
+      } catch (err) {
+        console.log(err)
       }
-      this.loading = false
-      this.cards = menuCards
+
     },
   },
   created() {
