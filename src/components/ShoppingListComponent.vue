@@ -54,16 +54,26 @@ import fridgeService from "@/services/fridgeService";
         },
         methods: {
             async getShoppingList(){
-              const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
-              for(let i = 0; i<list.length; i++){
-                this.shoppingList.push(list[i].item.name)
+              try {
+                const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
+                for(let i = 0; i<list.length; i++){
+                  this.shoppingList.push(list[i].item.name)
+                }
+              } catch(err) {
+                console.log(err)
               }
+
             },
             async getAllItems(){
-              const list = await fridgeService.getAllItems()
-              for(let i = 0; i<list.length; i++){
-                this.allItems.push(list[i].name)
+              try {
+                const list = await fridgeService.getAllItems()
+                for(let i = 0; i<list.length; i++){
+                  this.allItems.push(list[i].name)
+                }
+              } catch (err) {
+                console.log(err)
               }
+
             },
             async buy(){
               for(let i = 0; i<this.shoppingList.length; i++){
