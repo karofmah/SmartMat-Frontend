@@ -53,6 +53,14 @@
               :rules="[ checkAge ]"
           >
           </v-text-field>
+        <v-text-field
+            type="password"
+            id="pin-code-input"
+            label="PIN-CODE"
+            v-model="pinCode"
+            :rules="[ checkPin ]"
+        >
+        </v-text-field>
         </div>
     </div>
     <div id="buttons">
@@ -148,6 +156,15 @@ export default {
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
+    checkPin(value){
+      if (value?.length === 4) {
+        this.pinCheck = true;
+        return true
+      } else {
+        this.pinCheck = false;
+        return 'PIN-CODE must be 4 digits.'
+      }
+    },
     async login(){
       const info = {
         "email": this.email,
@@ -183,11 +200,13 @@ export default {
       }
 
       const firstname = this.firstname
+      const pinCode = this.pinCode
 
       await loginService.registerUser(info).then(async function (response) {
         console.log(response.status)
         if (response.status === 201){
           localStorage.setItem("email", info.email)
+          localStorage.setItem("pin-code", pinCode)
           const subuser = {
             "name": firstname,
             "accessLevel": true,
@@ -210,7 +229,7 @@ export default {
     async submit(){
       if (this.value === "Login" && this.emailCheck && this.passwordCheck) {
         await this.login()
-      } else if (this.value === "Register" && this.emailCheck && this.passwordCheck && this.firstNameCheck && this.lastNameCheck && this.phoneCheck && this.householdCheck && this.ageCheck) {
+      } else if (this.value === "Register" && this.emailCheck && this.passwordCheck && this.firstNameCheck && this.lastNameCheck && this.phoneCheck && this.householdCheck && this.ageCheck && this.pinCheck) {
         await this.register()
       }
     },
@@ -231,6 +250,7 @@ export default {
     phoneCheck: false,
     householdCheck: false,
     ageCheck: false,
+    pinCheck: false,
     show: true,
     value: "Login",
     email: null,
@@ -238,8 +258,9 @@ export default {
     firstname:'',
     lastname:'',
     phoneNumber:'',
-    household:'6',
-    age:'100',
+    household:'',
+    age:'',
+    pinCode: ''
   }),
 }
 </script>
@@ -253,7 +274,7 @@ export default {
 }
 #input-form{
   display: grid;
-  height: 600px;
+  height: 700px;
   float: bottom;
   margin-top: 10%;
   align-content: center;
@@ -266,7 +287,7 @@ export default {
   align-items: center;
 }
 input{
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 </style>
