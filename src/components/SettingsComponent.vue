@@ -33,7 +33,8 @@
                 id="addNewSubuserButton"
                 color="teal"
                 v-bind="props"
-                :disabled="betaUser || (users.length === parseInt(household) || users.length >= parseInt(household))"
+                :disabled="betaUser"
+                @click="maxSubusers"
             >
               Add new user
             </v-btn>
@@ -92,7 +93,7 @@
     </div>
     <div><p v-if="betaUser">You are not authorized to make changes</p></div>
     <v-spacer></v-spacer>
-    <p v-if="(users.length === parseInt(household) || users.length >= parseInt(household)) && !betaUser">You have max amount of subusers</p>
+    <p v-if="max && !betaUser">You have max amount of subusers</p>
     <h1 id="title-settings">Theme:</h1>
     <v-btn prepend-icon="mdi-theme-light-dark" @click="toggleTheme">
       Switch theme
@@ -130,9 +131,22 @@ export default {
       lastNameValid: false,
       phoneValid: false,
       householdValid: false,
+      max: false
     };
   },
   methods: {
+    maxSubusers(){
+      try {
+        if (this.users.length === parseInt(this.household)){
+          this.dialog = false
+          this.max = true
+        } else {
+          this.max = false
+        }
+      } catch (error){
+        console.log(error)
+      }
+    },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
         this.betaUser = true;
