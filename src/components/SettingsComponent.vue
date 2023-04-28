@@ -21,75 +21,81 @@
     </div>
     <div>
     <div class="settings-buttons"><v-btn id="info-button" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
-    <div id="newSubUser" class="settings-buttons"> <v-row>
-      <v-dialog
-          v-model="dialog"
-          persistent
-          width="400"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-              id="addNewSubuserButton"
-              color="teal"
-              v-bind="props"
-              :disabled="betaUser"
-          >
-            Add new user
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>
-            <span class="text-h5">New user</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col
-                    cols="12"
-                >
-                  <v-text-field
-                      v-model="username"
-                      label="Username*"
-                      required
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                    cols="12"
-                >
-                  <v-select
-                      v-model="userType"
-                      :items="types"
-                      label="User level*"
-                      required
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small>*indicates required field</small>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
+    <div id="newSubUser" class="settings-buttons"> 
+      <v-row>
+        <v-dialog
+            v-model="dialog"
+            persistent
+            width="400"
+        >
+          <template v-slot:activator="{ props }">
             <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="dialog = false"
+                id="addNewSubuserButton"
+                color="teal"
+                v-bind="props"
+                :disabled="betaUser"
             >
-              Close
+              Add new user
             </v-btn>
-            <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="addSubuser"
-            >
-              Save
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">New user</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-text-field
+                        v-model="username"
+                        label="Username*"
+                        required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-select
+                        v-model="userType"
+                        :items="types"
+                        label="User level*"
+                        required
+                    ></v-select>
+                  </v-col>
+                </v-row>
+              </v-container>
+              <small>*indicates required field</small>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="dialog = false"
+              >
+                Close
+              </v-btn>
+              <v-btn
+                  color="blue-darken-1"
+                  variant="text"
+                  @click="addSubuser"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
     </div>
     </div>
     <div><p v-if="betaUser">You are not authorized to make changes</p></div>
+    <v-spacer></v-spacer>
+    <h1 id="title-settings">Theme:</h1>
+    <v-btn prepend-icon="mdi-theme-light-dark" @click="toggleTheme">
+      Switch theme 
+    </v-btn>
   </div>
   <div id="users">
     <UserComponent v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel"/>
@@ -99,7 +105,8 @@
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
-import settingsService from "@/services/settingsService.js";
+import settingsService from "@/services/settingsService.js";7
+import { useTheme } from 'vuetify'
 export default {
   components: {UserComponent},
   data(){
@@ -197,9 +204,17 @@ export default {
       }
     }
   },
-  beforeMount(){
+  beforeMount() {
     this.getSubusers()
     this.setUserLevel()
+  },
+  setup() {
+    const theme = useTheme()
+
+    return {
+      theme,
+      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+    }
   }
 }
 </script>
