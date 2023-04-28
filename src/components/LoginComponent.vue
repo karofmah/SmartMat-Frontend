@@ -238,8 +238,8 @@ export default {
     firstname:'',
     lastname:'',
     phoneNumber:'',
-    household:'6',
-    age:'100',
+    household:'',
+    age:'',
   }),
 }
 </script>
