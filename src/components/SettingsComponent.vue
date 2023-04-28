@@ -33,7 +33,7 @@
                 id="addNewSubuserButton"
                 color="teal"
                 v-bind="props"
-                :disabled="betaUser || (users.length === parseInt(household))"
+                :disabled="betaUser || (users.length === parseInt(household) || users.length >= parseInt(household))"
             >
               Add new user
             </v-btn>
@@ -92,7 +92,7 @@
     </div>
     <div><p v-if="betaUser">You are not authorized to make changes</p></div>
     <v-spacer></v-spacer>
-    <p v-if="(users.length === parseInt(household))">You have max amount of subusers</p>
+    <p v-if="(users.length === parseInt(household) || users.length >= parseInt(household)) && !betaUser">You have max amount of subusers</p>
     <h1 id="title-settings">Theme:</h1>
     <v-btn prepend-icon="mdi-theme-light-dark" @click="toggleTheme">
       Switch theme
