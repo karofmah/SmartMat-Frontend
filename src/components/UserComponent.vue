@@ -97,6 +97,7 @@ export default {
       }
       console.log(subuser)
       await settingsService.deleteSubuser(subuser)
+      this.$emit('update-users')
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
