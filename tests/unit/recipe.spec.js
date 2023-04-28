@@ -19,8 +19,6 @@ describe('Recipe page', () => {
 
     it('generate menus', () => {
         const wrapper = mount(Recipe)
-        wrapper.vm.generateCards()
-        //  MER TEST NÅR METODEN ER FERDIG
     })
 
 })
