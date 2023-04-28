@@ -92,12 +92,6 @@
     </div>
     </div>
     <div><p v-if="betaUser">You are not authorized to make changes</p></div>
-    <v-spacer></v-spacer>
-    <p v-if="max && !betaUser">You have max amount of subusers</p>
-    <h1 id="title-settings">Theme:</h1>
-    <v-btn prepend-icon="mdi-theme-light-dark" @click="toggleTheme">
-      Switch theme
-    </v-btn>
   </div>
   <div id="users">
     <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
@@ -108,7 +102,6 @@
 <script>
 import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
-import { useTheme } from 'vuetify'
 export default {
   components: {UserComponent},
   data(){
