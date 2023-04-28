@@ -35,6 +35,15 @@ export default {
             console.log(err.response)
         })
     },
+    updateSubuser(update){
+        return axios.put("",  update).then((response) => {
+            console.log("updating subuser info")
+            console.log(response)
+            return response.data
+        }).catch(function (err) {
+            console.log(err.response)
+        })
+    },
     updateInformation(update){
         return axios.put("http://localhost:8080/api/users/updateUser",  update).then((response) => {
             console.log("updating master user info")
