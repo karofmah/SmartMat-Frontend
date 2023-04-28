@@ -77,7 +77,8 @@ export default {
   props: {
     name: String,
     type: Boolean,
-    pin: Number
+    pin: Number,
+    id: Number
   },
   data() {
     return {
@@ -94,13 +95,8 @@ export default {
   },
   methods:{
     async deleteSubuser(){
-      const subuser = {
-        "name": this.name,
-        "accessLevel": this.type,
-        "masterUser": localStorage.getItem("email")
-      }
-      console.log(subuser)
-      await settingsService.deleteSubuser(subuser)
+      console.log(this.id)
+      await settingsService.deleteSubuser(this.id)
       this.$emit('update-users')
     },
     async updateUser(){
