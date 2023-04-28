@@ -174,11 +174,13 @@ export default {
         console.log(response)
         if (response.status === 200){
           localStorage.setItem("email", info.email)
+          await loginService.getFridgeId(localStorage.getItem("email"))
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", information.firstName)
           localStorage.setItem("lastname", information.lastName)
           localStorage.setItem("phone", information.phoneNumber)
           localStorage.setItem("household", information.household)
+          console.log(localStorage.getItem("fridgeId"))
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
@@ -206,6 +208,8 @@ export default {
         console.log(response.status)
         if (response.status === 201){
           localStorage.setItem("email", info.email)
+          await loginService.getFridgeId(localStorage.getItem("email"))
+          console.log(localStorage.getItem("fridgeId"))
           localStorage.setItem("pin-code", pinCode)
           const subuser = {
             "name": firstname,
