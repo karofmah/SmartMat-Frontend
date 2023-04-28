@@ -44,12 +44,12 @@ export default {
         })
     },
     deleteItem(item, waste){
-        return axios.delete("http://localhost:8080/api/refrigerators/removeItemFromRefrigerator?waste=" + waste, {data: item}).then((response) => {
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItem?isGarbage=" + waste, {data: item}).then((response) => {
             console.log("Deleting item from fridge")
             console.log(response)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            console.log(err)
         })
     }
 }
