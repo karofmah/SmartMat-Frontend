@@ -165,19 +165,19 @@ export default {
       this.addToShoppingList = false
     },
     async getAllItemsByCategory(){
-      this.items = await fridgeService.getAllItemsByCategory(1, this.id)
+      this.items = await fridgeService.getAllItemsByCategory(localStorage.getItem("fridgeId"), this.id)
     },
     async removeItem() {
       if (this.amountCheck) {
         this.error = false
         const item = {
           "itemName": this.name,
-          "refrigeratorId": "1",
+          "refrigeratorId": localStorage.getItem("fridgeId"),
           "amount": this.amount,
           "measurementType": "KG"
         }
         this.message = await fridgeService.deleteItem(item, this.waste)
-        await this.getAllItemsByCategory(1, this.id)
+        await this.getAllItemsByCategory(localStorage.getItem("fridgeId"), this.id)
         this.$emit('update-fridge')
         this.addToShoppingList = true
       } else {
