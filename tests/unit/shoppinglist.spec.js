@@ -13,11 +13,11 @@ describe('ShoppingListView.vue test', () => {
     })
     it('removeList removes item from list when called', () => {
         const wrapper = mount(ShoppingListComponent)
-
+        //wrapper.vm.removeList()
 
     })
     it('addlist adds items to list correctly when called', () => {
         const wrapper = mount(ShoppingListComponent)
-
+        //wrapper.vm.addList()
     })
 })

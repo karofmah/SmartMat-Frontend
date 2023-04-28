@@ -8,7 +8,6 @@
     </select>
     <div><img src="../assets/logo.png" id="user-image"></div>
     <v-card-actions>
-      <!--LEGGE TIL AT ENDRE KNAPPEN FORVINNER PÅ STARTSIDEN-->
       <v-btn v-if="!edit && $route.name !== 'chooseUser'" @click="editInfo">Change info</v-btn>
       <div v-if="edit"><v-btn @click="editInfo">Save info</v-btn></div><v-btn v-if="edit && !betaUser" @click="deleteSubuser">Delete</v-btn>
     </v-card-actions>
