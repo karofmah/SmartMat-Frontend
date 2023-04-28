@@ -21,7 +21,7 @@
     </div>
     <div>
     <div class="settings-buttons"><v-btn id="info-button" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
-    <div id="newSubUser" class="settings-buttons"> 
+    <div id="newSubUser" class="settings-buttons">
       <v-row>
         <v-dialog
             v-model="dialog"
@@ -33,7 +33,7 @@
                 id="addNewSubuserButton"
                 color="teal"
                 v-bind="props"
-                :disabled="betaUser"
+                :disabled="betaUser || (users.length === parseInt(household))"
             >
               Add new user
             </v-btn>
@@ -100,7 +100,7 @@
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
-import settingsService from "@/services/settingsService.js";7
+import settingsService from "@/services/settingsService.js";
 export default {
   components: {UserComponent},
   data(){
@@ -118,7 +118,7 @@ export default {
       lastname: localStorage.getItem("lastname"),
       phone: localStorage.getItem("phone"),
       household: localStorage.getItem("household"),
-      users: null,
+      users: [],
       nameValid: false,
       lastNameValid: false,
       phoneValid: false,
@@ -137,15 +137,21 @@ export default {
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      const subuser = {
-        "name": this.username,
-        "accessLevel": this.userType,
-        "masterUser": localStorage.getItem("email")
+      if (this.users.length === parseInt(this.household)){
+        console.log("you cannot add more subusers")
+      } else {
+        const subuser = {
+          "name": this.username,
+          "accessLevel": this.userType,
+          "masterUser": localStorage.getItem("email")
+        }
+        await settingsService.addNewSubuser(subuser)
+        await this.getSubusers()
+        this.dialog = false
       }
-      await settingsService.addNewSubuser(subuser)
-      await this.getSubusers()
+
     },
-    changeInfo(){
+    async changeInfo(){
       if(!this.editing){
         this.change = !this.change
         this.editing = !this.editing
@@ -153,6 +159,24 @@ export default {
         console.log(this.editing)
       } else {
         if(this.nameValid && this.lastNameValid && this.householdValid && this.phoneValid) {
+          const firstName = this.firstname
+          const lastName = this.lastname
+          const update = {
+            "email": localStorage.getItem("email"),
+            "firstName": firstName,
+            "lastName": lastName,
+            "phoneNumber": this.phone,
+            "household": this.household
+          }
+          console.log(update)
+
+          await settingsService.updateInformation(update)
+          const updatedInformation = await settingsService.getUserInfo(localStorage.getItem("email"))
+          localStorage.setItem("firstname", updatedInformation.firstName)
+          localStorage.setItem("lastname", updatedInformation.lastName)
+          localStorage.setItem("phone", updatedInformation.phoneNumber)
+          localStorage.setItem("household", updatedInformation.household)
+
           this.change = !this.change
           this.editing = !this.editing
           this.picked = "Change your information"
