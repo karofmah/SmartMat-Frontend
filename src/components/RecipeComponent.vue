@@ -19,15 +19,18 @@
         :step="1"
         show-ticks="always"
         :ticks="tickLabels"
+        :disabled="betaUser"
       >
         <template v-slot:append>
-          <v-btn @click="generateRecipes(email, numPeople)">Generate recipes</v-btn>
+          <v-btn :disabled="betaUser" @click="generateRecipes(email, numPeople)">Generate recipes</v-btn>
         </template>
       </v-slider>
+
       
       </v-card>
-    
+      <div id="user-level-recipe"><p v-if="betaUser">You are not authorized to create a menu :(</p></div>
       <div class="card-container">
+
         <v-card v-for="(card, index) in cards.slice(0, numCards)" :key="index" class="card">
           <v-toolbar color="teal">
             <v-toolbar-title>{{ card.title }}</v-toolbar-title>
@@ -60,6 +63,7 @@ export default {
         8: 8,
       },
       numPeople: 4,
+      betaUser: null,
       loading: false,
       email: localStorage.getItem("email"),
     };
@@ -97,10 +101,18 @@ export default {
       }
 
     },
+    async setUserLevel(){
+      if (localStorage.getItem("userType") === "false"){
+        this.betaUser = true;
+      } else {
+        this.betaUser = false;
+      }
+    }
   },
   created() {
     const email = this.email
-      this.getRecipes(email)
+    this.getRecipes(email)
+    this.setUserLevel()
     },
 };
 </script>
@@ -115,11 +127,13 @@ export default {
 
 .card {
   width: 600px;
-  margin-bottom: 20px;
   margin: 20px;
 }
 
 #menu {
   margin: 20px
+}
+#user-level-recipe {
+  text-align: center;
 }
 </style>
