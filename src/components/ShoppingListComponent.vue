@@ -46,6 +46,7 @@
 <script>
 import shoppingListService from "@/services/shoppingListService";
 import fridgeService from "@/services/fridgeService";
+import { mount } from "@vue/test-utils";
   export default {
       data() {
           return {
@@ -152,11 +153,14 @@ import fridgeService from "@/services/fridgeService";
             }
             this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
             this.shoppingList.push(itemFromBuy.itemName)
+          },
+          async mount() {
+            await this.getShoppingList()
+            await this.getAllItems()
           }
       },
       beforeMount(){
-        this.getShoppingList()
-        this.getAllItems()
+        this.mount()
       }
   }
 </script>
