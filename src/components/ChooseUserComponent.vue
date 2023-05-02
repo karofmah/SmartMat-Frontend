@@ -1,6 +1,6 @@
 <template>
   <div id="choose-users">
-    <UserComponent class="choose-card" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel"/>
+    <UserComponent class="choose-card" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
   </div>
 </template>
 
