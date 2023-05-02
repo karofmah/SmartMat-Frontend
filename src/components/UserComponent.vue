@@ -1,7 +1,7 @@
 <template>
   <v-card variant="outlined" class="user-card" @click="chooseUser">
-    <v-card-title v-if="!edit">{{ name }} </v-card-title>
-    <v-card-subtitle v-if="!edit">{{ type }}</v-card-subtitle>
+    <v-card-title v-if="!edit" id="name">{{ name }} </v-card-title>
+    <v-card-subtitle v-if="!edit" id="type">{{ type }}</v-card-subtitle>
     <input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
     <select :type="type" v-if="edit" v-model="newType" id="edit-userlevel-input">
       <option v-for="type in types">{{type.name}}</option>
@@ -41,6 +41,7 @@
             </v-container>
             <small>*indicates required field</small>
             <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+            <div><small class="error-message" id="error-pinCode"></small></div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -72,6 +73,7 @@
 <script>
 import settingsService from "@/services/settingsService";
 import router from "@/router"
+import loginService from "@/services/loginService";
 export default {
   name: "user-component",
   props: {
@@ -96,19 +98,23 @@ export default {
   methods:{
     async deleteSubuser(){
       console.log(this.id)
-      await settingsService.deleteSubuser(this.id)
+      await settingsService.deleteSubuser(16)
       this.$emit('update-users')
     },
     async updateUser(){
       const name = this.newName
       const type = this.newType
       const pinCode = this.pinCode
+      // TODO: legge til at man kan endre pinkode
 
       const update = {
-
+        "name": name,
+        "accessLevel": type,
+        "subUserId": this.id
       }
 
       await settingsService.updateSubuser(update)
+      this.$emit('update-users')
       this.edit = !this.edit
     },
     async setUserLevel(){
@@ -141,13 +147,26 @@ export default {
         this.dialog = true
       }
     },
-    chooseSuperUser() {
-      if (this.pinCheck){
-        localStorage.setItem("username", this.name)
-        localStorage.setItem("userType", this.type)
-        this.dialog = false
-        router.push("/fridge")
+    async chooseSuperUser() {
+      const name = this.name
+      const type = this.type
+      const check = {
+        "subUserId": this.id,
+        "pinCode": this.pinCode
       }
+      await loginService.checkPinCode(check).then(function (response) {
+        //TODO: fikse når feil pin-kode
+        console.log(response)
+        if (response.status === 200) {
+          localStorage.setItem("username", name)
+          localStorage.setItem("userType", type)
+          router.push("/fridge")
+        } else if (response.status === 404){
+          document.getElementById("error-pinCode").innerHTML = response.data
+        }
+      }).catch(function (error) {
+        console.log(error)
+      })
     }
   },
   created(){
