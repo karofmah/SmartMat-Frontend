@@ -76,9 +76,11 @@ import fridgeService from "@/services/fridgeService";
           async getShoppingList(){
             try {
               const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
-              for(let i = 0; i<list.length; i++){
-                if(!this.buyItems.includes(list[i].item.name)){
-                  this.shoppingList.push(list[i].item.name)
+              localStorage.setItem("shoppingListId", list.shoppingListId)
+              console.log(list.items[0].item.name)
+              for(let i = 0; i<list.items.length; i++){
+                if(!this.buyItems.includes(list.items[i].item.name)){
+                  this.shoppingList.push(list.items[i].item.name)
                 }
               }
             } catch(err) {
@@ -105,7 +107,7 @@ import fridgeService from "@/services/fridgeService";
             for(let i = 0; i<this.buyItems.length; i++){
               const item = {
                 "itemName": this.buyItems[i],
-                "refrigeratorId": "1",
+                "refrigeratorId": localStorage.getItem("fridgeId"),
                 "amount": "10",
                 "measurementType": "2"
               }
@@ -113,7 +115,7 @@ import fridgeService from "@/services/fridgeService";
 
               const itemToDelete = {
                 "itemName": this.buyItems[i],
-                "shoppingListId": "1",
+                "shoppingListId": localStorage.getItem("shoppingListId"),
                 "amount": "10",
                 "measurementType": "2"
               }
@@ -128,7 +130,7 @@ import fridgeService from "@/services/fridgeService";
             if (this.allItems.includes(this.selectedItem)){
               const itemToAdd = {
                 "itemName": this.selectedItem,
-                "shoppingListId": "1",
+                "shoppingListId": localStorage.getItem("shoppingListId"),
                 "amount": "10",
                 "measurementType": "2"
               }
@@ -142,7 +144,7 @@ import fridgeService from "@/services/fridgeService";
           async removeList(item) {
             const itemToDelete = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
@@ -154,7 +156,7 @@ import fridgeService from "@/services/fridgeService";
           async addToBuy(item) {
             const itemToBuy = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
@@ -164,7 +166,7 @@ import fridgeService from "@/services/fridgeService";
           async removeFromBuy(item) {
             const itemFromBuy = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
