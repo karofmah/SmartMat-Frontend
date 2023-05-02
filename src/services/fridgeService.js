@@ -2,7 +2,11 @@ import axios from "axios";
 
 export default {
     getAllCategories(){
-        return axios.get("http://localhost:8080/api/categories/getAllCategories").then((response) => {
+        return axios.get("http://localhost:8080/api/categories/getAllCategories", {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting all categories")
             return response.data
         }).catch(function (err) {
@@ -10,7 +14,11 @@ export default {
         })
     },
     getAllItemsByCategory(fridgeId, categoryId){
-        return axios.get("http://localhost:8080/api/refrigerators/getItemInRefrigeratorByCategory/+" + fridgeId + "?categoryId=" + categoryId).then((response) => {
+        return axios.get("http://localhost:8080/api/refrigerators/getItemInRefrigeratorByCategory/+" + fridgeId + "?categoryId=" + categoryId, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting all by category")
             return response.data
         }).catch(function (err) {
@@ -18,7 +26,11 @@ export default {
         })
     },
     getAllItems(){
-        return axios.get("http://localhost:8080/api/items/getAllItems").then((response) => {
+        return axios.get("http://localhost:8080/api/items/getAllItems", {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting all items")
             return response.data
         }).catch(function (err) {
@@ -26,7 +38,11 @@ export default {
         })
     },
     getAllItemsInFridge(email){
-        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail="+email).then((response) => {
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail="+email, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting all items in fridge")
             console.log(response.data.items)
             return response.data.items
@@ -35,7 +51,11 @@ export default {
         })
     },
     addNewItemToFridge(item){
-        return axios.post("http://localhost:8080/api/refrigerators/addItemInRefrigerator", item).then((response) => {
+        return axios.post("http://localhost:8080/api/refrigerators/addItemInRefrigerator", item, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("adding items to fridge")
             console.log(response.data)
             return response.data
@@ -44,7 +64,12 @@ export default {
         })
     },
     deleteItem(item, waste){
-        return axios.delete("http://localhost:8080/api/refrigerators/removeItem?isGarbage=" + waste, {data: item}).then((response) => {
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItem?isGarbage=" + waste, {
+            data: item,
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Deleting item from fridge")
             console.log(response)
             return response.data
