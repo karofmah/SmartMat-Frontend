@@ -63,7 +63,7 @@ import { mount } from "@vue/test-utils";
             try {
               const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
               localStorage.setItem("shoppingListId", list.shoppingListId)
-              console.log(list.items[0].item.name)
+              //console.log(list.items[0].item.name)
               for(let i = 0; i<list.items.length; i++){
                 if(!this.buyItems.includes(list.items[i].item.name)){
                   this.shoppingList.push(list.items[i].item.name)
@@ -117,7 +117,8 @@ import { mount } from "@vue/test-utils";
               "itemName": this.selectedItem,
               "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
-              "measurementType": "2"
+              "measurementType": "2",
+              "subUserId": localStorage.getItem("subUserId")
             }
 
             await shoppingListService.addShoppingListItems(itemToAdd)
