@@ -31,12 +31,22 @@ export default {
     },
     getShoppingListId(email) {
         return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email).then((response) => {
-            console.log("Getting fridgeId")
-            localStorage.setItem("fridgeId", response.data.refrigeratorId)
+            console.log("Getting shoppinglist id")
+            localStorage.setItem("shoppingListId", response.data.refrigeratorId)
+            console.log(response)
+            return response.data
+        }).catch(function (err) {
+            console.log(err)
+        })
+    },
+    checkPinCode(subuser) {
+        return axios.post("http://localhost:8080/api/subusers/validatePinCode", subuser).then((response) => {
+            console.log("checking pin code")
             console.log(response)
             return response
         }).catch(function (err) {
-            console.log(err)
+            console.log(err.response)
+            return err.response
         })
     }
 }
