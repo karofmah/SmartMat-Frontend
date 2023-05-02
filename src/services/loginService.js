@@ -20,7 +20,11 @@ export default {
         })
     },
     getFridgeId(email) {
-        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email).then((response) => {
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting fridgeId")
             localStorage.setItem("fridgeId", response.data.refrigeratorId)
             console.log(response)
@@ -30,7 +34,11 @@ export default {
         })
     },
     getShoppingListId(email) {
-        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email).then((response) => {
+        return axios.get("http://localhost:8080/api/refrigerators/getRefrigeratorByUser?userEmail=" + email, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("Getting shoppinglist id")
             localStorage.setItem("shoppingListId", response.data.refrigeratorId)
             console.log(response)
@@ -40,7 +48,11 @@ export default {
         })
     },
     checkPinCode(subuser) {
-        return axios.post("http://localhost:8080/api/subusers/validatePinCode", subuser).then((response) => {
+        return axios.post("http://localhost:8080/api/subusers/validatePinCode", subuser, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
             console.log("checking pin code")
             console.log(response)
             return response
