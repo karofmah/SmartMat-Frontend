@@ -98,7 +98,7 @@ export default {
   methods:{
     async deleteSubuser(){
       console.log(this.id)
-      await settingsService.deleteSubuser(16)
+      await settingsService.deleteSubuser(this.id)
       this.$emit('update-users')
     },
     async updateUser(){
