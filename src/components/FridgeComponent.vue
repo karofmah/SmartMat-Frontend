@@ -202,9 +202,6 @@ export default {
         return 'Measurement cannot me empty.'
       }
     },
-    showIngredients() {
-      this.show = !this.show;
-    },
     async generateRecipe(){
       this.recipe = "Generating recipe..."
       const recipe = await recipeService.getRecipe(1) // TODO Change 1 to actual fridge ID
