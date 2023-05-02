@@ -1,11 +1,12 @@
 <template>
-  <v-container id="container">
+
+  <v-container id="container"><p id="error-message-shoppinglist" v-if="betaUser">You can only add items to the shopping list, but not buy or remove</p>
       <v-row justify="space-around">
           <v-card class="mx-auto" width="400">
               <v-toolbar color="teal">
                   <v-toolbar-title id="shoppinglist-title">Shopping list</v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-btn icon @click="buy">
+                  <v-btn icon @click="buy" :disabled="betaUser">
                       <v-icon>mdi-fridge</v-icon>
                       <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add selected items to fridge</v-tooltip>
                   </v-btn>
@@ -14,10 +15,10 @@
                   <v-list id="itemList">
                       <v-list-item v-for="(item, index) in shoppingList" :key="index" :title="item">
                           <template v-slot:append>
-                              <v-btn id="trash" variant="text" size="large" density="compact" icon="mdi-delete" v-on:click="removeList(item)"></v-btn>
+                              <v-btn id="trash" variant="text" size="large" density="compact" icon="mdi-delete" v-on:click="removeList(item)" :disabled="betaUser"></v-btn>
                           </template>
                           <template v-slot:prepend>
-                            <v-btn id="add" variant="text" size="large" density="compact" icon="mdi-checkbox-blank-outline" v-on:click="addToBuy(item)"></v-btn>
+                            <v-btn id="add" variant="text" size="large" density="compact" icon="mdi-checkbox-blank-outline" v-on:click="addToBuy(item)" :disabled="betaUser "></v-btn>
                           </template>
                       </v-list-item>
                       <v-list-item v-for="(item, index) in buyItems" :key="index" :title="item">
@@ -54,6 +55,7 @@ import { mount } from "@vue/test-utils";
               selectedItem: "",
               allItems:[],
               buyItems: [],
+              betaUser: null
           }
       },
       methods: {
@@ -156,9 +158,17 @@ import { mount } from "@vue/test-utils";
             this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
             this.shoppingList.push(itemFromBuy.itemName)
           },
+          async setUserLevel(){
+            if (localStorage.getItem("userType") === "false"){
+              this.betaUser = true;
+            } else {
+              this.betaUser = false;
+            }
+          },
           async mount() {
             await this.getShoppingList()
             await this.getAllItems()
+            await this.setUserLevel()
           }
       },
       beforeMount(){
@@ -168,8 +178,12 @@ import { mount } from "@vue/test-utils";
 </script>
 
 <style>
-  #container{
+#container{
       margin-top: 150px;
-  }
-
+}
+#error-message-shoppinglist {
+  margin: 20px;
+  max-width: 310px;
+  text-align: center;
+}
 </style>
