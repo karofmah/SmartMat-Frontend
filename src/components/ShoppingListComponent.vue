@@ -113,11 +113,18 @@ import { mount } from "@vue/test-utils";
             await this.getShoppingList()
           },
           async addItem() {
-            const itemToAdd = {
-              "itemName": this.selectedItem,
-              "shoppingListId": localStorage.getItem("shoppingListId"),
-              "amount": "10",
-              "measurementType": "2"
+            if (this.allItems.includes(this.selectedItem)){
+              const itemToAdd = {
+                "itemName": this.selectedItem,
+                "shoppingListId": localStorage.getItem("shoppingListId"),
+                "amount": "10",
+                "measurementType": "2"
+              }
+              this.selectedItem = "";
+              await shoppingListService.addShoppingListItems(itemToAdd)
+              this.shoppingList = []
+              await this.getShoppingList()
+              this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
             }
 
             await shoppingListService.addShoppingListItems(itemToAdd)
