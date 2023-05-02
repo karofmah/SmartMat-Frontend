@@ -157,7 +157,7 @@ export default {
       }
     },
     checkPin(value){
-      if (value?.length === 4) {
+      if (/^\d{4}$/.test(value)) {
         this.pinCheck = true;
         return true
       } else {
@@ -181,6 +181,8 @@ export default {
           localStorage.setItem("phone", information.phoneNumber)
           localStorage.setItem("household", information.household)
           console.log(localStorage.getItem("fridgeId"))
+          const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
+          localStorage.setItem("masterUserId",masterUser[0].subUserId)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
@@ -214,7 +216,8 @@ export default {
           const subuser = {
             "name": firstname,
             "accessLevel": true,
-            "masterUser": localStorage.getItem("email")
+            "userEmail": localStorage.getItem("email"),
+            "pinCode": pinCode
           }
           await settingsService.addNewSubuser(subuser)
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
@@ -222,6 +225,8 @@ export default {
           localStorage.setItem("lastname", information.lastName)
           localStorage.setItem("phone", information.phoneNumber)
           localStorage.setItem("household", information.household)
+          const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
+          localStorage.setItem("masterUserId", masterUser[0].subUserId)
           router.push("/user")
         } else {
           document.getElementById("error-message-submit").innerHTML = response.data
