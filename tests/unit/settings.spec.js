@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { mount } from '@vue/test-utils'
 import Settings from '../../src/components/SettingsComponent.vue'
+import Login from "@/components/LoginComponent.vue";
 
 describe('Settings component', () => {
     const mock = new MockAdapter(axios);
@@ -98,5 +99,39 @@ describe('Settings component', () => {
         await expect(wrapper.vm.checkHousehold('4')).toBe(true)
         await expect(wrapper.vm.householdValid).toBe(true)
         await expect(wrapper.vm.checkHousehold('')).toBe('There must be at least 1 household member.')
+    })
+
+    it('add new subuser', async () => {
+        const wrapper = mount(Settings)
+        wrapper.vm.email = "test@example.com"
+        wrapper.vm.username = "John Doe"
+        wrapper.vm.userType = "true"
+        //await wrapper.vm.getSubusers()
+        //const numberOfSubusers = wrapper.vm.users.length
+        //const addNewUser = wrapper.find('#addNewSubuserButton');
+        //await addNewUser.trigger('click');
+
+        mock.onGet('http://localhost:8080/api/subusers/getUsersFromMaster?email='+wrapper.vm.email).reply(config => {
+            const { email, password } = JSON.parse(config.data)
+
+            if (email === 'test@example.com' && password === 'password123') {
+                return [200, { token: 'mock_token' }]
+            } else {
+                return [401, 'Invalid email or password']
+            }
+        })
+
+        mock.onPost('http://localhost:8080/api/subusers/addSubUser').reply(config => {
+            const { email, password } = JSON.parse(config.data)
+
+            if (email === 'test@example.com' && password === 'password123') {
+                return [200, { token: 'mock_token' }]
+            } else {
+                return [401, 'Invalid email or password']
+            }
+        })
+
+        await wrapper.vm.addSubuser()
+        expect(wrapper.vm.dialog).toBe(false);
     })
 })
