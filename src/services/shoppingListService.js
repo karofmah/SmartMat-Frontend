@@ -5,7 +5,7 @@ export default {
         return axios.get("http://localhost:8080/api/shoppingList/getItemsFromShoppingList?email=" + email).then((response) => {
             console.log("getting shopping list items")
             console.log(response.data.items)
-            return response.data.items
+            return response.data
         }).catch(function (err) {
             console.log(err.response)
         })
