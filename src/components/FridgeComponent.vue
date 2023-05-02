@@ -126,7 +126,7 @@ export default {
         this.myItems = [];
         const item = {
           "itemName": this.newItemName,
-          "refrigeratorId": "1",
+          "refrigeratorId": localStorage.getItem("fridgeId"),
           "amount": this.newItemAmount,
           "measurementType": this.newItemMeasurement
         }
@@ -207,7 +207,7 @@ export default {
     },
     async generateRecipe(){
       this.recipe = "Generating recipe..."
-      const recipe = await recipeService.getRecipe(1) // TODO Change 1 to actual fridge ID
+      const recipe = await recipeService.getRecipe(localStorage.getItem("fridgeId"))
       this.recipe = recipe
     },
   },
