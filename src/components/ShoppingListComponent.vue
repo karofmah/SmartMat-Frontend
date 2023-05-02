@@ -27,7 +27,6 @@
                       </v-list-item>
                   </v-list>
               </div>
-            <div id="card">
               <div id="input">
                   <v-autocomplete
                       id="add-to-cart"
@@ -37,22 +36,7 @@
                       :items="allItems"
                       v-model="selectedItem"
                       v-on:keyup.enter="addItem"
-                      variant="underlined"
                   />
-              </div>
-            </div>
-              <div>
-                <v-alert
-                  v-model="alert"
-                  border="start"
-                  variant="tonal"
-                  closable
-                  close-label="Close Alert"
-                  color="red"
-                  title="Something went wrong"
-                >
-                Please try again
-                </v-alert>
               </div>
           </v-card>
       </v-row>
@@ -62,6 +46,7 @@
 <script>
 import shoppingListService from "@/services/shoppingListService";
 import fridgeService from "@/services/fridgeService";
+import { mount } from "@vue/test-utils";
   export default {
       data() {
           return {
@@ -69,7 +54,6 @@ import fridgeService from "@/services/fridgeService";
               selectedItem: "",
               allItems:[],
               buyItems: [],
-              alert: false,
           }
       },
       methods: {
@@ -85,13 +69,14 @@ import fridgeService from "@/services/fridgeService";
               }
             } catch(err) {
               console.log(err)
-              this.alert = true
             }
 
           },
           async getAllItems(){
             try {
               const list = await fridgeService.getAllItems()
+              console.log(list);
+              console.log(this.shoppingList);
               for(let i = 0; i<list.length; i++){
                 if (!this.shoppingList.includes(list[i].name)) {
                   this.allItems.push(list[i].name)
@@ -99,7 +84,6 @@ import fridgeService from "@/services/fridgeService";
               }
             } catch (err) {
               console.log(err)
-              this.alert = true
             }
 
           },
@@ -140,6 +124,12 @@ import fridgeService from "@/services/fridgeService";
               await this.getShoppingList()
               this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
             }
+
+            await shoppingListService.addShoppingListItems(itemToAdd)
+            this.shoppingList = []
+            await this.getShoppingList()
+            this.selectedItem = "";
+            this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
           },
           async removeList(item) {
             const itemToDelete = {
@@ -186,14 +176,7 @@ import fridgeService from "@/services/fridgeService";
 
 <style>
   #container{
-    margin-top: 150px;
-  }
-  #input{
-    width: 90%;
-  }
-  #card{
-    display: flex;
-    justify-content: center;
+      margin-top: 150px;
   }
 
 </style>
