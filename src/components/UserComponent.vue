@@ -110,7 +110,8 @@ export default {
       const update = {
         "name": name,
         "accessLevel": type,
-        "subUserId": this.id
+        "subUserId": this.id,
+        "pinCode": pinCode
       }
 
       await settingsService.updateSubuser(update)
@@ -142,6 +143,7 @@ export default {
       if (this.$route.name === "chooseUser" && this.type === false){
         localStorage.setItem("username", this.name)
         localStorage.setItem("userType", this.type)
+        localStorage.setItem("subUserId", this.id)
         router.push("/fridge")
       } else if(this.$route.name === "chooseUser" && this.type === true){
         this.dialog = true
@@ -150,6 +152,7 @@ export default {
     async chooseSuperUser() {
       const name = this.name
       const type = this.type
+      const pinCheck = this.pinCheck
       const check = {
         "subUserId": this.id,
         "pinCode": this.pinCode
@@ -157,9 +160,10 @@ export default {
       await loginService.checkPinCode(check).then(function (response) {
         //TODO: fikse når feil pin-kode
         console.log(response)
-        if (response.status === 200) {
+        if (response.status === 200 && pinCheck) {
           localStorage.setItem("username", name)
           localStorage.setItem("userType", type)
+          localStorage.setItem("subUserId", check.subUserId)
           router.push("/fridge")
         } else if (response.status === 404){
           document.getElementById("error-pinCode").innerHTML = response.data
