@@ -65,6 +65,16 @@
                         required
                     ></v-select>
                   </v-col>
+                  <v-col
+                      cols="12"
+                  >
+                    <v-text-field
+                        v-if="userType==='true'"
+                        v-model="pinCode"
+                        label="Pin-Code*"
+                        required
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
               </v-container>
               <small>*indicates required field</small>
@@ -109,6 +119,7 @@ export default {
       betaUser: true,
       username: null,
       userType: null,
+      pinCode: '',
       types: ["true", "false"],
       dialog: false,
       picked: "Change your information",
@@ -157,7 +168,8 @@ export default {
         const subuser = {
           "name": this.username,
           "accessLevel": this.userType,
-          "masterUser": localStorage.getItem("email")
+          "userEmail": localStorage.getItem("email"),
+          "pinCode": this.pinCode
         }
         await settingsService.addNewSubuser(subuser)
         await this.getSubusers()

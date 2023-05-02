@@ -27,6 +27,7 @@
                       </v-list-item>
                   </v-list>
               </div>
+            <div id="card">
               <div id="input">
                   <v-autocomplete
                       id="add-to-cart"
@@ -36,7 +37,22 @@
                       :items="allItems"
                       v-model="selectedItem"
                       v-on:keyup.enter="addItem"
+                      variant="underlined"
                   />
+              </div>
+            </div>
+              <div>
+                <v-alert
+                  v-model="alert"
+                  border="start"
+                  variant="tonal"
+                  closable
+                  close-label="Close Alert"
+                  color="red"
+                  title="Something went wrong"
+                >
+                Please try again
+                </v-alert>
               </div>
           </v-card>
       </v-row>
@@ -46,7 +62,6 @@
 <script>
 import shoppingListService from "@/services/shoppingListService";
 import fridgeService from "@/services/fridgeService";
-import { mount } from "@vue/test-utils";
   export default {
       data() {
           return {
@@ -54,27 +69,29 @@ import { mount } from "@vue/test-utils";
               selectedItem: "",
               allItems:[],
               buyItems: [],
+              alert: false,
           }
       },
       methods: {
           async getShoppingList(){
             try {
               const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
-              for(let i = 0; i<list.length; i++){
-                if(!this.buyItems.includes(list[i].item.name)){
-                  this.shoppingList.push(list[i].item.name)
+              localStorage.setItem("shoppingListId", list.shoppingListId)
+              console.log(list.items[0].item.name)
+              for(let i = 0; i<list.items.length; i++){
+                if(!this.buyItems.includes(list.items[i].item.name)){
+                  this.shoppingList.push(list.items[i].item.name)
                 }
               }
             } catch(err) {
               console.log(err)
+              this.alert = true
             }
 
           },
           async getAllItems(){
             try {
               const list = await fridgeService.getAllItems()
-              console.log(list);
-              console.log(this.shoppingList);
               for(let i = 0; i<list.length; i++){
                 if (!this.shoppingList.includes(list[i].name)) {
                   this.allItems.push(list[i].name)
@@ -82,6 +99,7 @@ import { mount } from "@vue/test-utils";
               }
             } catch (err) {
               console.log(err)
+              this.alert = true
             }
 
           },
@@ -89,7 +107,7 @@ import { mount } from "@vue/test-utils";
             for(let i = 0; i<this.buyItems.length; i++){
               const item = {
                 "itemName": this.buyItems[i],
-                "refrigeratorId": "1",
+                "refrigeratorId": localStorage.getItem("fridgeId"),
                 "amount": "10",
                 "measurementType": "2"
               }
@@ -97,7 +115,7 @@ import { mount } from "@vue/test-utils";
 
               const itemToDelete = {
                 "itemName": this.buyItems[i],
-                "shoppingListId": "1",
+                "shoppingListId": localStorage.getItem("shoppingListId"),
                 "amount": "10",
                 "measurementType": "2"
               }
@@ -109,23 +127,24 @@ import { mount } from "@vue/test-utils";
             await this.getShoppingList()
           },
           async addItem() {
-            const itemToAdd = {
-              "itemName": this.selectedItem,
-              "shoppingListId": "1",
-              "amount": "10",
-              "measurementType": "2"
+            if (this.allItems.includes(this.selectedItem)){
+              const itemToAdd = {
+                "itemName": this.selectedItem,
+                "shoppingListId": localStorage.getItem("shoppingListId"),
+                "amount": "10",
+                "measurementType": "2"
+              }
+              this.selectedItem = "";
+              await shoppingListService.addShoppingListItems(itemToAdd)
+              this.shoppingList = []
+              await this.getShoppingList()
+              this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
             }
-
-            await shoppingListService.addShoppingListItems(itemToAdd)
-            this.shoppingList = []
-            await this.getShoppingList()
-            this.selectedItem = "";
-            this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
           },
           async removeList(item) {
             const itemToDelete = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
@@ -137,7 +156,7 @@ import { mount } from "@vue/test-utils";
           async addToBuy(item) {
             const itemToBuy = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
@@ -147,7 +166,7 @@ import { mount } from "@vue/test-utils";
           async removeFromBuy(item) {
             const itemFromBuy = {
               "itemName": item,
-              "shoppingListId": "1",
+              "shoppingListId": localStorage.getItem("shoppingListId"),
               "amount": "10",
               "measurementType": "2"
             }
@@ -167,7 +186,14 @@ import { mount } from "@vue/test-utils";
 
 <style>
   #container{
-      margin-top: 150px;
+    margin-top: 150px;
+  }
+  #input{
+    width: 90%;
+  }
+  #card{
+    display: flex;
+    justify-content: center;
   }
 
 </style>

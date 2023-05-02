@@ -4,6 +4,8 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { mount } from '@vue/test-utils'
 import Login from '../../src/components/LoginComponent.vue'
+import loginService from "@/services/loginService";
+import settingsService from "@/services/settingsService";
 
 describe('Login page', () => {
     const mock = new MockAdapter(axios);
@@ -71,6 +73,13 @@ describe('Login page', () => {
         wrapper.vm.checkAge('20')
         expect(wrapper.vm.ageCheck).toBe(true)
         expect(wrapper.vm.checkAge('5')).toBe('You must be between 16-123 years old to use SmartMat.')
+    })
+
+    it('validates the pin input', () => {
+        const wrapper = mount(Login)
+        wrapper.vm.checkPin('1234')
+        expect(wrapper.vm.pinCheck).toBe(true)
+        expect(wrapper.vm.checkPin('11')).toBe('PIN-CODE must be 4 digits.')
     })
 
     it('should login successfully', async () => {
