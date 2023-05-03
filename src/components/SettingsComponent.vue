@@ -125,7 +125,6 @@
 <script>
 import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
-
 export default {
   components: {UserComponent},
   data(){
