@@ -120,7 +120,46 @@
             v-for="(item, index) in items"
             :key="index"
         >
-          <div id="itemInfo"><div id="itemName"><v-list-item-title>{{ item.item.name }}</v-list-item-title></div><div id="ThrowButton"><v-btn id="removeItem" @click="(dialog = true) && (this.name = item.item.name)" variant="text" size="large" density="compact" icon="mdi-delete"></v-btn></div></div>
+          <div id="itemInfo"><div id="itemName"><v-list-item-title>{{ item.item.name }}</v-list-item-title></div>
+            <div id="ThrowButton">
+              <v-btn id="removeItem" @click="(dialog = true) && (this.name = item.item.name)" variant="text" size="large" density="compact" icon="mdi-delete"></v-btn>
+              <v-btn id="pick-date-button" @click="(picker = true)" variant="text" size="large" density="compact" icon="mdi-calendar"></v-btn>
+              <v-row justify="center">
+                <v-dialog
+                    v-model="picker"
+                    persistent
+                    width="310"
+                >
+                  <v-card>
+                    <v-card-title class="text-h5">
+                      Add expiration date
+                    </v-card-title>
+                    <div id="datepicker"><datepicker
+                        v-model="selectedDate"
+                        starting-view="day"
+                        placeholder="expiration date"
+                    ></datepicker></div>
+                    <v-card-actions>
+                      <v-btn
+                          color="green-darken-1"
+                          variant="text"
+                          @click="(picker = false)"
+                      >
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                          color="green-darken-1"
+                          variant="text"
+                          @click="(picker = false)"
+                      >
+                        Add
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-row>
+            </div>
+          </div>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -130,13 +169,17 @@
 <script>
 import fridgeService from "@/services/fridgeService";
 import shoppingListService from "@/services/shoppingListService";
+import Datepicker from 'vue3-datepicker';
 export default {
   props: {
     id: Number,
     desc: String,
   },
+  components: { Datepicker },
   data(){
     return {
+      selectedDate: "",
+      picker: false,
       name: null,
       waste: "true",
       amount: null,
@@ -156,13 +199,23 @@ export default {
     async yes(){
       const itemToAdd = {
         "itemName": this.name,
-        "shoppingListId": "1",
-        "amount": "10",
+        "shoppingListId": localStorage.getItem("shoppingListId"),
+        "amount": this.amount,
         "measurementType": "2"
       }
       await shoppingListService.addShoppingListItems(itemToAdd)
       this.dialog = false
       this.addToShoppingList = false
+    },
+    async addDateToItem() {
+      const itemToUpdate = {
+        "itemName": this.name,
+        "refrigeratorId": localStorage.getItem("fridgeId"),
+        "amount": this.amount,
+        "measurementType": "2",
+        "date": this.selectedDate
+      }
+
     },
     async getAllItemsByCategory(){
       this.items = await fridgeService.getAllItemsByCategory(localStorage.getItem("fridgeId"), this.id)
@@ -234,4 +287,15 @@ export default {
   float: right;
 }
 
+#datepicker {
+  display: inline-block;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+  height: 275px;
+}
+datepicker {
+  border: black;
+  box-shadow: 0 4px 10px 0 rgba(128, 144, 160, 0.1), 0 0 1px 0 rgba(128, 144, 160, 0.81);
+}
 </style>
