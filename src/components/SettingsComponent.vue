@@ -110,6 +110,22 @@
   <div id="users">
     <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId" :pin="user.pinCode"/>
   </div>
+    <v-snackbar
+        v-model="snackbar"
+        color="teal"
+    >
+      {{ text }}
+
+      <template v-slot:actions>
+        <v-btn
+            color="white"
+            variant="text"
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -120,6 +136,8 @@ export default {
   components: {UserComponent},
   data(){
     return {
+      text: "",
+      snackbar: false,
       betaUser: true,
       username: null,
       userType: null,
@@ -175,7 +193,9 @@ export default {
         "userEmail": localStorage.getItem("email"),
         "pinCode": this.pinCode
       }
-      await settingsService.addNewSubuser(subuser)
+      const text = await settingsService.addNewSubuser(subuser)
+      this.text = text
+      this.snackbar = true
       await this.getSubusers()
       this.dialog = false
     },
