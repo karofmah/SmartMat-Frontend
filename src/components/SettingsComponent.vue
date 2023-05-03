@@ -48,7 +48,7 @@
                             <v-text-field
                                 v-model="username"
                                 label="Username*"
-                                required
+                                :rules="[checkUsername]"
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -58,7 +58,7 @@
                                 v-model="userType"
                                 :items="types"
                                 label="User level*"
-                                required
+                                :rules="[checkUsertype]"
                             ></v-select>
                           </v-col>
                           <v-col
@@ -68,7 +68,7 @@
                                 v-if="userType==='true'"
                                 v-model="pinCode"
                                 label="Pin-Code*"
-                                required
+                                :rules="[checkPin]"
                             ></v-text-field>
                           </v-col>
                         </v-row>
@@ -103,12 +103,29 @@
         <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
       </div>
     </div>
+    <v-snackbar
+        v-model="snackbar"
+        color="teal"
+    >
+      {{ text }}
+
+      <template v-slot:actions>
+        <v-btn
+            color="white"
+            variant="text"
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
+
 export default {
   components: {UserComponent},
   data(){
@@ -141,18 +158,6 @@ export default {
     };
   },
   methods: {
-    maxSubusers(){
-      try {
-        if (this.users.length === parseInt(this.household)){
-          this.dialog = false
-          this.max = true
-        } else {
-          this.max = false
-        }
-      } catch (error){
-        console.log(error)
-      }
-    },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
         this.betaUser = true;
@@ -164,17 +169,22 @@ export default {
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      const subuser = {
-        "name": this.username,
-        "accessLevel": this.userType,
-        "userEmail": localStorage.getItem("email"),
-        "pinCode": this.pinCode
+      if(this.usernameCheck && this.usertypeCheck && this.pinCheck) {
+        const subuser = {
+          "name": this.username,
+          "accessLevel": this.userType,
+          "userEmail": localStorage.getItem("email"),
+          "pinCode": this.pinCode
+        }
+        this.text = await settingsService.addNewSubuser(subuser)
+        this.snackbar = true
+        await this.getSubusers()
+        this.dialog = false
+      } else {
+        this.text = "Failed to add user"
+        this.snackbar = true
       }
-      const text = await settingsService.addNewSubuser(subuser)
-      this.text = text
-      this.snackbar = true
-      await this.getSubusers()
-      this.dialog = false
+
     },
     async changeInfo(){
       if(!this.editing){
