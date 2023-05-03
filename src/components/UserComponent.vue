@@ -69,6 +69,22 @@
       <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>
     </v-card-actions>
   </v-card>
+  <v-snackbar
+      v-model="snackbar"
+      color="teal"
+  >
+    {{ text }}
+
+    <template v-slot:actions>
+      <v-btn
+          color="white"
+          variant="text"
+          @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -85,6 +101,8 @@ export default {
   },
   data() {
     return {
+      text: "",
+      snackbar: false,
       edit: false,
       betaUser: false,
       currentUser: false,
@@ -100,13 +118,13 @@ export default {
   },
   methods:{
     async deleteSubuser(){
-      console.log(this.id)
       await settingsService.deleteSubuser(this.id)
       this.$emit('update-users')
     },
     async updateUser(){
-      if (this.pinCode.length !== 4){
-        document.getElementById("error-update-user").innerHTML = "Your pin has to be 4 numbers"
+      if (!(/^\d{4}$/.test(this.pinCode))){
+        this.text = "Your pin has to be 4 numbers"
+        this.snackbar = true
       } else{
         const name = this.newName
         const type = this.newType
