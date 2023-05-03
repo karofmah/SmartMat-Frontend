@@ -13,32 +13,12 @@ describe('Settings component', () => {
         mock.reset();
     });
 
-    it('renders with user information text components', async () => {
+    it('renders the input fields', async () => {
         const wrapper = mount(Settings)
-        await expect(wrapper.html()).toContain("Your information")
-        await expect(wrapper.html()).toContain("Email:")
-        await expect(wrapper.html()).toContain("First name:")
-        await expect(wrapper.html()).toContain("Last name:")
-        await expect(wrapper.html()).toContain("Phone number:")
-        await expect(wrapper.html()).toContain("Household:")
-    })
-
-    it('renders the correct information', async () => {
-        const email = 'test@test.com'
-        const firstname = 'John'
-        const lastname = 'Doe'
-        const phone = '12345678'
-        const household = '4'
-        localStorage.setItem('email', email)
-        localStorage.setItem('firstname', firstname)
-        localStorage.setItem('lastname', lastname)
-        localStorage.setItem('phone', phone)
-        localStorage.setItem('household', household)
-        const wrapper = mount(Settings)
-        await expect(wrapper.find('#first-name-display').text()).toBe(firstname)
-        await expect(wrapper.find('#last-name-display').text()).toBe(lastname)
-        await expect(wrapper.find('#phone-number-display').text()).toBe(phone)
-        await expect(wrapper.find('#household-display').text()).toBe(household)
+        await expect(wrapper.find('#first-name-input').exists()).toBe(true)
+        await expect(wrapper.find('#last-name-input').exists()).toBe(true)
+        await expect(wrapper.find('#phone-number-input').exists()).toBe(true)
+        await expect(wrapper.find('#household-input').exists()).toBe(true)
     })
 
     it('changes the "change" variable on click of the info-button', async () => {
