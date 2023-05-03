@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import statsService from "@/services/statsService";
+import statsService from "@/services/statsService.js";
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
