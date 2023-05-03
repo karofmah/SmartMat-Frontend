@@ -137,7 +137,8 @@ export default {
           "pinCode": pinCode
         }
 
-        await settingsService.updateSubuser(update)
+        this.text = await settingsService.updateSubuser(update)
+        this.snackbar = true
         this.$emit('update-users')
         this.edit = !this.edit
       }
