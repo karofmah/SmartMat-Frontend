@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined" class="user-card" @click="chooseUser">
+  <v-card class="user-card" @click="chooseUser">
     <v-card-title v-if="!edit" id="name">{{ name }} </v-card-title>
     <v-card-subtitle v-if="!edit" id="type">{{ type }}</v-card-subtitle>
     <input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">

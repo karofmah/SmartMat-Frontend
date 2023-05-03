@@ -1,97 +1,91 @@
 <template>
-  <div id="container-categories">
-    <div id="searchbar">
-    <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
-      <div ><v-row justify="center">
-        <v-dialog
-            v-model="dialog"
-            persistent
-            width="400"
-        >
-          <template v-slot:activator="{ props }">
-            <div id="addNewItemButton" ><v-btn
+  <v-app>
+    <div id="container-categories">
+      <div id="searchbar">
+      </div>
+      <div id="category-recipe">
+        <v-card id="categories" class="card">
+          <v-toolbar color="teal">
+            <v-toolbar-title>Your Fridge</v-toolbar-title>
+          </v-toolbar>
+          <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div>
+          <div id="topBar">
+          <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
+            <v-dialog v-model="dialog" persistent width="400">
+              <template v-slot:activator="{ props }">
+                <div id="addNewItemButton" >
+                  <v-btn color="" v-bind="props" :disabled="betaUser">
+                    Add new item
+                  </v-btn>
+                </div>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">Add new item to fridge</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-autocomplete type="text" placeholder="Select food" clearable :items="items" v-model="newItemName" :rules="[ checkName ]"></v-autocomplete>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                            label="Amount*"
+                            v-model="newItemAmount"
+                            :rules="[ checkAmount ]"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-autocomplete
+                            :items="['KG', 'DL', 'L']"
+                            label="Measurement type*"
+                            v-model="newItemMeasurement"
+                            :rules="[ checkMeasurement ]"
+                        ></v-autocomplete>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small>*indicates required field</small>
+                  <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                      color="blue-darken-1"
+                      variant="text"
+                      @click="dialog = false"
+                  >
+                    Close
+                  </v-btn>
+                  <v-btn
+                      color="blue-darken-1"
+                      variant="text"
+                      @click="addToFridge"
+                  >
+                    Add
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+          <ul id="category-list">
+            <li id="category-component"><CategoryComponent v-on:update-fridge="handleUpdate" v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
+          </ul>
+        </v-card>
 
-                color=""
-                v-bind="props"
-                :disabled="betaUser"
-            >
-              Add new item
-            </v-btn>
-            <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div></div>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">Add new item to fridge</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-autocomplete type="text" placeholder="Select food" clearable :items="items" v-model="newItemName" :rules="[ checkName ]"></v-autocomplete>
-                  </v-col>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-text-field
-                        label="Amount*"
-                        v-model="newItemAmount"
-                        :rules="[ checkAmount ]"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-autocomplete
-                        :items="['KG', 'DL', 'L']"
-                        label="Measurement type*"
-                        v-model="newItemMeasurement"
-                        :rules="[ checkMeasurement ]"
-                    ></v-autocomplete>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <small>*indicates required field</small>
-              <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="dialog = false"
-              >
-                Close
-              </v-btn>
-              <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="addToFridge"
-              >
-                Add
-              </v-btn>
-            </v-card-actions>
+        <div id="generate">
+          <v-card id="recipe" class="card">
+            <v-toolbar color="teal">
+              <v-toolbar-title>Recepie generator</v-toolbar-title>
+              <v-btn id="generateButton" variant="tonal" @click="generateRecipe" icon="mdi-silverware"></v-btn>
+            </v-toolbar>
+            <v-card-text class="text-pre-wrap">{{ recipe }}</v-card-text>
           </v-card>
-        </v-dialog>
-      </v-row></div>
+        </div>
+      </div>
     </div>
-    <div id="category-recipe">
-    <div id="categories">
-      <ul id="category-list">
-        <li id="category-component"><CategoryComponent v-on:update-fridge="handleUpdate" v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
-      </ul>
-    </div>
-
-    <div id="generate">
-      <v-btn id="generateButton" @click="generateRecipe">Generate recipe</v-btn>
-      <div id="recipe-box">
-      <textarea class="textarea" v-model="recipe" id="recipe" disabled>
-      </textarea>
-    </div>
-    </div>
-  </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -107,7 +101,7 @@ export default {
       newItemName: null,
       newItemAmount: null,
       newItemMeasurement: null,
-      recipe: null,
+      recipe: "This is your AI powerd dinner generator.\nTo create a recepie using ingredients in your fridge, press the knife and fork icon in the toolbar.",
       show: false,
       items: [],
       myItems: [],
@@ -253,48 +247,25 @@ export default {
 #search {
   width: 100%;
   max-width: 300px;
-  margin-right: 10px;
-  height: 100px;
-}
-
-#generate {
-  margin: 10px;
-  width: 49%;
-  text-align: center;
-}
-#generateButton {
-  border: solid black;
-  margin: 5px;
-}
-
-#recipe-box {
   margin: 10px;
 }
-
-
-#recipe {
-  height: 300px;
-  border: solid black;
-  width: 90%;
-}
-
-ul#category-list {
+#category-list {
   list-style-type: none;
   overflow: hidden;
 }
-
-category-component{
-  float: left;
-  margin: 10px;
+#topBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
-li#category-component {
+#category-component {
   float: left;
   margin: 10px;
 }
 #addNewItemButton{
   margin: 10px;
-  display: block;
-  text-align: center;
+  margin-top: 20px;
+
 }
 .textarea{
   resize: none;
@@ -302,4 +273,10 @@ li#category-component {
 #error-fridge {
   margin: 10px;
 }
+.card {
+  width: 600px;
+  max-width: 600px;
+  margin: 20px;
+}
+
 </style>

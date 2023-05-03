@@ -1,116 +1,109 @@
 <template>
-  <div id="settings-container">
-  <div id="user-information">
-    <div id="information">
-      <h1 id="title-settings">Your information:</h1>
-      <p class="settings-text"><span class="font-weight-bold">Email: </span><span>{{ email }}</span></p>
-      <div v-if="!change">
-        <p class="settings-text"><span class="font-weight-bold">First name: </span><span id="first-name-display">{{ firstname }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Last name: </span><span id="last-name-display">{{ lastname }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Phone number: </span><span id="phone-number-display">{{ phone }}</span></p>
-        <p class="settings-text"><span class="font-weight-bold">Household: </span><span id="household-display">{{ household }}</span></p>
+  <v-app>
+    <div id="settings-container">
+      <v-card id="user-information" class="mx-auto" max-width="320">
+          <div id="information">
+            <v-toolbar color="teal">
+              <v-toolbar-title>Your information</v-toolbar-title>
+            </v-toolbar>
+            <v-card-subtitle te>e-mail:</v-card-subtitle>
+            <v-card-text>{{ email }}</v-card-text>
+            <v-sheet id="user-information" width="300">
+              <v-text-field id="first-name-input" label="First name" v-model="firstname" :readonly="!change" :rules="[ checkName(firstname) ]"></v-text-field>
+              <v-text-field id="last-name-input" label="Last name" v-model="lastname" :readonly="!change" :rules="[ checkLastName(lastname) ]"></v-text-field>
+              <v-text-field id="phone-number-input" label="Phone number" v-model="phone" :readonly="!change" :rules="[ checkPhoneNumber(phone) ]"></v-text-field>
+              <v-text-field id="household-input" label="Household number" v-model="household" :readonly="!change" :rules="[ checkHousehold(household) ]"></v-text-field>
+            </v-sheet>
+          </div>
+          <div id="buttons">
+            <div class="settings-buttons"><v-btn id="info-button" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
+            <div id="newSubUser" class="settings-buttons">
+              <v-row>
+                <v-dialog
+                    v-model="dialog"
+                    persistent
+                    width="400"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                        id="addNewSubuserButton"
+                        color="teal"
+                        v-bind="props"
+                        :disabled="betaUser"
+                        @click="maxSubusers"
+                    >
+                      Add new user
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      <span class="text-h5">New user</span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row>
+                          <v-col
+                              cols="12"
+                          >
+                            <v-text-field
+                                v-model="username"
+                                label="Username*"
+                                required
+                            ></v-text-field>
+                          </v-col>
+                          <v-col
+                              cols="12"
+                          >
+                            <v-select
+                                v-model="userType"
+                                :items="types"
+                                label="User level*"
+                                required
+                            ></v-select>
+                          </v-col>
+                          <v-col
+                              cols="12"
+                          >
+                            <v-text-field
+                                v-if="userType==='true'"
+                                v-model="pinCode"
+                                label="Pin-Code*"
+                                required
+                            ></v-text-field>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                      <small>*indicates required field</small>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                          color="blue-darken-1"
+                          variant="text"
+                          @click="dialog = false"
+                      >
+                        Close
+                      </v-btn>
+                      <v-btn
+                          color="blue-darken-1"
+                          variant="text"
+                          @click="addSubuser"
+                      >
+                        Save
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-row>
+            </div>
+          </div>
+          <div><p v-if="betaUser">You are not authorized to make changes</p></div>
+      </v-card>
+      <div id="users">
+        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
       </div>
-      <div v-if="change">
-        <v-sheet width="300">
-        <div><v-text-field id="first-name-input" label="First name" v-model="firstname" :rules="[ checkName(firstname) ]"></v-text-field></div>
-        <div><v-text-field id="last-name-input" label="Last name" v-model="lastname" :rules="[ checkLastName(lastname) ]"></v-text-field></div>
-        <div><v-text-field id="phone-number-input" label="Phone number" v-model="phone" :rules="[ checkPhoneNumber(phone) ]"></v-text-field></div>
-        <div><v-text-field id="household-input" label="Household number" v-model="household" :rules="[ checkHousehold(household) ]"></v-text-field></div>
-        </v-sheet>
-      </div>
     </div>
-    <div>
-    <div class="settings-buttons"><v-btn id="info-button" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
-    <div id="newSubUser" class="settings-buttons">
-      <v-row>
-        <v-dialog
-            v-model="dialog"
-            persistent
-            width="400"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn
-                id="addNewSubuserButton"
-                color="teal"
-                v-bind="props"
-                :disabled="betaUser"
-                @click="maxSubusers"
-            >
-              Add new user
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">New user</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-text-field
-                        v-model="username"
-                        label="Username*"
-                        required
-                        :rules="[checkUsername(username)]"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-select
-                        v-model="userType"
-                        :items="types"
-                        label="User level*"
-                        required
-                        :rules="[checkUsertype(userType)]"
-                    ></v-select>
-                  </v-col>
-                  <v-col
-                      cols="12"
-                  >
-                    <v-text-field
-                        v-if="userType==='true'"
-                        v-model="pinCode"
-                        label="Pin-Code*"
-                        required
-                        :rules="[checkPin(pinCode)]"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <small>*indicates required field</small>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="dialog = false"
-              >
-                Close
-              </v-btn>
-              <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="addSubuser"
-              >
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-    </div>
-    </div>
-    <div><p v-if="betaUser">You are not authorized to make changes</p></div>
-    <div v-if="max">You have max amount of subusers</div>
-  </div>
-  <div id="users">
-    <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId" :pin="user.pinCode"/>
-  </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -139,9 +132,6 @@ export default {
       lastNameValid: false,
       phoneValid: false,
       householdValid: false,
-      pinCheck: false,
-      usernameCheck: false,
-      usertypeCheck: false,
       max: false
     };
   },
@@ -169,15 +159,20 @@ export default {
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      const subuser = {
-        "name": this.username,
-        "accessLevel": this.userType,
-        "userEmail": localStorage.getItem("email"),
-        "pinCode": this.pinCode
+      if (this.users.length === parseInt(this.household)){
+        console.log("you cannot add more subusers")
+      } else {
+        const subuser = {
+          "name": this.username,
+          "accessLevel": this.userType,
+          "userEmail": localStorage.getItem("email"),
+          "pinCode": this.pinCode
+        }
+        await settingsService.addNewSubuser(subuser)
+        await this.getSubusers()
+        this.dialog = false
       }
-      await settingsService.addNewSubuser(subuser)
-      await this.getSubusers()
-      this.dialog = false
+
     },
     async changeInfo(){
       if(!this.editing){
@@ -248,33 +243,6 @@ export default {
         this.householdValid = false
         return 'There must be at least 1 household member.'
       }
-    },
-    checkUsername(value) {
-      if (value?.length > 0) {
-        this.usernameCheck = true
-        return true
-      } else {
-        this.usernameCheck = false
-        return 'Username cannot be empty.'
-      }
-    },
-    checkUsertype(value) {
-      if (value?.length > 0) {
-        this.usertypeCheck = true
-        return true
-      } else {
-        this.usertypeCheck = false
-        return 'Usertype cannot be empty.'
-      }
-    },
-    checkPin(value){
-      if (/^\d{4}$/.test(value)) {
-        this.pinCheck = true;
-        return true
-      } else {
-        this.pinCheck = false;
-        return 'PIN-CODE must be 4 digits.'
-      }
     }
   },
   beforeMount() {
@@ -288,21 +256,28 @@ export default {
 #settings-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  overflow: hidden;
 }
-#user-information{
-  width: 500px;
+#information{
+  display: flex;
+  align-content: center;
+  flex-direction: column;
 }
 #users{
-  width: 750px;
-  height: 580px;
+  min-width: 500px;
+  width: calc(100% - 400px);
+  width: -moz-calc(100% - 400px);
+  width: -webkit-calc(100% - 400px);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
   text-align: center;
+  overflow: hidden;
 }
 #user-information{
-  margin: 40px;
+  margin: 10px;
 }
 #title-settings{
   margin-bottom: 10px;
@@ -320,5 +295,12 @@ export default {
 #newSubUser {
   margin-left: 10px;
   margin-bottom: 12px;
+}
+
+#buttons {
+  display:flex;
+  align-content:center;
+  flex-direction: column;
+  padding-bottom: 10px;
 }
 </style>
