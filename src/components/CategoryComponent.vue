@@ -119,8 +119,9 @@
         <v-list-item
             v-for="(item, index) in items"
             :key="index"
+            :value="item.itemExpirationDateId"
         >
-          <div id="itemInfo"><div id="itemName"><v-list-item-title>{{ item.item.name }}</v-list-item-title></div>
+          <div id="itemInfo"><div id="itemName"><v-list-item-title>{{ item.item.name }} + {{item.itemExpirationDateId}}</v-list-item-title></div>
             <div id="ThrowButton">
               <v-btn id="removeItem" @click="(dialog = true) && (this.name = item.item.name)" variant="text" size="large" density="compact" icon="mdi-delete"></v-btn>
               <v-btn id="pick-date-button" @click="(picker = true)" variant="text" size="large" density="compact" icon="mdi-calendar"></v-btn>
