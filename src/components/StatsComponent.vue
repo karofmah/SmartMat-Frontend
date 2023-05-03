@@ -42,15 +42,41 @@
         <v-card-text class="text-pre-wrap">Average amount of garbage thrown in {{averageChosenYear}} is {{averageYearAmount}}kg</v-card-text>
       </v-card>
     </div>
-    <div id="stats-graph"><canvas id="myChart"></canvas></div>
+    <div id="button-and-chart">
+      <div>
+        <v-menu>
+          <template v-slot:activator="{props}">
+            <v-btn icon variant="tonal" v-bind="props" id="change-graph-year">
+              <v-icon>mdi-chart-line</v-icon>
+              <v-tooltip activator="parent" location="start">Change year</v-tooltip>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-for="(year, index) in years" :key="index" :value="year" @click="changeData(year)">
+              <v-list-item-title>{{year}}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <Bar
+        v-if="loaded"
+        id="my-chart-id"
+        :options="chartOptions"
+        :data="chartData"
+    />
+    </div>
   </div>
 </template>
 
 <script>
 import statsService from "@/services/statsService";
-import {Chart} from "chart.js/auto";
+import { Bar } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
+  components: { Bar },
   data(){
     return {
       loaded:  false,
@@ -61,9 +87,16 @@ export default {
       years: ["2023", "2022", "2021","2020"],
       personalData: [1,2,3,4,5,6,7,8,9,5,2,8],
       averageData: [1,2,3,4,5,6,7,8,9,9,3,4],
+      chartData: null,
+      chartOptions: {
+        responsive: true
+      }
     }
   },
   methods: {
+    changeData(year){
+      this.createChart(year)
+    },
     async getYearAmount(year){
       this.personalYearAmount = await statsService.getGarbageYear(localStorage.getItem("fridgeId"), year)
       this.personalChosenYear = year
@@ -72,43 +105,37 @@ export default {
       await this.getYearAmount(year)
     },
     async getAverageAmount(year){
-      await this.getYearAmount(year)
+      // TODO: legg til annen liste fra annen backend metode
     },
-    async getPersonalEachMonth(year){
-      this.personalData = await statsService.getGarbageMonth(localStorage.getItem("fridgeId"), year)
-      this.loaded = true
-    },
-  },
-  mounted(){
-    this.getYearAmount(this.personalChosenYear)
-    //this.getPersonalEachMonth(2023)
-    const ctx = document.getElementById("myChart");
-    const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-        datasets: [{
-          label: 'Personal waste',
-          data: this.personalData,
-          borderWidth: 1,
-          backgroundColor: "teal"
-        },{
-          label: 'Average waste all users',
-          data: this.averageData,
-          borderWidth: 1,
-          backgroundColor: "#6200EA"
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+    async createChart(year){
+      this.loaded = false
+
+      try {
+        const userList = await statsService.getGarbageMonth(localStorage.getItem("fridgeId"), year)
+        const data = {
+          labels: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
+          datasets: [
+            { label: "Your waste",
+              data: userList,
+              backgroundColor: "teal"
+            }, { label: "Average waste",
+              data: userList, // TODO: legg til annen liste fra annen backend metode
+              backgroundColor: "purple"
+            } ]
         }
+        console.log(data)
+        this.chartData = data
+
+        this.loaded = true
+      } catch (err){
+        console.log(err)
       }
-    });
-    myChart;
+
+    }
+  },
+  beforeMount(){
+    this.getYearAmount(this.personalChosenYear)
+    this.createChart(this.personalChosenYear)
   }
 }
 </script>
@@ -134,5 +161,9 @@ export default {
 .stats-card {
   width: 375px;
   margin: 20px;
+}
+
+#change-graph-year{
+  float: right;
 }
 </style>
