@@ -1,14 +1,94 @@
 <template>
   <v-card class="user-card" @click="chooseUser">
-    <v-card-title v-if="!edit" id="name">{{ name }} </v-card-title>
-    <v-card-subtitle v-if="!edit" id="type">{{ type }}</v-card-subtitle>
-    <input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
+    <v-card-title id="name">{{ name }} </v-card-title>
+    <v-card-subtitle id="type">{{ type }}</v-card-subtitle>
+    <!--<input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
     <select :type="type" v-if="edit" v-model="newType" id="edit-userlevel-input">
       <option v-for="type in types">{{type.name}}</option>
     </select>
-    <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">
-    <!--<p v-if="edit" class="error-message" id="error-update-user"></p>-->
+    <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">-->
     <div><img src="../assets/logo.png" id="user-image"></div>
+
+    <v-row>
+      <v-dialog
+          v-model="edit"
+          persistent
+          width="400"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+              id="changeSubuserInfo"
+              color="teal"
+              v-if="$route.name !== 'chooseUser' && !betaUser"
+              v-bind="props"
+              :disabled="betaUser"
+              @click="edit = true"
+          >
+            Change info
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">New user</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                    cols="12"
+                >
+                  <v-text-field
+                      v-model="newName"
+                      label="Username*"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                    cols="12"
+                >
+                  <v-select
+                      v-model="newType"
+                      :items="types"
+                      label="User level*"
+                      required
+                  ></v-select>
+                </v-col>
+                <v-col
+                    cols="12"
+                >
+                  <v-text-field
+                      v-if="newType==='true' || newType===true"
+                      v-model="pinCode"
+                      label="Pin-Code*"
+                      required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="edit = false"
+            >
+              Close
+            </v-btn>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="updateUser"
+            >
+              Save info
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+
+
     <v-row justify="center">
       <v-dialog
           v-model="dialog"
@@ -65,8 +145,8 @@
       </v-dialog>
     </v-row>
     <v-card-actions>
-      <v-btn v-if="!edit && $route.name !== 'chooseUser' && !betaUser" @click="editInfo">Change info</v-btn>
-      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>
+      <!--<v-btn v-if="!edit && $route.name !== 'chooseUser' && !betaUser" @click="editInfo">Change info</v-btn>
+      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>-->
     </v-card-actions>
   </v-card>
 </template>
@@ -95,7 +175,7 @@ export default {
       pinCode: '',
       newName: this.name,
       newType: this.type,
-      types: [{name: "true"}, {name: "false"}]
+      types: ["true", "false"]
     }
   },
   methods:{
@@ -105,24 +185,20 @@ export default {
       this.$emit('update-users')
     },
     async updateUser(){
-      if (this.pinCode.length !== 4){
-        document.getElementById("error-update-user").innerHTML = "Your pin has to be 4 numbers"
-      } else{
-        const name = this.newName
-        const type = this.newType
-        const pinCode = this.pinCode
+      const name = this.newName
+      const type = this.newType
+      const pinCode = this.pinCode
 
-        const update = {
-          "name": name,
-          "accessLevel": type,
-          "subUserId": this.id,
-          "pinCode": pinCode
-        }
-
-        await settingsService.updateSubuser(update)
-        this.$emit('update-users')
-        this.edit = !this.edit
+      const update = {
+        "name": name,
+        "accessLevel": type,
+        "subUserId": this.id,
+        "pinCode": pinCode
       }
+
+      await settingsService.updateSubuser(update)
+      this.$emit('update-users')
+      this.edit = !this.edit
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
@@ -142,7 +218,7 @@ export default {
       }
     },
     editInfo(){
-      this.edit = !this.edit
+      this.edit = true
     },
     checkPin(value) {
       if (/^\d{4}$/.test(value)) {
