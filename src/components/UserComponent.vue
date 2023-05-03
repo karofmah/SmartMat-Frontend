@@ -7,6 +7,7 @@
       <option v-for="type in types">{{type.name}}</option>
     </select>
     <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">
+    <!--<p v-if="edit" class="error-message" id="error-update-user"></p>-->
     <div><img src="../assets/logo.png" id="user-image"></div>
     <v-row justify="center">
       <v-dialog
@@ -64,8 +65,8 @@
       </v-dialog>
     </v-row>
     <v-card-actions>
-      <v-btn v-if="!edit && $route.name !== 'chooseUser'" @click="editInfo">Change info</v-btn>
-      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser" @click="deleteSubuser">Delete</v-btn>
+      <v-btn v-if="!edit && $route.name !== 'chooseUser' && !betaUser" @click="editInfo">Change info</v-btn>
+      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -86,12 +87,14 @@ export default {
     return {
       edit: false,
       betaUser: false,
+      currentUser: false,
+      masterUser: false,
       dialog: false,
       pinCheck: false,
       error: false,
-      pinCode: "",
-      newName: "",
-      newType: "",
+      pinCode: '',
+      newName: this.name,
+      newType: this.type,
       types: [{name: "true"}, {name: "false"}]
     }
   },
@@ -102,21 +105,24 @@ export default {
       this.$emit('update-users')
     },
     async updateUser(){
-      const name = this.newName
-      const type = this.newType
-      const pinCode = this.pinCode
-      // TODO: legge til at man kan endre pinkode
+      if (this.pinCode.length !== 4){
+        document.getElementById("error-update-user").innerHTML = "Your pin has to be 4 numbers"
+      } else{
+        const name = this.newName
+        const type = this.newType
+        const pinCode = this.pinCode
 
-      const update = {
-        "name": name,
-        "accessLevel": type,
-        "subUserId": this.id,
-        "pinCode": pinCode
+        const update = {
+          "name": name,
+          "accessLevel": type,
+          "subUserId": this.id,
+          "pinCode": pinCode
+        }
+
+        await settingsService.updateSubuser(update)
+        this.$emit('update-users')
+        this.edit = !this.edit
       }
-
-      await settingsService.updateSubuser(update)
-      this.$emit('update-users')
-      this.edit = !this.edit
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
@@ -124,12 +130,22 @@ export default {
       } else {
         this.betaUser = false;
       }
+      if (parseInt(localStorage.getItem("subUserId")) === this.id) {
+        this.currentUser = true
+      } else {
+        this.currentUser = false
+      }
+      if (parseInt(localStorage.getItem("masterUserId")) === this.id){
+        this.masterUser = true
+      } else {
+        this.masterUser = false
+      }
     },
     editInfo(){
       this.edit = !this.edit
     },
     checkPin(value) {
-      if (value?.length === 4) {
+      if (/^\d{4}$/.test(value)) {
         this.pinCheck = true;
         this.error = false
         return true
@@ -165,7 +181,7 @@ export default {
           localStorage.setItem("userType", type)
           localStorage.setItem("subUserId", check.subUserId)
           router.push("/fridge")
-        } else if (response.status === 404){
+        } else {
           document.getElementById("error-pinCode").innerHTML = response.data
         }
       }).catch(function (error) {
