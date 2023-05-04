@@ -106,6 +106,7 @@
     <v-snackbar
         v-model="snackbar"
         color="teal"
+        :timeout="2000"
     >
       {{ text }}
 
@@ -168,29 +169,35 @@ export default {
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      if(this.usernameCheck && this.usertypeCheck && this.pinCheck) {
-        const subuser = {
-          "name": this.username,
-          "accessLevel": this.userType,
-          "userEmail": localStorage.getItem("email"),
-          "pinCode": this.pinCode
+      if(this.usernameCheck && this.usertypeCheck) {
+        if ((this.userType === "true" && this.pinCheck) || this.userType === "false"){
+          const subuser = {
+            "name": this.username,
+            "accessLevel": this.userType,
+            "userEmail": localStorage.getItem("email"),
+            "pinCode": this.pinCode
+          }
+          const feedback = await settingsService.addNewSubuser(subuser)
+          this.text = feedback.data
+          this.snackbar = true
+          if(feedback.status === 200) {
+            await this.getSubusers()
+            this.dialog = false
+          }
+        } else {
+          this.text = "Missing pin code"
+          this.snackbar = true
         }
-        this.text = await settingsService.addNewSubuser(subuser)
-        this.snackbar = true
-        await this.getSubusers()
-        this.dialog = false
-      } else {
-        this.text = "Failed to add user"
-        this.snackbar = true
-      }
-
+        }else {
+          this.text = "Failed to add user"
+          this.snackbar = true
+        }
     },
     async changeInfo(){
       if(!this.editing){
         this.change = !this.change
         this.editing = !this.editing
         this.picked = "Save your new information"
-        console.log(this.editing)
       } else {
         if(this.nameValid && this.lastNameValid && this.householdValid && this.phoneValid) {
           const firstName = this.firstname
@@ -202,19 +209,22 @@ export default {
             "phoneNumber": this.phone,
             "household": this.household
           }
-          console.log(update)
 
-          await settingsService.updateInformation(update)
+          const feedback = await settingsService.updateInformation(update)
           const updatedInformation = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", updatedInformation.firstName)
           localStorage.setItem("lastname", updatedInformation.lastName)
           localStorage.setItem("phone", updatedInformation.phoneNumber)
           localStorage.setItem("household", updatedInformation.household)
 
-          this.change = !this.change
-          this.editing = !this.editing
-          this.picked = "Change your information"
-          console.log(this.editing)
+          if (feedback.status === 200){
+            this.change = !this.change
+            this.editing = !this.editing
+            this.picked = "Change your information"
+          }
+          this.text = feedback.data
+          this.snackbar = true
+
         }
       }
 
@@ -273,13 +283,13 @@ export default {
         return 'Usertype cannot be empty.'
       }
     },
-    checkPin(value){
-      if (/^\d{4}$/.test(value)) {
+    checkPin(value) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
         return true
       } else {
         this.pinCheck = false;
-        return 'PIN-CODE must be 4 digits.'
+        return 'PIN must be 4 digits and cannot start with 0.'
       }
     }
   },
