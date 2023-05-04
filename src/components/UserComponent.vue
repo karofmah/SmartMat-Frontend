@@ -1,8 +1,8 @@
 <template>
   <v-card class="user-card" @click="chooseUser">
     <v-card-title id="name">{{ name }} </v-card-title>
-    <v-card-subtitle id="type">{{ type }}</v-card-subtitle>
-    <div><img src="../assets/logo.png" id="user-image"></div>
+    <v-card-subtitle id="type">{{ typeName }}</v-card-subtitle>
+    <div><img src="../assets/user-logo.png" id="user-image"></div>
 
     <v-row id="change-info-button">
       <v-dialog
@@ -53,7 +53,7 @@
                     cols="12"
                 >
                   <v-text-field
-                      v-if="newType==='true' || newType===true"
+                      v-if="newType==='Adult'"
                       v-model="pinCode"
                       type="password"
                       label="Pin-Code*"
@@ -184,6 +184,7 @@ export default {
   },
   data() {
     return {
+      typeName: null,
       text: "",
       snackbar: false,
       edit: false,
@@ -195,8 +196,9 @@ export default {
       error: false,
       pinCode: '',
       newName: this.name,
-      newType: this.type,
-      types: ["true", "false"]
+      newType: this.typeName,
+      types: ["Adult", "Child"],
+      typeToSend: false
     }
   },
   methods:{
@@ -210,8 +212,9 @@ export default {
       this.$emit('update-users')
     },
     async updateUser(){
+      this.typeToSend = this.newType === "Adult";
       const name = this.newName
-      const type = this.newType
+      const type = this.typeToSend
       const pinCode = this.pinCode
 
       const update = {
@@ -224,27 +227,22 @@ export default {
         this.error = true
       } else {
         this.text = await settingsService.updateSubuser(update)
-        this.snackbar = true
         this.$emit('update-users')
+        this.snackbar = true
         this.edit = !this.edit
         this.error = false
       }
     },
     async setUserLevel(){
-      if (localStorage.getItem("userType") === "false"){
-        this.betaUser = true;
+      this.betaUser = localStorage.getItem("userType") === "false";
+      this.currentUser = parseInt(localStorage.getItem("subUserId")) === this.id;
+      this.masterUser = parseInt(localStorage.getItem("masterUserId")) === this.id;
+      if (this.type === true){
+        this.typeName = "Adult"
+        this.newType = "Adult"
       } else {
-        this.betaUser = false;
-      }
-      if (parseInt(localStorage.getItem("subUserId")) === this.id) {
-        this.currentUser = true
-      } else {
-        this.currentUser = false
-      }
-      if (parseInt(localStorage.getItem("masterUserId")) === this.id){
-        this.masterUser = true
-      } else {
-        this.masterUser = false
+        this.typeName = "Child"
+        this.newType = "Child"
       }
     },
     editInfo(){
@@ -314,11 +312,13 @@ export default {
 #user-image {
   width: 100px;
   height: 100px;
+  margin-top: 4px;
 }
 #change-info-button {
   display:flex;
   align-content:center;
   flex-direction: column;
   padding-bottom: 10px;
+  margin-top: 2px;
 }
 </style>
