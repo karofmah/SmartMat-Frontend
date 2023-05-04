@@ -76,5 +76,18 @@ export default {
         }).catch(function (err) {
             console.log(err)
         })
+    },
+    updateItemInFridge(item){
+        return axios.put("http://localhost:8080/api/refrigerators/updateItemInRefrigerator", item, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
+            console.log("updating fridge")
+            console.log(response)
+            return response
+        }).catch(function (err) {
+            console.log(err)
+        })
     }
 }

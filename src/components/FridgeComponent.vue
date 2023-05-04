@@ -10,7 +10,7 @@
           </v-toolbar>
           <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div>
           <div id="topBar">
-          <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div>
+          <!-- <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div> -->
             <v-dialog v-model="dialog" persistent width="400">
               <template v-slot:activator="{ props }">
                 <div id="addNewItemButton" >
@@ -38,7 +38,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-autocomplete
-                            :items="['KG', 'DL', 'L']"
+                            :items="['G', 'KG', 'DL', 'L', 'UNIT']"
                             label="Measurement type*"
                             v-model="newItemMeasurement"
                             :rules="[ checkMeasurement ]"
@@ -69,9 +69,103 @@
               </v-card>
             </v-dialog>
           </div>
-          <ul id="category-list">
-            <li id="category-component"><CategoryComponent v-on:update-fridge="handleUpdate" v-for="category in categories" :key="category.description" :desc="category.description" :id="category.categoryId" :items="category.items"/></li>
-          </ul>
+          <div>
+            <v-text-field
+              v-model="search"
+              append-inner-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-data-table
+              v-model:expanded="expanded"
+              :group-by="groupBy"
+              :headers="headers"
+              :items="fridgeItems"
+              :sort-by="sortBy"
+              :search="search"
+              :expanded.sync="expanded"
+              class="elevation-1"
+              item-key="name"
+              items-per-page="-1"
+              show-expand
+              hide-default-footer
+            >
+            <template v-slot:expanded-row="{ item }">   
+              <td>
+                <p v-for="food in item.raw.foods">
+                  <v-icon
+                        size="small"
+                        class="me-2"
+                        @click="editDate(item.raw.id, food.id, food.amount, food.measurement, food.date)"
+                      >
+                        mdi-calendar
+                      </v-icon>
+                      <v-icon
+                        size="small"
+                        @click="deleteItem(food)"
+                      >
+                        mdi-delete
+                      </v-icon>
+                </p>
+              </td>
+              <td>
+                <p v-for="food in item.raw.foods">{{ food.name }}</p>
+              </td>
+              <td>
+                <p v-for="food in item.raw.foods">{{ food.amount }}</p>
+              </td>
+              <td>
+                <p v-for="food in item.raw.foods">{{ food.measurement }}</p>
+              </td>
+              <td>
+                <p v-for="food in item.raw.foods">{{ food.date }}</p>
+              </td>
+            </template>
+              <template v-slot:bottom>
+                <v-spacer></v-spacer>
+              </template>
+            </v-data-table>
+
+
+            <v-dialog
+              v-model="picker"
+              persistent
+              width="300"
+            >
+              <v-card>
+                <v-card-title class="text-h5">
+                  Add expiration date
+                </v-card-title>
+                <div id="datepicker"><datepicker
+                  v-model="selectedDate"
+                  lang="en"
+                  starting-view="day"
+                  placeholder="expiration date"
+                  format="YYYY-MM-dd"
+                  type="date"
+                  :lower-limit="new Date()"
+                ></datepicker></div>
+                <v-card-actions>
+                  <v-btn
+                    color="green-darken-1"
+                    variant="text"
+                    @click="(picker = false)"
+                >
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    color="green-darken-1"
+                    variant="text"
+                    @click="updateFridgeItem"
+                  >
+                    Add
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+
         </v-card>
 
         <div id="generate">
@@ -92,25 +186,51 @@
 import fridgeService from "@/services/fridgeService";
 import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
+import Datepicker from 'vue3-datepicker';
+import { ref } from 'vue'
 
 export default {
-  components: {CategoryComponent},
+  components: {CategoryComponent, Datepicker},
   data() {
     return {
       dialog: false,
+      picker: false,
+      deleteDialog: false,
       newItemName: null,
       newItemAmount: null,
       newItemMeasurement: null,
       recipe: "This is your AI powerd dinner generator.\nTo create a recepie using ingredients in your fridge, press the knife and fork icon in the toolbar.",
       show: false,
+      editedFoodId: null,
+      editedFoodItemId: null,
+      editedFoodItemDate: null,
+      editedFoodItemAmount: null,
+      editedFoodItemMeasurement: null,
       items: [],
       myItems: [],
+      fridgeItems: [],
       categories: null,
       nameCheck: false,
       amountCheck: false,
       measurementCheck: false,
       error: false,
-      betaUser: null
+      betaUser: null,
+      search: '',
+      expanded: [],
+      singleExpanded: false,
+      sortBy: [{ key: 'name' }],
+      groupBy: [{ key: 'category' }],
+      headers: [
+        {
+          title: 'Food items',
+          align: 'start',
+          value: 'name',
+          groupable: false,
+      },
+      {title: 'Amount', value: 'amount'},
+      {title: 'Measurement', value: 'measurement'},
+      {title: 'Date', value: 'date'},
+    ],
     }
   },
   methods: {
@@ -133,8 +253,8 @@ export default {
 
     },
     async getAllCategories(){
-      console.log(await fridgeService.getAllCategories())
       this.categories = await fridgeService.getAllCategories()
+      console.log(this.categories);
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
@@ -149,14 +269,48 @@ export default {
     async getAllFridgeItems(){
       try {
         this.myItems = []
+        this.fridgeItems = []
         const list = await fridgeService.getAllItemsInFridge(localStorage.getItem("email"))
-        console.log("getting all items in my fridge")
+        console.log(list)
         for(let i = 0; i < list.length; i++){
           this.myItems.push(list[i].item.name + " (" + list[i].amount + ")")
+          let fridgeSubItems = []
+          let amount = 0
+          for(let j = 0; j < list[i].itemsInRefrigerator.length; j++){
+            fridgeSubItems.push({ 'id': list[i].itemsInRefrigerator[j].itemExpirationDateId, 'name': list[i].item.name, 'amount': list[i].itemsInRefrigerator[j].amount, 'measurement': list[i].measurementType, 'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')  })
+            amount += list[i].itemsInRefrigerator[j].amount
+          }
+          // const dates = fridgeSubItems.map(({date}) => new Date(date))
+          // const minDate = new Date(Math.min(...dates))    minDate.toISOString().slice(0,10)
+          this.fridgeItems.push({'id': list[i].itemRefrigeratorId, 'name': list[i].item.name, 'amount': amount, 'measurement': list[i].measurementType, 'date': list[i].itemsInRefrigerator[0].date, 'foods': fridgeSubItems, 'category': this.getCategoryById(list[i].item.categoryId)})
         }
+        console.log(this.fridgeItems);
       } catch(err) {
         console.log(err)
       }
+    },
+    async updateFridgeItem(){
+      this.fridgeItems = this.fridgeItems.map(obj => {
+        if (obj.id == this.editedFoodId) {
+          (obj.date == this.editedFoodItemDate) ? obj.date = new Date(this.selectedDate).toISOString().slice(0,10) : obj.date
+          obj.foods.map(m => {
+            if (m.id == this.editedFoodItemId) {
+              m.date = new Date(this.selectedDate).toISOString().slice(0,10)
+            }
+            return m
+          })
+        }
+        return obj
+      })
+      this.picker = false
+      let item = {
+        'itemExpirationDateId': this.editedFoodItemId,
+        'amount': this.editedFoodItemAmount,
+        'measurementType': this.editedFoodItemMeasurement,
+        'date': new Date(this.selectedDate).toISOString().slice(0,10)
+      }
+      console.log(item);
+      await fridgeService.updateItemInFridge(item)
     },
     async getAllItems(){
       try {
@@ -201,12 +355,38 @@ export default {
       const recipe = await recipeService.getRecipe(localStorage.getItem("fridgeId"))
       this.recipe = recipe
     },
+    getCategoryById(id) {
+      const i = this.categories.findIndex(function(Ids) {
+        return Ids.categoryId == id
+      })
+      console.log(this.categories[i].description);
+      return this.categories[i].description
+    },
+    async editDate(itemId, dateId, amount, measurement, date){
+      console.log(itemId);
+      console.log(dateId);
+      this.editedFoodId = itemId
+      this.editedFoodItemId = dateId
+      this.editedFoodItemDate = date
+      this.editedFoodItemAmount = amount
+      this.editedFoodItemMeasurement = measurement
+      this.picker = true
+    },
+    deleteItem(item){
+      console.log(item)
+    }
   },
   created(){
     this.getAllCategories()
     this.getAllItems()
     this.getAllFridgeItems()
     this.setUserLevel()
+  },
+  setup() {
+    const selectedDate = ref(new Date());
+    return {
+      selectedDate
+    }
   }
 }
 
@@ -225,7 +405,6 @@ export default {
   flex-wrap: wrap;
   text-align: center;
   justify-content: center;
-  width: 49%;
 }
 
 #category-recipe {
@@ -274,9 +453,20 @@ export default {
   margin: 10px;
 }
 .card {
-  width: 600px;
-  max-width: 600px;
+  width: 700px;
+  max-width: 700px;
   margin: 20px;
+}
+#datepicker {
+  display: inline-block;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+  height: 275px;
+}
+datepicker {
+  border: black;
+  box-shadow: 0 4px 10px 0 rgba(128, 144, 160, 0.1), 0 0 1px 0 rgba(128, 144, 160, 0.81);
 }
 
 </style>

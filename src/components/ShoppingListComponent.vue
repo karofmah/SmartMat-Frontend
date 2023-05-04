@@ -187,10 +187,10 @@
       async getShoppingList(){
         try {
           const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
-          console.log(list.items);
+          console.log(list);
           for(let i = 0; i<list.items.length; i++){
             if(!this.buyItems.includes(list.items[i].item.name)){
-              this.shoppingList.push({"name": list.items[i].item.name,"amount": list.items[i].amount, "measurement": list.items[i].measurementType, "subUser": list.items[i].subUserAccessLevel.toString()})
+              this.shoppingList.push({"name": list.items[i].item.name,"amount": list.items[i].amount, "measurement": list.items[i].measurementType, "subUser": list.items[i].subUserAccessLevel.toString(), 'bannaner': 3})
             }
           }
         } catch(err) {
