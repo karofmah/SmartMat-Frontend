@@ -79,7 +79,7 @@ describe('Login page', () => {
         const wrapper = mount(Login)
         wrapper.vm.checkPin('1234')
         expect(wrapper.vm.pinCheck).toBe(true)
-        expect(wrapper.vm.checkPin('11')).toBe('PIN-CODE must be 4 digits.')
+        expect(wrapper.vm.checkPin('11')).toBe('PIN must be 4 digits and cannot start with 0.')
     })
 
     it('should login successfully', async () => {

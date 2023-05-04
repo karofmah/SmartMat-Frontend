@@ -1,22 +1,108 @@
 <template>
   <v-card class="user-card" @click="chooseUser">
-    <v-card-title v-if="!edit" id="name">{{ name }} </v-card-title>
-    <v-card-subtitle v-if="!edit" id="type">{{ type }}</v-card-subtitle>
-    <input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
-    <select :type="type" v-if="edit" v-model="newType" id="edit-userlevel-input">
-      <option v-for="type in types">{{type.name}}</option>
-    </select>
-    <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">
-    <!--<p v-if="edit" class="error-message" id="error-update-user"></p>-->
-    <div><img src="../assets/logo.png" id="user-image"></div>
+    <v-card-title id="name">{{ name }} </v-card-title>
+    <v-card-subtitle id="type">{{ typeName }}</v-card-subtitle>
+    <div><img src="../assets/user-logo.png" id="user-image"></div>
+
+    <v-row id="change-info-button">
+      <v-dialog
+          v-model="edit"
+          persistent
+          width="400"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+              id="changeSubuserInfo"
+              color="teal"
+              v-if="$route.name !== 'chooseUser' && !betaUser"
+              v-bind="props"
+              :disabled="betaUser"
+              @click="edit = true"
+          >
+            Change info
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Change user info</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col
+                    cols="12"
+                >
+                  <v-text-field
+                      v-model="newName"
+                      label="Username*"
+                      required
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                    cols="12"
+                >
+                  <v-select
+                      :disabled="masterUser"
+                      v-model="newType"
+                      :items="types"
+                      label="User level*"
+                      required
+                  ></v-select>
+                </v-col>
+                <v-col
+                    cols="12"
+                >
+                  <v-text-field
+                      v-if="newType==='Adult'"
+                      v-model="pinCode"
+                      type="password"
+                      label="Pin-Code*"
+                      required
+                      :rules="[ checkPin ]"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+            <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="edit = false"
+            >
+              Close
+            </v-btn>
+            <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="updateUser"
+            >
+              Save info
+            </v-btn>
+            <v-btn
+                v-if="!masterUser"
+                color="blue-darken-1"
+                variant="text"
+                @click="deleteSubuser"
+            >
+              Delete user
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+
+
     <v-row justify="center">
       <v-dialog
           v-model="dialog"
           persistent
           width="400"
       >
-        <template v-slot:activator="{ props }">
-        </template>
+        <template v-slot:activator="{ props }"></template>
         <v-card>
           <v-card-title>
             <span class="text-h5">Enter PIN code</span>
@@ -64,11 +150,24 @@
         </v-card>
       </v-dialog>
     </v-row>
-    <v-card-actions>
-      <v-btn v-if="!edit && $route.name !== 'chooseUser' && !betaUser" @click="editInfo">Change info</v-btn>
-      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>
-    </v-card-actions>
   </v-card>
+  <v-snackbar
+      v-model="snackbar"
+      color="teal"
+      :timeout="2000"
+  >
+    {{ text }}
+
+    <template v-slot:actions>
+      <v-btn
+          color="white"
+          variant="text"
+          @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -85,6 +184,9 @@ export default {
   },
   data() {
     return {
+      typeName: null,
+      text: "",
+      snackbar: false,
       edit: false,
       betaUser: false,
       currentUser: false,
@@ -94,65 +196,67 @@ export default {
       error: false,
       pinCode: '',
       newName: this.name,
-      newType: this.type,
-      types: [{name: "true"}, {name: "false"}]
+      newType: this.typeName,
+      types: ["Adult", "Child"],
+      typeToSend: false
     }
   },
   methods:{
     async deleteSubuser(){
-      console.log(this.id)
-      await settingsService.deleteSubuser(this.id)
+      const feedback = await settingsService.deleteSubuser(this.id)
+      console.log(feedback.status)
+      if (feedback.status !== 200) {
+        this.text = "Something went wrong, try again later"
+        this.snackbar = true
+      }
       this.$emit('update-users')
     },
     async updateUser(){
-      if (this.pinCode.length !== 4){
-        document.getElementById("error-update-user").innerHTML = "Your pin has to be 4 numbers"
-      } else{
-        const name = this.newName
-        const type = this.newType
-        const pinCode = this.pinCode
+      this.typeToSend = this.newType === "Adult";
+      const name = this.newName
+      const type = this.typeToSend
+      const pinCode = this.pinCode
 
-        const update = {
-          "name": name,
-          "accessLevel": type,
-          "subUserId": this.id,
-          "pinCode": pinCode
-        }
-
-        await settingsService.updateSubuser(update)
+      const update = {
+        "name": name,
+        "accessLevel": type,
+        "subUserId": this.id,
+        "pinCode": pinCode
+      }
+      if ((type === true && !this.pinCheck) || this.newName === ''){
+        this.error = true
+      } else {
+        this.text = await settingsService.updateSubuser(update)
         this.$emit('update-users')
+        this.snackbar = true
         this.edit = !this.edit
+        this.error = false
       }
     },
     async setUserLevel(){
-      if (localStorage.getItem("userType") === "false"){
-        this.betaUser = true;
+      this.betaUser = localStorage.getItem("userType") === "false";
+      this.currentUser = parseInt(localStorage.getItem("subUserId")) === this.id;
+      this.masterUser = parseInt(localStorage.getItem("masterUserId")) === this.id;
+      if (this.type === true){
+        this.typeName = "Adult"
+        this.newType = "Adult"
       } else {
-        this.betaUser = false;
-      }
-      if (parseInt(localStorage.getItem("subUserId")) === this.id) {
-        this.currentUser = true
-      } else {
-        this.currentUser = false
-      }
-      if (parseInt(localStorage.getItem("masterUserId")) === this.id){
-        this.masterUser = true
-      } else {
-        this.masterUser = false
+        this.typeName = "Child"
+        this.newType = "Child"
       }
     },
     editInfo(){
-      this.edit = !this.edit
+      this.edit = true
     },
     checkPin(value) {
-      if (/^\d{4}$/.test(value)) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
         this.error = false
         return true
       } else {
         this.error = true
         this.pinCheck = false;
-        return 'PIN must be 4 digits.'
+        return 'PIN must be 4 digits and cannot start with 0.'
       }
     },
     chooseUser(){
@@ -205,24 +309,16 @@ export default {
   border: 1px solid #39495c;
   text-align: center;
 }
-.user:hover {
-  transform: scale(1.01);
-  box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
-}
 #user-image {
   width: 100px;
   height: 100px;
+  margin-top: 4px;
 }
-#edit-name-input {
-  margin-top: 10px;
-  border: 1px solid #39495c;
-}
-#edit-userlevel-input {
-  border: 1px solid #39495c;
-  width: 85%;
-}
-#edit-pincode-input {
-  margin-top: 10px;
-  border: 1px solid #39495c;
+#change-info-button {
+  display:flex;
+  align-content:center;
+  flex-direction: column;
+  padding-bottom: 10px;
+  margin-top: 2px;
 }
 </style>

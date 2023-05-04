@@ -2,8 +2,9 @@
   <nav>
     <v-toolbar flat app>
       <v-toolbar-title class="text-uppercase grey--text">
-        <div @click="route"><span class="font-weight-light">Smart</span>
-          <span>Mat</span></div>
+        <div id="logo-name-toolbar"><div><img src="../assets/logo.png" id="logo-image"></div>
+        <div @click="route" id="toolbar-name"><span class="font-weight-light">Smart</span>
+          <span>Mat</span></div></div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="!mobile">
@@ -30,7 +31,7 @@
               <v-tab flat to="/settings">Settings<v-icon icon="mdi-cog"></v-icon></v-tab>
               <v-tab to="/">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
             </v-tabs>
-          </v-list> 
+          </v-list>
         </v-menu>
       </div>
       <v-btn prepend-icon="mdi-theme-light-dark" @click="toggleTheme"></v-btn>
@@ -60,3 +61,18 @@ export default {
   }
 }
 </script>
+
+<style>
+#logo-image{
+  width: 50px;
+  height: 50px;
+}
+#logo-name-toolbar{
+  display: flex;
+  flex-direction: row;
+}
+#toolbar-name{
+  display: flex;
+  align-items: center;
+}
+</style>
