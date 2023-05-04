@@ -2,14 +2,9 @@
   <v-card class="user-card" @click="chooseUser">
     <v-card-title id="name">{{ name }} </v-card-title>
     <v-card-subtitle id="type">{{ type }}</v-card-subtitle>
-    <!--<input v-if="edit" id="edit-name-input" v-model="newName" placeholder="Your username">
-    <select :type="type" v-if="edit" v-model="newType" id="edit-userlevel-input">
-      <option v-for="type in types">{{type.name}}</option>
-    </select>
-    <input v-if="edit && (newType === 'true' || type === true)" id="edit-pincode-input" v-model="pinCode" placeholder="New pin">-->
     <div><img src="../assets/logo.png" id="user-image"></div>
 
-    <v-row>
+    <v-row id="change-info-button">
       <v-dialog
           v-model="edit"
           persistent
@@ -29,7 +24,7 @@
         </template>
         <v-card>
           <v-card-title>
-            <span class="text-h5">New user</span>
+            <span class="text-h5">Change user info</span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -47,6 +42,7 @@
                     cols="12"
                 >
                   <v-select
+                      :disabled="masterUser"
                       v-model="newType"
                       :items="types"
                       label="User level*"
@@ -61,11 +57,13 @@
                       v-model="pinCode"
                       label="Pin-Code*"
                       required
+                      :rules="[ checkPin ]"
                   ></v-text-field>
                 </v-col>
               </v-row>
             </v-container>
             <small>*indicates required field</small>
+            <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -83,6 +81,14 @@
             >
               Save info
             </v-btn>
+            <v-btn
+                v-if="!masterUser"
+                color="blue-darken-1"
+                variant="text"
+                @click="deleteSubuser"
+            >
+              Delete user
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -95,8 +101,7 @@
           persistent
           width="400"
       >
-        <template v-slot:activator="{ props }">
-        </template>
+        <template v-slot:activator="{ props }"></template>
         <v-card>
           <v-card-title>
             <span class="text-h5">Enter PIN code</span>
@@ -144,10 +149,6 @@
         </v-card>
       </v-dialog>
     </v-row>
-    <v-card-actions>
-      <!--<v-btn v-if="!edit && $route.name !== 'chooseUser' && !betaUser" @click="editInfo">Change info</v-btn>
-      <div v-if="edit"><v-btn @click="updateUser">Save info</v-btn></div><v-btn v-if="edit && !betaUser && !masterUser" @click="deleteSubuser">Delete</v-btn>-->
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -195,10 +196,14 @@ export default {
         "subUserId": this.id,
         "pinCode": pinCode
       }
-
-      await settingsService.updateSubuser(update)
-      this.$emit('update-users')
-      this.edit = !this.edit
+      if ((type === true && !this.pinCheck) || this.newName === ''){
+        this.error = true
+      } else {
+        await settingsService.updateSubuser(update)
+        this.$emit('update-users')
+        this.edit = !this.edit
+        this.error = false
+      }
     },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
@@ -289,16 +294,10 @@ export default {
   width: 100px;
   height: 100px;
 }
-#edit-name-input {
-  margin-top: 10px;
-  border: 1px solid #39495c;
-}
-#edit-userlevel-input {
-  border: 1px solid #39495c;
-  width: 85%;
-}
-#edit-pincode-input {
-  margin-top: 10px;
-  border: 1px solid #39495c;
+#change-info-button {
+  display:flex;
+  align-content:center;
+  flex-direction: column;
+  padding-bottom: 10px;
 }
 </style>
