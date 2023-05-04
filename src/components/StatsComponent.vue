@@ -13,7 +13,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item v-for="(year, index) in years" :key="index" :value="year" @click="getPersonalAmount(year)">
+              <v-list-item v-for="(year, index) in years" :key="index" :value="year" @click="getPersonalYearAmount(year)">
                 <v-list-item-title>{{year}}</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -33,7 +33,7 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item v-for="(year, index) in years" :key="index" :value="year" @click="getAverageAmount(year)">
+              <v-list-item v-for="(year, index) in years" :key="index" :value="year" @click="getAverageYearAmount(year)">
                 <v-list-item-title>{{year}}</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -48,7 +48,7 @@
           <template v-slot:activator="{props}">
             <v-btn icon variant="tonal" v-bind="props" id="change-graph-year">
               <v-icon>mdi-chart-line</v-icon>
-              <v-tooltip activator="parent" location="start">Change year</v-tooltip>
+              <v-tooltip activator="parent" location="start">Change year (showing: {{ chartYear }})</v-tooltip>
             </v-btn>
           </template>
           <v-list>
@@ -85,10 +85,25 @@ export default {
       personalYearAmount: null,
       averageYearAmount: null,
       years: ["2023", "2022", "2021","2020"],
+      chartYear: new Date().getFullYear(),
       personalData: [1,2,3,4,5,6,7,8,9,5,2,8],
       averageData: [1,2,3,4,5,6,7,8,9,9,3,4],
       chartData: null,
       chartOptions: {
+        scales:{
+          y: {
+            title: {
+              display: true,
+              text: "Kilograms"
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Month"
+            }
+          }
+        },
         responsive: true
       }
     }
@@ -96,22 +111,22 @@ export default {
   methods: {
     changeData(year){
       this.createChart(year)
+      this.chartYear = year
     },
-    async getYearAmount(year){
-      this.personalYearAmount = await statsService.getGarbageYear(localStorage.getItem("fridgeId"), year)
+    async getPersonalYearAmount(year){
+      this.personalYearAmount = await statsService.getPersonalGarbageYear(localStorage.getItem("fridgeId"), year)
       this.personalChosenYear = year
     },
-    async getPersonalAmount(year){
-      await this.getYearAmount(year)
-    },
-    async getAverageAmount(year){
-      // TODO: legg til annen liste fra annen backend metode
+    async getAverageYearAmount(year){
+      this.averageYearAmount = await statsService.getAverageGarbageYear(localStorage.getItem("fridgeId"), year)
+      this.averageChosenYear = year
     },
     async createChart(year){
       this.loaded = false
 
       try {
-        const userList = await statsService.getGarbageMonth(localStorage.getItem("fridgeId"), year)
+        const userList = await statsService.getPersonalGarbageMonth(localStorage.getItem("fridgeId"), year)
+        const averageList = await statsService.getAverageGarbageMonth(localStorage.getItem("fridgeId"), year)
         const data = {
           labels: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ],
           datasets: [
@@ -119,8 +134,8 @@ export default {
               data: userList,
               backgroundColor: "teal"
             }, { label: "Average waste",
-              data: userList, // TODO: legg til annen liste fra annen backend metode
-              backgroundColor: "purple"
+              data: averageList,
+              backgroundColor: "#6200EE"
             } ]
         }
         console.log(data)
@@ -134,8 +149,9 @@ export default {
     }
   },
   beforeMount(){
-    this.getYearAmount(this.personalChosenYear)
-    this.createChart(this.personalChosenYear)
+    this.getPersonalYearAmount(this.personalChosenYear)
+    this.getAverageYearAmount(this.averageChosenYear)
+    this.createChart(this.chartYear)
   }
 }
 </script>
@@ -147,10 +163,6 @@ export default {
   flex-direction: column;
   align-content: center;
   overflow: hidden;
-}
-#stats-graph{
-  width: 800px;
-  min-width: 500px;
 }
 
 #stats {

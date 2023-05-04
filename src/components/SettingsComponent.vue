@@ -30,7 +30,6 @@
                         color="teal"
                         v-bind="props"
                         :disabled="betaUser"
-                        @click="maxSubusers"
                     >
                       Add new user
                     </v-btn>
@@ -100,7 +99,7 @@
           <div><p v-if="betaUser">You are not authorized to make changes</p></div>
       </v-card>
       <div id="users">
-        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
+        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.subUserId" :name="user.name" :user="user" :type="user.accessLevel" :id="user.subUserId"/>
       </div>
     </div>
     <v-snackbar
@@ -159,13 +158,10 @@ export default {
   },
   methods: {
     async setUserLevel(){
-      if (localStorage.getItem("userType") === "false"){
-        this.betaUser = true;
-      } else {
-        this.betaUser = false;
-      }
+      this.betaUser = localStorage.getItem("userType") === "false";
     },
     async getSubusers(){
+      this.users = []
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
@@ -326,14 +322,6 @@ export default {
 }
 #user-information{
   margin: 10px;
-}
-#title-settings{
-  margin-bottom: 10px;
-}
-
-.settings-text {
-  margin-bottom: 30px;
-  font-size: 25px;
 }
 
 .settings-buttons {
