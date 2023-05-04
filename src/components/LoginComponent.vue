@@ -252,8 +252,12 @@ export default {
       localStorage.setItem("household", information.household)
     },
     resetError() {
-      this.show = !this.show
-      document.getElementById("error-message-submit").innerHTML = ""
+      try {
+        this.show = !this.show
+        document.getElementById("error-message-submit").innerHTML = ""
+      } catch (err) {
+        console.log(err.response)
+      }
     }
   },
   data: () => ({
