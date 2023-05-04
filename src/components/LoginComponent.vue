@@ -69,14 +69,14 @@
             id="login-radiobutton"
             label="Login"
             value="Login"
-            @click="show=true"
+            @click="resetError"
         >
         </v-radio>
         <v-radio
             id="register-radiobutton"
             label="Register"
             value="Register"
-            @click="show=false"
+            @click="resetError"
         >
         </v-radio>
       </v-radio-group></div>
@@ -184,12 +184,13 @@ export default {
           const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
           localStorage.setItem("masterUserId",masterUser[0].subUserId)
           router.push("/user")
+        } else if (response.status === 403){
+          document.getElementById("error-message-submit").innerHTML = "Email or password is not correct"
         } else {
-          document.getElementById("error-message-submit").innerHTML = response.data
+          document.getElementById("error-message-submit").innerHTML = "Login failed"
         }
       }).catch(function (err) {
         console.log(err.response)
-        console.log(err)
       })
     },
     async register(){
@@ -250,6 +251,10 @@ export default {
       localStorage.setItem("phone", information.phoneNumber)
       localStorage.setItem("household", information.household)
     },
+    resetError() {
+      this.show = !this.show
+      document.getElementById("error-message-submit").innerHTML = ""
+    }
   },
   data: () => ({
     emailCheck: false,
@@ -275,12 +280,6 @@ export default {
 </script>
 
 <style>
-#container{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 150px;
-}
 #input-form{
   display: grid;
   height: 700px;
