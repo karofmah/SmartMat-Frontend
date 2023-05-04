@@ -138,6 +138,7 @@
 <script>
   import shoppingListService from "@/services/shoppingListService";
   import fridgeService from "@/services/fridgeService";
+  import router from "@/router";
   export default {
     data() {
       return {
@@ -341,6 +342,11 @@
     },
     beforeMount(){
       this.mount()
+    },
+    mounted(){
+      if (localStorage.getItem("token") === null){
+        router.push("/")
+      }
     }
   }
 </script>

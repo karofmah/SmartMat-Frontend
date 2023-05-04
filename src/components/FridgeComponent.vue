@@ -92,6 +92,7 @@
 import fridgeService from "@/services/fridgeService";
 import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
+import router from "@/router"
 
 export default {
   components: {CategoryComponent},
@@ -137,11 +138,7 @@ export default {
       this.categories = await fridgeService.getAllCategories()
     },
     async setUserLevel(){
-      if (localStorage.getItem("userType") === "false"){
-        this.betaUser = true;
-      } else {
-        this.betaUser = false;
-      }
+      this.betaUser = localStorage.getItem("userType") === "false";
     },
     async handleUpdate() {
       await this.getAllFridgeItems(localStorage.getItem("email"))
@@ -206,10 +203,16 @@ export default {
     },
   },
   created(){
-    this.getAllCategories()
-    this.getAllItems()
-    this.getAllFridgeItems()
-    this.setUserLevel()
+      this.getAllCategories()
+      this.getAllItems()
+      this.getAllFridgeItems()
+      this.setUserLevel()
+
+  },
+  mounted(){
+    if (localStorage.getItem("token") === null){
+      router.push("/")
+    }
   }
 }
 

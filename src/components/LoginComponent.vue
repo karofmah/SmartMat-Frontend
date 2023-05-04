@@ -1,5 +1,7 @@
 <template>
-  <v-sheet width="300" class="mx-auto" >
+  <div id="login-container">
+  <div><img src="../assets/logo.png" class="login-page-logo"></div>
+  <div id="login-page-form"><v-sheet width="300" class="mx-auto" >
     <v-form ref="form" fast-fail @submit.prevent>
       <div id="input-form">
   <div id="login-form">
@@ -85,6 +87,8 @@
     </div>
     </v-form>
   </v-sheet>
+  </div>
+  </div>
 </template>
 
 <script>
@@ -288,10 +292,13 @@ export default {
   display: grid;
   max-height: 700px;
   min-height: 300px;
-  margin: 30px;
+  margin: 10px;
   align-content: center;
 }
-#login-form{
+#login-page-form{
+  display: flex;
+  flex-direction: column-reverse;
+  text-align: center;
 }
 #buttons{
   display: flex;
@@ -306,5 +313,14 @@ input{
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.login-page-logo{
+  width: 500px;
+  height: 500px;
+  margin-top: 150px;
+}
+#login-container{
+  display: flex;
+  justify-content: center;
 }
 </style>
