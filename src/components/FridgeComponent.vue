@@ -77,7 +77,7 @@
         <div id="generate">
           <v-card id="recipe" class="card">
             <v-toolbar color="teal">
-              <v-toolbar-title>Recepie generator</v-toolbar-title>
+              <v-toolbar-title>Recipe generator</v-toolbar-title>
               <v-btn id="generateButton" variant="tonal" @click="generateRecipe" icon="mdi-silverware"></v-btn>
             </v-toolbar>
             <v-card-text class="text-pre-wrap">{{ recipe }}</v-card-text>
@@ -101,7 +101,7 @@ export default {
       newItemName: null,
       newItemAmount: null,
       newItemMeasurement: null,
-      recipe: "This is your AI powerd dinner generator.\nTo create a recepie using ingredients in your fridge, press the knife and fork icon in the toolbar.",
+      recipe: "This is your AI powered dinner generator.\nTo create a recipe using ingredients in your fridge, press the knife and fork icon in the toolbar.",
       show: false,
       items: [],
       myItems: [],
@@ -198,7 +198,10 @@ export default {
     },
     async generateRecipe(){
       this.recipe = "Generating recipe..."
-      const recipe = await recipeService.getRecipe(localStorage.getItem("fridgeId"))
+      let recipe = await recipeService.getRecipe(localStorage.getItem("fridgeId"))
+      if(recipe === 500) {
+        recipe = "There was an error creating your recipe. Please try again later"
+      }
       this.recipe = recipe
     },
   },
@@ -267,9 +270,7 @@ export default {
   margin-top: 20px;
 
 }
-.textarea{
-  resize: none;
-}
+
 #error-fridge {
   margin: 10px;
 }
