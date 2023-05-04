@@ -179,7 +179,7 @@ export default {
           const feedback = await settingsService.addNewSubuser(subuser)
           this.text = feedback.data
           this.snackbar = true
-          if(feedback.status === 200) {
+          if(feedback.status === 201) {
             await this.getSubusers()
             this.dialog = false
           }
