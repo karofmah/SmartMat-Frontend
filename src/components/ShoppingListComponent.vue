@@ -11,12 +11,13 @@
                   >
                     <template v-slot:activator="{ props }">
                       <v-btn
-                        color="primary"
+                        color=""
                         dark
                         class="mb-2"
                         v-bind="props"
-                      >
-                        New Item
+                        icon
+                      ><v-icon>mdi-plus-circle-outline</v-icon>
+                        <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add an item to shoppinglist</v-tooltip>
                       </v-btn>
                     </template>
                     <v-card>
@@ -227,13 +228,13 @@
         console.log(localStorage.getItem("subUserId"))
         const itemToDelete = {
           "itemName":this.editedItem.name,
-          "shoppngListId": parseInt(localStorage.getItem("shoppingListId")),
+          "shoppingListId": parseInt(localStorage.getItem("shoppingListId")),
           "amount": this.editedItem.amount,
           "measurementType": 2
         }
         console.log(itemToDelete)
         this.editedIndex = -1
-        //await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+        await shoppingListService.deleteItemFromShoppingList(itemToDelete)
       },
       close () {
         this.dialog = false
@@ -265,74 +266,74 @@
 
       async buy(){
         console.log(this.buyItems);
-      //   for(let i = 0; i<this.buyItems.length; i++){
-      //     const item = {
-      //       "itemName": this.buyItems[i],
-      //       "refrigeratorId": "1",
-      //       "amount": "10",
-      //       "measurementType": "2"
-      //     }
-      //     await fridgeService.addNewItemToFridge(item)
+         for(let i = 0; i<this.buyItems.length; i++){
+           const item = {
+             "itemName": this.buyItems[i],
+             "refrigeratorId": "1",
+             "amount": "10",
+             "measurementType": "2"
+           }
+           await fridgeService.addNewItemToFridge(item)
 
-      //     const itemToDelete = {
-      //       "itemName": this.buyItems[i],
-      //       "shoppingListId": "1",
-      //       "amount": "10",
-      //       "measurementType": "2"
-      //     }
-      //     await shoppingListService.deleteItemFromShoppingList(itemToDelete)
-      //     this.allItems.push(itemToDelete.itemName)
-      //   }
-      //   this.buyItems = []
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
+           const itemToDelete = {
+             "itemName": this.buyItems[i],
+             "shoppingListId": "1",
+             "amount": "10",
+             "measurementType": "2"
+           }
+           await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+           this.allItems.push(itemToDelete.itemName)
+         }
+         this.buyItems = []
+         this.shoppingList = []
+         await this.getShoppingList()
       },
-      // async addItem() {
-      //   const itemToAdd = {
-      //     "itemName": this.selectedItem,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
+       async addItem() {
+         const itemToAdd = {
+           "itemName": this.selectedItem,
+           "shoppingListId": "1",
+           "amount": "10",
+           "measurementType": "2"
+         }
 
-      //   await shoppingListService.addShoppingListItems(itemToAdd)
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
-      //   this.selectedItem = "";
-      //   this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
-      // },
-      // async removeList(item) {
-      //   const itemToDelete = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   await shoppingListService.deleteItemFromShoppingList(itemToDelete)
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
-      //   this.allItems.push(itemToDelete.itemName)
-      // },
-      // async addToBuy(item) {
-      //   const itemToBuy = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   this.buyItems.push(itemToBuy.itemName)
-      //   this.shoppingList.splice(this.shoppingList.indexOf(itemToBuy.itemName), 1)
-      // },
-      // async removeFromBuy(item) {
-      //   const itemFromBuy = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
-      //   this.shoppingList.push(itemFromBuy.itemName)
-      // },
+         await shoppingListService.addShoppingListItems(itemToAdd)
+         this.shoppingList = []
+         await this.getShoppingList()
+         this.selectedItem = "";
+         this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
+       },
+       async removeList(item) {
+         const itemToDelete = {
+           "itemName": item,
+           "shoppingListId": "1",
+           "amount": "10",
+           "measurementType": "2"
+         }
+         await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+         this.shoppingList = []
+         await this.getShoppingList()
+         this.allItems.push(itemToDelete.itemName)
+       },
+       async addToBuy(item) {
+         const itemToBuy = {
+           "itemName": item,
+           "shoppingListId": "1",
+           "amount": "10",
+           "measurementType": "2"
+         }
+         this.buyItems.push(itemToBuy.itemName)
+         this.shoppingList.splice(this.shoppingList.indexOf(itemToBuy.itemName), 1)
+       },
+       async removeFromBuy(item) {
+         const itemFromBuy = {
+           "itemName": item,
+           "shoppingListId": "1",
+           "amount": "10",
+           "measurementType": "2"
+         }
+         this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
+         this.shoppingList.push(itemFromBuy.itemName)
+       },
       async mount() {
         await this.getShoppingList()
         await this.getAllItems()
