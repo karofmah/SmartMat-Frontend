@@ -135,7 +135,7 @@ export default {
               backgroundColor: "teal"
             }, { label: "Average waste",
               data: averageList,
-              backgroundColor: "purple"
+              backgroundColor: "#6200EE"
             } ]
         }
         console.log(data)
