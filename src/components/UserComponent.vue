@@ -150,6 +150,22 @@
       </v-dialog>
     </v-row>
   </v-card>
+  <v-snackbar
+      v-model="snackbar"
+      color="teal"
+  >
+    {{ text }}
+
+    <template v-slot:actions>
+      <v-btn
+          color="white"
+          variant="text"
+          @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -166,6 +182,8 @@ export default {
   },
   data() {
     return {
+      text: "",
+      snackbar: false,
       edit: false,
       betaUser: false,
       currentUser: false,
@@ -181,7 +199,6 @@ export default {
   },
   methods:{
     async deleteSubuser(){
-      console.log(this.id)
       await settingsService.deleteSubuser(this.id)
       this.$emit('update-users')
     },
@@ -199,7 +216,8 @@ export default {
       if ((type === true && !this.pinCheck) || this.newName === ''){
         this.error = true
       } else {
-        await settingsService.updateSubuser(update)
+        this.text = await settingsService.updateSubuser(update)
+        this.snackbar = true
         this.$emit('update-users')
         this.edit = !this.edit
         this.error = false

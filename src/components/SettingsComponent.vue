@@ -48,7 +48,7 @@
                             <v-text-field
                                 v-model="username"
                                 label="Username*"
-                                required
+                                :rules="[checkUsername]"
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -58,7 +58,7 @@
                                 v-model="userType"
                                 :items="types"
                                 label="User level*"
-                                required
+                                :rules="[checkUsertype]"
                             ></v-select>
                           </v-col>
                           <v-col
@@ -68,7 +68,7 @@
                                 v-if="userType==='true'"
                                 v-model="pinCode"
                                 label="Pin-Code*"
-                                required
+                                :rules="[checkPin]"
                             ></v-text-field>
                           </v-col>
                         </v-row>
@@ -103,6 +103,22 @@
         <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
       </div>
     </div>
+    <v-snackbar
+        v-model="snackbar"
+        color="teal"
+    >
+      {{ text }}
+
+      <template v-slot:actions>
+        <v-btn
+            color="white"
+            variant="text"
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -113,6 +129,8 @@ export default {
   components: {UserComponent},
   data(){
     return {
+      text: "",
+      snackbar: false,
       betaUser: true,
       username: null,
       userType: null,
@@ -132,22 +150,13 @@ export default {
       lastNameValid: false,
       phoneValid: false,
       householdValid: false,
+      pinCheck: false,
+      usernameCheck: false,
+      usertypeCheck: false,
       max: false
     };
   },
   methods: {
-    maxSubusers(){
-      try {
-        if (this.users.length === parseInt(this.household)){
-          this.dialog = false
-          this.max = true
-        } else {
-          this.max = false
-        }
-      } catch (error){
-        console.log(error)
-      }
-    },
     async setUserLevel(){
       if (localStorage.getItem("userType") === "false"){
         this.betaUser = true;
@@ -159,18 +168,20 @@ export default {
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      if (this.users.length === parseInt(this.household)){
-        console.log("you cannot add more subusers")
-      } else {
+      if(this.usernameCheck && this.usertypeCheck && this.pinCheck) {
         const subuser = {
           "name": this.username,
           "accessLevel": this.userType,
           "userEmail": localStorage.getItem("email"),
           "pinCode": this.pinCode
         }
-        await settingsService.addNewSubuser(subuser)
+        this.text = await settingsService.addNewSubuser(subuser)
+        this.snackbar = true
         await this.getSubusers()
         this.dialog = false
+      } else {
+        this.text = "Failed to add user"
+        this.snackbar = true
       }
 
     },
@@ -242,6 +253,33 @@ export default {
       } else {
         this.householdValid = false
         return 'There must be at least 1 household member.'
+      }
+    },
+    checkUsername(value) {
+      if (value?.length > 0) {
+        this.usernameCheck = true
+        return true
+      } else {
+        this.usernameCheck = false
+        return 'Username cannot be empty.'
+      }
+    },
+    checkUsertype(value) {
+      if (value?.length > 0) {
+        this.usertypeCheck = true
+        return true
+      } else {
+        this.usertypeCheck = false
+        return 'Usertype cannot be empty.'
+      }
+    },
+    checkPin(value){
+      if (/^\d{4}$/.test(value)) {
+        this.pinCheck = true;
+        return true
+      } else {
+        this.pinCheck = false;
+        return 'PIN-CODE must be 4 digits.'
       }
     }
   },
