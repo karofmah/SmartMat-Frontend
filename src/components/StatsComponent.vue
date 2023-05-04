@@ -19,7 +19,7 @@
             </v-list>
           </v-menu>
         </v-toolbar>
-        <v-card-text class="text-pre-wrap">You have thrown {{personalYearAmount}}kg so far in {{personalChosenYear}}</v-card-text>
+        <v-card-text class="text-pre-wrap">In {{personalChosenYear}} you have thrown {{personalYearAmount}}kg food</v-card-text>
       </v-card>
 
       <v-card class="stats-card">
@@ -72,6 +72,7 @@
 import statsService from "@/services/statsService.js";
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import router from "@/router";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -152,6 +153,11 @@ export default {
     this.getPersonalYearAmount(this.personalChosenYear)
     this.getAverageYearAmount(this.averageChosenYear)
     this.createChart(this.chartYear)
+  },
+  mounted(){
+    if (localStorage.getItem("token") === null){
+      router.push("/")
+    }
   }
 }
 </script>

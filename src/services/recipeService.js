@@ -11,6 +11,7 @@ export default {
             return response.data
         }).catch(function (err) {
             console.log(err.response)
+            return err.response.status
         })
     },
     async generateWeeklyMenus(email, numPeople){

@@ -64,7 +64,7 @@
                               cols="12"
                           >
                             <v-text-field
-                                v-if="userType==='true'"
+                                v-if="userType==='Adult'"
                                 v-model="pinCode"
                                 label="Pin-Code*"
                                 :rules="[checkPin]"
@@ -125,6 +125,7 @@
 <script>
 import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
+import router from "@/router";
 export default {
   components: {UserComponent},
   data(){
@@ -135,7 +136,7 @@ export default {
       username: null,
       userType: null,
       pinCode: '',
-      types: ["true", "false"],
+      types: ["Adult", "Child"],
       dialog: false,
       picked: "Change your information",
       change: false,
@@ -153,7 +154,8 @@ export default {
       pinCheck: false,
       usernameCheck: false,
       usertypeCheck: false,
-      max: false
+      max: false,
+      typeToSend: false
     };
   },
   methods: {
@@ -166,10 +168,11 @@ export default {
     },
     async addSubuser(){
       if(this.usernameCheck && this.usertypeCheck) {
-        if ((this.userType === "true" && this.pinCheck) || this.userType === "false"){
+        this.typeToSend = this.userType === "Adult"
+        if ((this.typeToSend && this.pinCheck) || !this.typeToSend){
           const subuser = {
             "name": this.username,
-            "accessLevel": this.userType,
+            "accessLevel": this.typeToSend,
             "userEmail": localStorage.getItem("email"),
             "pinCode": this.pinCode
           }
@@ -292,6 +295,11 @@ export default {
   beforeMount() {
     this.getSubusers()
     this.setUserLevel()
+  },
+  mounted(){
+    if (localStorage.getItem("token") === null){
+      router.push("/")
+    }
   }
 }
 </script>

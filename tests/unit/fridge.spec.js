@@ -15,7 +15,7 @@ describe('FridgeView.vue test', () => {
         const wrapper = mount(FridgeComponent)
         expect(wrapper.find('#search').text()).toBe('')
         expect(wrapper.find("#generateButton").text()).toBe('')
-        expect(wrapper.find("#recipe").text()).toBe('Recepie generatorThis is your AI powerd dinner generator.\nTo create a recepie using ingredients in your fridge, press the knife and fork icon in the toolbar.')
+        expect(wrapper.find("#recipe").text()).toBe('Recipe generatorThis is your AI powered dinner generator.\nTo create a recipe using ingredients in your fridge, press the knife and fork icon in the toolbar.')
     })
     it('hides error message when a master user is logged in', () => {
         const wrapper = mount(FridgeComponent)
