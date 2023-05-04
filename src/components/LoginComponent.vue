@@ -63,6 +63,7 @@
         </v-text-field>
         </div>
     </div>
+      <div id="error-message-container-login"><p id="error-message-submit" class="error-message"></p></div>
     <div id="buttons">
       <div ><v-radio-group inline v-model="value">
         <v-radio
@@ -81,7 +82,6 @@
         </v-radio>
       </v-radio-group></div>
       <v-btn id="submit-button" type="submit" block class="mt-2" @click="submit">{{ value }}</v-btn>
-      <p id="error-message-submit" class="error-message"></p>
     </div>
     </v-form>
   </v-sheet>
@@ -282,9 +282,9 @@ export default {
 <style>
 #input-form{
   display: grid;
-  height: 700px;
-  float: bottom;
-  margin-top: 10%;
+  max-height: 700px;
+  min-height: 300px;
+  margin: 30px;
   align-content: center;
 }
 #login-form{
@@ -298,4 +298,9 @@ input{
   margin-bottom: 5px;
 }
 
+#error-message-container-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>
