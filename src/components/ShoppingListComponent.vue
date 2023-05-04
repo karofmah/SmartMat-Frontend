@@ -24,7 +24,7 @@
                       <v-card-title>
                         <span class="text-h5">{{ formTitle }}</span>
                       </v-card-title>
-                      <v-form v-model="form" @submit.prevent="save">
+                      <v-form v-model="form" @submit.prevent="addItem">
                         <v-card-text>
                           <v-container>
                             <v-row>
@@ -39,7 +39,7 @@
                                   label="Food Name"
                                   clearable
                                   :items="allItems"
-                                  v-model="editedItem.name"
+                                  v-model="editedItem.itemName"
                                   :rules="[required]"
                               />
                               </v-col>
@@ -60,12 +60,13 @@
                                 sm="6"
                                 md="4"
                               >
-                                <v-text-field
-                                  v-model="editedItem.measurement"
+                                <v-select
+                                  v-model="editedItem.measurementType"
+                                  :items="measurementTypes"
                                   label="Measurement type"
                                   clearable
                                   :rules="[required]"
-                                ></v-text-field>
+                                ></v-select>
                               </v-col>
                             </v-row>
                           </v-container>
@@ -82,7 +83,6 @@
                           <v-btn
                             color="blue-darken-1"
                             variant="text"
-                            @click="save"
                             type="submit"
                           >
                             Save
@@ -121,7 +121,7 @@
                       </v-icon>
                       <v-icon
                         size="small"
-                        @click="deleteItem(item.raw)"
+                        @click="removeList(item.raw.name)"
                       >
                         mdi-delete
                       </v-icon>
@@ -145,6 +145,7 @@
         form: false,
         shoppingList: [],
         selectedItem: "",
+        measurementTypes: ["KG", "G", "L", "DL"],
         allItems:[],
         buyItems: [],
         headers: [
@@ -161,15 +162,17 @@
         ],
         editedIndex: -1,
         editedItem: {
-          name: '',
+          itemName: '',
           amount: '1',
-          measurement: 'kg',
-          subUser: '',
+          measurementType: 'KG',
+          subUserId: localStorage.getItem("subUserId"),
+          shoppingListId: '1',
+          itemShoppingListId: '1'
         },
         defaultItem: {
           name: '',
           amount: '1',
-          measurement: 'kg',
+          measurement: 'KG',
           subUser: '',
         },
         dialog: false,
@@ -244,16 +247,16 @@
           this.editedIndex = -1
         })
       },
-      save () {
-        if (!this.form) return
-        this.editedItem.subUser = localStorage.getItem("userType")
+      async save () {
         if (this.editedIndex > -1) {
           Object.assign(this.shoppingList[this.editedIndex], this.editedItem)
         } else {
-          this.shoppingList.push(this.editedItem)
+          console.log(this.editedItem)
+          await shoppingListService.addShoppingListItems(this.editedItem)
+          //this.shoppingList.push(this.editedItem)
         }
         this.editedItem = Object.assign({}, this.defaultItem)
-        this.close()
+        this.dialog = false
       },
       required (v) {
         return !!v || 'Field is required'
@@ -272,7 +275,7 @@
              "itemName": this.buyItems[i],
              "refrigeratorId": "1",
              "amount": "10",
-             "measurementType": "2"
+             "measurementType": "KG"
            }
            await fridgeService.addNewItemToFridge(item)
 
@@ -280,7 +283,7 @@
              "itemName": this.buyItems[i],
              "shoppingListId": "1",
              "amount": "10",
-             "measurementType": "2"
+             "measurementType": "KG"
            }
            await shoppingListService.deleteItemFromShoppingList(itemToDelete)
            this.allItems.push(itemToDelete.itemName)
@@ -289,27 +292,31 @@
          this.shoppingList = []
          await this.getShoppingList()
       },
-       async addItem() {
+       async addItem() { //TODO: FUNKER!! (endre hardkodet)
          const itemToAdd = {
-           "itemName": this.selectedItem,
+           "itemName": this.editedItem.itemName,
            "shoppingListId": "1",
-           "amount": "10",
-           "measurementType": "2"
+           "amount": this.editedItem.amount,
+           "measurementType": this.editedItem.measurementType,
+           "itemShoppingListId": "1",
+           "subUserId": localStorage.getItem("subUserId")
          }
 
          await shoppingListService.addShoppingListItems(itemToAdd)
+         this.dialog = false
          this.shoppingList = []
          await this.getShoppingList()
-         this.selectedItem = "";
-         this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
        },
-       async removeList(item) {
+       async removeList(item) { //TODO: FUNKER!! (mangler hardkodet ting)
          const itemToDelete = {
            "itemName": item,
            "shoppingListId": "1",
-           "amount": "10",
-           "measurementType": "2"
+           "amount": "1",
+           "measurementType": this.editedItem.measurementType,
+           "itemShoppingListId": "23",
+           "subUserId": localStorage.getItem("subUserId")
          }
+         console.log(itemToDelete)
          await shoppingListService.deleteItemFromShoppingList(itemToDelete)
          this.shoppingList = []
          await this.getShoppingList()
