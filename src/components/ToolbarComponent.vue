@@ -14,7 +14,7 @@
           <v-tab flat color="grey" to="/list">Shopping list<v-icon icon="mdi-format-list-checkbox"></v-icon></v-tab>
           <v-tab flat color="grey" to="/recipe">Menus<v-icon icon="mdi-silverware"></v-icon></v-tab>
           <v-tab flat color="grey" to="/settings">Settings<v-icon icon="mdi-cog"></v-icon></v-tab>
-          <v-tab flat color="grey" to="/">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
+          <v-tab flat color="grey" to="/" @click="clear">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
         </v-tabs>
       </div>
       <div v-if="mobile">
@@ -47,6 +47,9 @@ export default {
   methods: {
     route(){
       router.push("/user")
+    },
+    clear(){
+      localStorage.clear()
     }
   },
   setup() {
@@ -66,6 +69,8 @@ export default {
 #logo-image{
   width: 50px;
   height: 50px;
+  margin-top: 8px;
+  margin-right: 8px;
 }
 #logo-name-toolbar{
   display: flex;
