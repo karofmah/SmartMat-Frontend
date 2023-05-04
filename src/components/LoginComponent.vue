@@ -63,25 +63,25 @@
         </v-text-field>
         </div>
     </div>
+      <div id="error-message-container-login"><p id="error-message-submit" class="error-message"></p></div>
     <div id="buttons">
       <div ><v-radio-group inline v-model="value">
         <v-radio
             id="login-radiobutton"
             label="Login"
             value="Login"
-            @click="show=true"
+            @click="resetError"
         >
         </v-radio>
         <v-radio
             id="register-radiobutton"
             label="Register"
             value="Register"
-            @click="show=false"
+            @click="resetError"
         >
         </v-radio>
       </v-radio-group></div>
       <v-btn id="submit-button" type="submit" block class="mt-2" @click="submit">{{ value }}</v-btn>
-      <p id="error-message-submit" class="error-message"></p>
     </div>
     </v-form>
   </v-sheet>
@@ -184,12 +184,13 @@ export default {
           const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
           localStorage.setItem("masterUserId",masterUser[0].subUserId)
           router.push("/user")
+        } else if (response.status === 403){
+          document.getElementById("error-message-submit").innerHTML = "Email or password is not correct"
         } else {
-          document.getElementById("error-message-submit").innerHTML = response.data
+          document.getElementById("error-message-submit").innerHTML = "Login failed"
         }
       }).catch(function (err) {
         console.log(err.response)
-        console.log(err)
       })
     },
     async register(){
@@ -250,6 +251,14 @@ export default {
       localStorage.setItem("phone", information.phoneNumber)
       localStorage.setItem("household", information.household)
     },
+    resetError() {
+      try {
+        this.show = !this.show
+        document.getElementById("error-message-submit").innerHTML = ""
+      } catch (err) {
+        console.log(err.response)
+      }
+    }
   },
   data: () => ({
     emailCheck: false,
@@ -275,17 +284,11 @@ export default {
 </script>
 
 <style>
-#container{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 150px;
-}
 #input-form{
   display: grid;
-  height: 700px;
-  float: bottom;
-  margin-top: 10%;
+  max-height: 700px;
+  min-height: 300px;
+  margin: 30px;
   align-content: center;
 }
 #login-form{
@@ -299,4 +302,9 @@ input{
   margin-bottom: 5px;
 }
 
+#error-message-container-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>
