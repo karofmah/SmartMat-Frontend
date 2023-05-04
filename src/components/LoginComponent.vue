@@ -156,13 +156,13 @@ export default {
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
-    checkPin(value){
-      if (/^\d{4}$/.test(value)) {
+    checkPin(value) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
         return true
       } else {
         this.pinCheck = false;
-        return 'PIN-CODE must be 4 digits.'
+        return 'PIN must be 4 digits and cannot start with 0.'
       }
     },
     async login(){

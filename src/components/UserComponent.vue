@@ -55,6 +55,7 @@
                   <v-text-field
                       v-if="newType==='true' || newType===true"
                       v-model="pinCode"
+                      type="password"
                       label="Pin-Code*"
                       required
                       :rules="[ checkPin ]"
@@ -153,6 +154,7 @@
   <v-snackbar
       v-model="snackbar"
       color="teal"
+      :timeout="2000"
   >
     {{ text }}
 
@@ -199,7 +201,12 @@ export default {
   },
   methods:{
     async deleteSubuser(){
-      await settingsService.deleteSubuser(this.id)
+      const feedback = await settingsService.deleteSubuser(this.id)
+      console.log(feedback.status)
+      if (feedback.status !== 200) {
+        this.text = "Something went wrong, try again later"
+        this.snackbar = true
+      }
       this.$emit('update-users')
     },
     async updateUser(){
@@ -244,14 +251,14 @@ export default {
       this.edit = true
     },
     checkPin(value) {
-      if (/^\d{4}$/.test(value)) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
         this.error = false
         return true
       } else {
         this.error = true
         this.pinCheck = false;
-        return 'PIN must be 4 digits.'
+        return 'PIN must be 4 digits and cannot start with 0.'
       }
     },
     chooseUser(){
@@ -303,10 +310,6 @@ export default {
   cursor: pointer;
   border: 1px solid #39495c;
   text-align: center;
-}
-.user:hover {
-  transform: scale(1.01);
-  box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
 }
 #user-image {
   width: 100px;
