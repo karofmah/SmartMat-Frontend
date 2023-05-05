@@ -8,8 +8,11 @@
           <v-toolbar color="teal">
             <v-toolbar-title>Your Fridge</v-toolbar-title>
           </v-toolbar>
-          <div id="error-fridge" class="error-message"><p v-if="betaUser">You are not authorized add items to the fridge</p></div>
+          <div id="error-fridge">
+            <p v-if="betaUser">You are not authorized add items to the fridge :(</p>
+          </div>
           <div id="topBar">
+
             <v-dialog v-model="dialog" persistent width="400">
               <template v-slot:activator="{ props }">
                 <div id="addNewItemButton" >
@@ -61,12 +64,13 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+            
           </div>
           <div>
             <v-text-field
               v-model="search"
               append-inner-icon="mdi-magnify"
-              label="Search for item"
+              label="Search"
               single-line
               hide-details
             ></v-text-field>
@@ -88,11 +92,11 @@
               <td>
                 <p v-for="food in item.raw.foods">
                   <v-icon size="small" class="me-2" @click="editDate(item.raw.id, food)">
-                        mdi-calendar
-                      </v-icon>
-                      <v-icon size="small" @click="deleteItem(item.raw.id, food)">
-                        mdi-delete
-                      </v-icon>
+                    mdi-calendar
+                  </v-icon>
+                  <v-icon size="small" @click="deleteItem(item.raw.id, food)">
+                    mdi-delete
+                  </v-icon>
                 </p>
               </td>
               <td>
@@ -113,12 +117,10 @@
               </template>
             </v-data-table>
 
-
             <v-dialog v-model="picker" persistent width="300">
               <v-card>
-                <v-card-title class="text-h5">
-                  Add expiration date
-                </v-card-title>
+                <v-card-title class="text-h5"> Add expiration date </v-card-title>
+                <v-card-subtitle> Click the date to edit</v-card-subtitle>
                 <div id="datepicker">
                   <datepicker
                     v-model="selectedDate"
@@ -127,7 +129,7 @@
                     placeholder="expiration date"
                     format="YYYY-MM-dd"
                     type="date"
-                    :lower-limit="new Date()"
+                    :lower-limit="new Date(Date.now() + (3600 * 1000 * 24))"
                   ></datepicker>
                 </div>
                 <v-card-actions>
@@ -267,7 +269,7 @@ export default {
       },
       {title: 'Amount', value: 'amount'},
       {title: 'Measurement', value: 'measurement'},
-      {title: 'Expiration date', value: 'date'},
+      {title: 'Date', value: 'date'},
     ],
     }
   },
@@ -444,7 +446,7 @@ export default {
         return true
       } else {
         this.amountCheck = false;
-        return 'Amount has to be a number above 0.'
+        return 'Amount cannot be below 0.'
       }
     },
   },
@@ -461,7 +463,7 @@ export default {
     }
   },
   setup() {
-    const selectedDate = ref(new Date());
+    const selectedDate = ref(new Date(Date.now() + (3600 * 1000 * 24)));
     return {
       selectedDate
     }
@@ -474,24 +476,20 @@ export default {
 <style>
 #container-categories {
   display: flex;
-  padding: 50px;
+  padding-top: 50px;
   flex-wrap: wrap;
 }
-
 #categories {
   display: inline-block;
   flex-wrap: wrap;
   text-align: center;
   justify-content: center;
 }
-
 #category-recipe {
-  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
-
 #searchbar {
   width: 100%;
   display: flex;
@@ -505,15 +503,14 @@ export default {
 #addNewItemButton{
   margin: 10px;
   margin-top: 20px;
-
 }
-
 #error-fridge {
   margin: 10px;
 }
 .card {
-  width: 700px;
   max-width: 700px;
+  width: 700px;
+  flex-shrink: 1;
   margin: 20px;
 }
 #datepicker {
