@@ -241,13 +241,13 @@ The following users can be used as test users.
 - Email: frida01@stud.ntnu.no
 - Password: password
 - Pin code: 1234
-- Email: frida01@stud.ntnu.no
+- Email: henrik100@stud.ntnu.no
 - Password: password
 - Pin code: 1234
-- Email: frida01@stud.ntnu.no
+- Email: stig1978@stud.ntnu.no
 - Password: password
 - Pin code: 1234
-- Email: frida01@stud.ntnu.no
+- Email: pål.einar@stud.ntnu.no
 - Password: password
 - Pin code: 1234
 
