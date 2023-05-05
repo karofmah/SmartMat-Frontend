@@ -63,16 +63,28 @@ export default {
             console.log(err.response)
         })
     },
-    deleteItem(item, waste){
-        return axios.delete("http://localhost:8080/api/refrigerators/removeItem?isGarbage=" + waste, {
-            data: item,
+    deleteItem(item){
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItem", item, {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Deleting item from fridge")
+            console.log("removing item from fridge")
             console.log(response)
-            return response.data
+            return response
+        }).catch(function (err) {
+            console.log(err)
+        })
+    },
+    updateItemInFridge(item){
+        return axios.put("http://localhost:8080/api/refrigerators/updateItemInRefrigerator", item, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("token")
+            }
+        }).then((response) => {
+            console.log("updating fridge")
+            console.log(response)
+            return response
         }).catch(function (err) {
             console.log(err)
         })
