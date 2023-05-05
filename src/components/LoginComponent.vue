@@ -67,23 +67,30 @@
     </div>
       <div id="error-message-container-login"><p id="error-message-submit" class="error-message"></p></div>
     <div id="buttons">
-      <div ><v-radio-group inline v-model="value">
-        <v-radio
-            id="login-radiobutton"
-            label="Login"
-            value="Login"
-            @click="resetError"
-        >
-        </v-radio>
-        <v-radio
-            id="register-radiobutton"
-            label="Register"
-            value="Register"
-            @click="resetError"
-        >
-        </v-radio>
-      </v-radio-group></div>
-      <v-btn id="submit-button" type="submit" block class="mt-2" @click="submit">{{ value }}</v-btn>
+      <div >
+        <v-radio-group inline v-model="value">
+          <v-radio
+              id="login-radiobutton"
+              label="Login"
+              value="Login"
+              @click="resetError"
+          >
+          </v-radio>
+          <v-radio
+              id="register-radiobutton"
+              label="Register"
+              value="Register"
+              @click="resetError"
+          >
+          </v-radio>
+        </v-radio-group>
+      </div>
+      <v-btn 
+        id="submit-button" 
+        type="submit" 
+        block class="mt-2" 
+        @click="submit"
+      >{{ value }}</v-btn>
     </div>
     </v-form>
   </v-sheet>
@@ -96,6 +103,26 @@ import router from "@/router";
 import loginService from "@/services/loginService.js";
 import settingsService from "@/services/settingsService";
 export default {
+  data: () => ({
+    emailCheck: false,
+    passwordCheck: false,
+    firstNameCheck: false,
+    lastNameCheck: false,
+    phoneCheck: false,
+    householdCheck: false,
+    ageCheck: false,
+    pinCheck: false,
+    show: true,
+    value: "Login",
+    email: null,
+    password: null,
+    firstname:'',
+    lastname:'',
+    phoneNumber:'',
+    household:'',
+    age:'',
+    pinCode: ''
+  }),
   methods:{
     checkEmail(value){
       if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) ) {
@@ -175,7 +202,6 @@ export default {
         "password": this.password
       }
       await loginService.login(info).then(async function (response) {
-        console.log(response)
         if (response.status === 200){
           localStorage.setItem("email", info.email)
           await loginService.getFridgeId(localStorage.getItem("email"))
@@ -184,7 +210,6 @@ export default {
           localStorage.setItem("lastname", information.lastName)
           localStorage.setItem("phone", information.phoneNumber)
           localStorage.setItem("household", information.household)
-          console.log(localStorage.getItem("fridgeId"))
           const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
           localStorage.setItem("masterUserId",masterUser[0].subUserId)
           router.push("/user")
@@ -212,11 +237,9 @@ export default {
       const pinCode = this.pinCode
 
       await loginService.registerUser(info).then(async function (response) {
-        console.log(response.status)
         if (response.status === 201){
           localStorage.setItem("email", info.email)
           await loginService.getFridgeId(localStorage.getItem("email"))
-          console.log(localStorage.getItem("fridgeId"))
           localStorage.setItem("pin-code", pinCode)
           const subuser = {
             "name": firstname,
@@ -248,7 +271,6 @@ export default {
       }
     },
     async getInformation(){
-      console.log(await settingsService.getUserInfo(localStorage.getItem("email")))
       const information = await settingsService.getUserInfo(localStorage.getItem("email"))
       localStorage.setItem("firstname", information.firstName)
       localStorage.setItem("lastname", information.lastName)
@@ -264,26 +286,6 @@ export default {
       }
     }
   },
-  data: () => ({
-    emailCheck: false,
-    passwordCheck: false,
-    firstNameCheck: false,
-    lastNameCheck: false,
-    phoneCheck: false,
-    householdCheck: false,
-    ageCheck: false,
-    pinCheck: false,
-    show: true,
-    value: "Login",
-    email: null,
-    password: null,
-    firstname:'',
-    lastname:'',
-    phoneNumber:'',
-    household:'',
-    age:'',
-    pinCode: ''
-  }),
 }
 </script>
 
@@ -317,10 +319,14 @@ input{
 .login-page-logo{
   width: 500px;
   height: 500px;
-  margin-top: 150px;
 }
 #login-container{
   display: flex;
   justify-content: center;
+  height:100vh;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
+
 </style>
