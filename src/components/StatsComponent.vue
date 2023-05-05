@@ -4,7 +4,7 @@
 
       <v-card class="stats-card">
         <v-toolbar color="teal">
-          <v-toolbar-title>Personal yearly amount ({{ personalChosenYear }})</v-toolbar-title>
+          <v-toolbar-title class="font-weight-bold">Personal yearly amount ({{ personalChosenYear }})</v-toolbar-title>
           <v-menu>
             <template v-slot:activator="{props}">
               <v-btn icon variant="tonal" v-bind="props">
@@ -24,7 +24,7 @@
 
       <v-card class="stats-card">
         <v-toolbar color="teal">
-          <v-toolbar-title>Average all users ({{averageChosenYear}})</v-toolbar-title>
+          <v-toolbar-title class="font-weight-bold">Average all users ({{averageChosenYear}})</v-toolbar-title>
           <v-menu>
             <template v-slot:activator="{props}">
               <v-btn icon variant="tonal" v-bind="props">

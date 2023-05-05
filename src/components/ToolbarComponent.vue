@@ -9,11 +9,12 @@
       <v-spacer></v-spacer>
       <div v-if="!mobile">
         <v-tabs v-model="tab" hide-slider="true">
-          <v-tab flat color="grey" to="/stats">Stats<v-icon icon="mdi-chart-bar"></v-icon></v-tab>
           <v-tab flat color="grey" to="/fridge">Fridge<v-icon icon="mdi-fridge"></v-icon></v-tab>
           <v-tab flat color="grey" to="/list">Shopping list<v-icon icon="mdi-format-list-checkbox"></v-icon></v-tab>
           <v-tab flat color="grey" to="/recipe">Menus<v-icon icon="mdi-silverware"></v-icon></v-tab>
           <v-tab flat color="grey" to="/settings">Settings<v-icon icon="mdi-cog"></v-icon></v-tab>
+          <v-tab flat color="grey" to="/stats">Stats<v-icon icon="mdi-chart-bar"></v-icon></v-tab>
+          <v-tab flat color="grey" to="/user">Users<v-icon icon="mdi-account-group"></v-icon></v-tab>
           <v-tab flat color="grey" to="/" @click="clear">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
         </v-tabs>
       </div>
@@ -24,12 +25,13 @@
           </template>
           <v-list>
             <v-tabs v-model="tab" direction="vertical" color="primary">
-              <v-tab flat to="/stats">Stats<v-icon icon="mdi-chart-bar"></v-icon></v-tab>
               <v-tab flat to="/fridge">Fridge<v-icon icon="mdi-fridge"></v-icon></v-tab>
               <v-tab flat to="/list">Shopping list<v-icon icon="mdi-format-list-checkbox"></v-icon></v-tab>
               <v-tab flat to="/recipe">Menus<v-icon icon="mdi-silverware"></v-icon></v-tab>
               <v-tab flat to="/settings">Settings<v-icon icon="mdi-cog"></v-icon></v-tab>
-              <v-tab to="/">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
+              <v-tab flat to="/stats">Stats<v-icon icon="mdi-chart-bar"></v-icon></v-tab>
+              <v-tab flat to="/user">Users<v-icon icon="mdi-account-group"></v-icon></v-tab>
+              <v-tab to="/" @click="clear">Sign out<v-icon icon="mdi-exit-to-app"></v-icon></v-tab>
             </v-tabs>
           </v-list>
         </v-menu>
