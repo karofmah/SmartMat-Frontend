@@ -7,10 +7,8 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("getting personal amount of garbage for specific year")
             return response
         }).catch(function (err) {
-            console.log(err.response)
             return err.response
         })
     },
@@ -20,11 +18,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("getting amount of garbage for all months")
-            console.log(response.data)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     getAverageGarbageYear(fridgeId, year){
@@ -33,10 +29,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("getting average amount of garbage for specific year")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     getAverageGarbageMonth(fridgeId, year){
@@ -45,11 +40,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("getting amount of garbage for all months")
-            console.log(response.data)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     }
 }

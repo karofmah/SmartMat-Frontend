@@ -7,11 +7,10 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("getting shopping list items")
-            console.log(response)
+            localStorage.setItem("shoppingListId", response.data.shoppingListId)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     deleteItemFromShoppingList(item){
@@ -21,11 +20,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Deleting item from shopping list")
-            console.log(response)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     addShoppingListItems(item){
@@ -34,11 +31,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("adding shopping list items")
-            console.log(response.data)
-            return response.data
+            return response
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     addShoppingPopularItems(shoppingListId, subUserId){
@@ -47,11 +42,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("adding shopping list items")
-            console.log(response.data)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     }
 }
