@@ -2,7 +2,7 @@
   <v-card class="user-card" @click="chooseUser">
     <v-card-title id="name">{{ name }} </v-card-title>
     <v-card-subtitle id="type">{{ typeName }}</v-card-subtitle>
-    <div><img src="../assets/user-logo.png" id="user-image" alt=""></div>
+    <div><img src="../assets/user-logo.png" id="user-image" alt="empty"></div>
 
     <v-row id="change-info-button">
       <v-dialog v-model="showEditingWindow" persistent width="400">
