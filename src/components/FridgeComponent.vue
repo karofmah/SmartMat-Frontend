@@ -8,7 +8,7 @@
           <v-toolbar color="teal">
             <v-toolbar-title>Your Fridge</v-toolbar-title>
           </v-toolbar>
-          <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div>
+          <div id="error-fridge" class="error-message"><p v-if="betaUser">You are not authorized add items to the fridge</p></div>
           <div id="topBar">
             <v-dialog v-model="dialog" persistent width="400">
               <template v-slot:activator="{ props }">
@@ -66,7 +66,7 @@
             <v-text-field
               v-model="search"
               append-inner-icon="mdi-magnify"
-              label="Search"
+              label="Search for item"
               single-line
               hide-details
             ></v-text-field>
@@ -267,7 +267,7 @@ export default {
       },
       {title: 'Amount', value: 'amount'},
       {title: 'Measurement', value: 'measurement'},
-      {title: 'Date', value: 'date'},
+      {title: 'Expiration date', value: 'date'},
     ],
     }
   },
@@ -444,7 +444,7 @@ export default {
         return true
       } else {
         this.amountCheck = false;
-        return 'Amount cannot be below 0.'
+        return 'Amount has to be a number above 0.'
       }
     },
   },

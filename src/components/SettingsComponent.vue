@@ -74,7 +74,7 @@
               </v-row>
             </div>
           </div>
-          <div><p v-if="childUser">You are not authorized to make changes</p></div>
+          <div class="error-message"><p v-if="childUser">You are not authorized to make changes</p></div>
       </v-card>
       <div id="users">
         <UserComponent
@@ -217,7 +217,7 @@ export default {
       }
     },
     checkPhoneNumber(value) {
-      if (value?.length === 8) {
+      if (/^[0-9]{8}$/.test(value)) {
         this.phoneCheck = true
         return true
       } else {
