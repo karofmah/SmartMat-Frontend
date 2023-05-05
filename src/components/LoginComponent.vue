@@ -1,101 +1,104 @@
 <template>
-  <div id="login-container">
-  <div><img src="../assets/logo.png" class="login-page-logo"></div>
-  <div id="login-page-form"><v-sheet width="300" class="mx-auto" >
-    <v-form ref="form" fast-fail @submit.prevent>
-      <div id="input-form">
-  <div id="login-form">
-      <v-text-field
-          id="email-input"
-          v-model="email"
-          label="Email"
-          :rules="[ checkEmail ]"
-      ></v-text-field>
-
-      <v-text-field
-          id="password-input"
-          type="password"
-          v-model="password"
-          label="Password"
-          :rules="[ checkPassword ]"
-      ></v-text-field>
-  </div><div id="register-form" v-if="!show">
-          <v-text-field
-              id="firstname-input"
-              label="First name"
-              v-model="firstname"
-              :rules="[ checkFirstName ]"
-          >
-          </v-text-field>
-          <v-text-field
-              id="lastname-input"
-              label="Last name"
-              v-model="lastname"
-              :rules="[ checkLastName ]"
-          >
-          </v-text-field>
-          <v-text-field
-              id="phone-input"
-              label="Phone number"
-              v-model="phoneNumber"
-              :rules="[ checkPhoneNumber ]"
-          >
-          </v-text-field>
-          <v-text-field
-              id="household-input"
-              label="Household amount"
-              v-model="household"
-              :rules="[ checkHousehold ]"
-          >
-          </v-text-field>
-          <v-text-field
-              id="age-input"
-              label="Age"
-              v-model="age"
-              :rules="[ checkAge ]"
-          >
-          </v-text-field>
-        <v-text-field
-            type="password"
-            id="pin-code-input"
-            label="PIN-CODE"
-            v-model="pinCode"
-            :rules="[ checkPin ]"
-        >
-        </v-text-field>
-        </div>
-    </div>
-      <div id="error-message-container-login"><p id="error-message-submit" class="error-message"></p></div>
-    <div id="buttons">
-      <div >
-        <v-radio-group inline v-model="value">
-          <v-radio
-              id="login-radiobutton"
-              label="Login"
-              value="Login"
-              @click="resetError"
-          >
-          </v-radio>
-          <v-radio
-              id="register-radiobutton"
-              label="Register"
-              value="Register"
-              @click="resetError"
-          >
-          </v-radio>
-        </v-radio-group>
+  <section>
+    <div id="login-container">
+      <div>
+        <img src="../assets/logo.png" class="login-page-logo">
       </div>
-      <v-btn
-        id="submit-button"
-        type="submit"
-        block class="mt-2"
-        @click="submit"
-      >{{ value }}</v-btn>
+      <div id="login-page-form">
+        <v-sheet width="300" class="mx-auto" >
+          <v-form ref="form" fast-fail @submit.prevent>
+            <div id="input-form">
+              <div id="login-form">
+                <v-text-field
+                  id="email-input"
+                  v-model="email"
+                  label="Email"
+                  :rules="[ checkEmail ]"
+                ></v-text-field>
+                <v-text-field
+                  id="password-input"
+                  type="password"
+                  v-model="password"
+                  label="Password"
+                  :rules="[ checkPassword ]"
+                ></v-text-field>
+              </div>
+              <div id="register-form" v-if="!show">
+                <v-text-field
+                  id="firstname-input"
+                  label="First name"
+                  v-model="firstname"
+                  :rules="[ checkFirstName ]"
+                ></v-text-field>
+                <v-text-field
+                  id="lastname-input"
+                  label="Last name"
+                  v-model="lastname"
+                  :rules="[ checkLastName ]"
+                ></v-text-field>
+                <v-text-field
+                  id="phone-input"
+                  label="Phone number"
+                  v-model="phoneNumber"
+                  :rules="[ checkPhoneNumber ]"
+                ></v-text-field>
+                <v-text-field
+                  id="household-input"
+                  label="Household amount"
+                  v-model="household"
+                  :rules="[ checkHousehold ]"
+                ></v-text-field>
+                <v-text-field
+                  id="age-input"
+                  label="Age"
+                  v-model="age"
+                  :rules="[ checkAge ]"
+                ></v-text-field>
+                <v-text-field
+                  type="password"
+                  id="pin-code-input"
+                  label="PIN-CODE"
+                  v-model="pinCode"
+                  :rules="[ checkPin ]"
+                ></v-text-field>
+              </div>
+            </div>
+            <div id="error-message-container-login">
+              <p id="error-message-submit" class="error-message"></p>
+            </div>
+            <div id="buttons">
+              <div >
+                <v-radio-group inline v-model="value">
+                  <v-radio
+                    id="login-radiobutton"
+                    label="Login"
+                    value="Login"
+                    @click="resetError"
+                  ></v-radio>
+                  <v-radio
+                    id="register-radiobutton"
+                    label="Register"
+                    value="Register"
+                    @click="resetError"
+                  ></v-radio>
+                </v-radio-group>
+              </div>
+              <v-btn
+                id="submit-button"
+                type="submit"
+                block class="mt-2"
+                @click="submit"
+              >{{ value }}</v-btn>
+            </div>
+          </v-form>
+        </v-sheet>
+      </div>
     </div>
-    </v-form>
-  </v-sheet>
-  </div>
-  </div>
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+    <div class="wave wave4"></div>
+  </section>
 </template>
 
 <script>
@@ -288,6 +291,10 @@ export default {
 </script>
 
 <style>
+*{
+  margin: 0;
+  padding: 0;
+}
 #input-form{
   display: grid;
   max-height: 700px;
@@ -321,10 +328,72 @@ input{
 #login-container{
   display: flex;
   justify-content: center;
-  height:100vh;
+  height: 100vh;
   align-items: center;
   flex-direction: row;
   flex-wrap: wrap;
 }
+section{
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow:hidden
+}
+section .wave{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: url(../assets/wave.png);
+  background-size: 1000px, 100px;
+}
+section .wave.wave1{
+  animation: animate 30s linear infinite;
+  z-index: 1000;
+  opacity: 1;
+  animation-delay: 0s;
+}
+section .wave.wave2{
+  animation: animate2 15s linear infinite;
+  z-index: 999;
+  opacity: 0.5;
+  animation-delay: -5s;
+  bottom: 10px;
+}
+section .wave.wave3{
+  animation: animate 30s linear infinite;
+  z-index: 998;
+  opacity: 0.2;
+  animation-delay: -2s;
+  bottom: 15px;
+}
+section .wave.wave3{
+  animation: animate2 15s linear infinite;
+  z-index: 997;
+  opacity: 0.5;
+  animation-delay: -5s;
+  bottom: 10px;
+}
+@keyframes animate{
+  0%
+  {
+    background-position-x: 0;
+  }
+  100%
+  {
+    background-position-x: -1000px;
+  }
+}
 
+@keyframes animate2{
+  0%
+  {
+    background-position-x: 0;
+  }
+  100%
+  {
+    background-position-x: -1000px;
+  }
+}
 </style>
