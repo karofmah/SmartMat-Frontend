@@ -86,5 +86,6 @@ export default {
 #toolbar-name{
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 </style>
