@@ -64,14 +64,15 @@ export default {
         })
     },
     deleteItem(item){
-        return axios.delete("http://localhost:8080/api/refrigerators/removeItem", item, {
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItem", {
+            data: item,
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
             console.log("removing item from fridge")
             console.log(response)
-            return response
+            return response.data
         }).catch(function (err) {
             console.log(err)
         })
