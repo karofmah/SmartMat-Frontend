@@ -4,7 +4,7 @@
       <v-card id="user-information" class="mx-auto" max-width="320">
           <div id="information">
             <v-toolbar color="teal">
-              <v-toolbar-title>Your information</v-toolbar-title>
+              <v-toolbar-title class="font-weight-bold">Account information</v-toolbar-title>
             </v-toolbar>
             <v-card-subtitle te>e-mail:</v-card-subtitle>
             <v-card-text>{{ email }}</v-card-text>
@@ -16,7 +16,7 @@
             </v-sheet>
           </div>
           <div id="buttons">
-            <div class="settings-buttons"><v-btn id="info-button" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
+            <div class="settings-buttons"><v-btn id="info-button" class="font-weight-bold" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
             <div id="newSubUser" class="settings-buttons">
               <v-row>
                 <v-dialog
@@ -27,6 +27,7 @@
                   <template v-slot:activator="{ props }">
                     <v-btn
                         id="addNewSubuserButton"
+                        class="font-weight-bold"
                         color="teal"
                         v-bind="props"
                         :disabled="betaUser"
