@@ -64,8 +64,7 @@ export default {
         })
     },
     deleteItem(item, waste){
-        return axios.delete("http://localhost:8080/api/refrigerators/removeItem?isGarbage=" + waste, {
-            data: item,
+        return axios.delete("http://localhost:8080/api/refrigerators/removeItem", item, {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
