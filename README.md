@@ -40,7 +40,8 @@ but future versions aim to add support for multiple languages.
 
 ### Database
 
-(image)
+![EER-diagramSprint2.2](uploads/86774b51d48c015fbc061147d0f589be/EER-diagramSprint2.2.png)
+
 
 ### Frameworks used
 
