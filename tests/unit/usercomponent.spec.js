@@ -50,7 +50,7 @@ describe('User component tests', () => {
         router.push({ name: 'chooseUser' });
         wrapper.vm.checkPin('1234')
         expect(wrapper.vm.pinCheck).toBe(true)
-        expect(wrapper.vm.checkPin('11')).toBe('PIN must be 4 digits.')
+        expect(wrapper.vm.checkPin('11')).toBe('PIN must be 4 digits and cannot start with 0.')
     })
 
     it('should delete subuser and emit update-users event', async () => {

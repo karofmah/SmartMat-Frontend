@@ -4,7 +4,7 @@
       <v-card id="user-information" class="mx-auto" max-width="320">
           <div id="information">
             <v-toolbar color="teal">
-              <v-toolbar-title>Your information</v-toolbar-title>
+              <v-toolbar-title class="font-weight-bold">Account information</v-toolbar-title>
             </v-toolbar>
             <v-card-subtitle te>e-mail:</v-card-subtitle>
             <v-card-text>{{ email }}</v-card-text>
@@ -16,7 +16,7 @@
             </v-sheet>
           </div>
           <div id="buttons">
-            <div class="settings-buttons"><v-btn id="info-button" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
+            <div class="settings-buttons"><v-btn id="info-button" class="font-weight-bold" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
             <div id="newSubUser" class="settings-buttons">
               <v-row>
                 <v-dialog
@@ -27,10 +27,10 @@
                   <template v-slot:activator="{ props }">
                     <v-btn
                         id="addNewSubuserButton"
+                        class="font-weight-bold"
                         color="teal"
                         v-bind="props"
                         :disabled="betaUser"
-                        @click="maxSubusers"
                     >
                       Add new user
                     </v-btn>
@@ -48,7 +48,7 @@
                             <v-text-field
                                 v-model="username"
                                 label="Username*"
-                                required
+                                :rules="[checkUsername]"
                             ></v-text-field>
                           </v-col>
                           <v-col
@@ -58,17 +58,17 @@
                                 v-model="userType"
                                 :items="types"
                                 label="User level*"
-                                required
+                                :rules="[checkUsertype]"
                             ></v-select>
                           </v-col>
                           <v-col
                               cols="12"
                           >
                             <v-text-field
-                                v-if="userType==='true'"
+                                v-if="userType==='Adult'"
                                 v-model="pinCode"
                                 label="Pin-Code*"
-                                required
+                                :rules="[checkPin]"
                             ></v-text-field>
                           </v-col>
                         </v-row>
@@ -100,24 +100,44 @@
           <div><p v-if="betaUser">You are not authorized to make changes</p></div>
       </v-card>
       <div id="users">
-        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId"/>
+        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.subUserId" :name="user.name" :user="user" :type="user.accessLevel" :id="user.subUserId"/>
       </div>
     </div>
+    <v-snackbar
+        v-model="snackbar"
+        color="teal"
+        :timeout="2000"
+    >
+      {{ text }}
+
+      <template v-slot:actions>
+        <v-btn
+            color="white"
+            variant="text"
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
 import UserComponent from "@/components/UserComponent.vue";
 import settingsService from "@/services/settingsService.js";
+import router from "@/router";
 export default {
   components: {UserComponent},
   data(){
     return {
+      text: "",
+      snackbar: false,
       betaUser: true,
       username: null,
       userType: null,
       pinCode: '',
-      types: ["true", "false"],
+      types: ["Adult", "Child"],
       dialog: false,
       picked: "Change your information",
       change: false,
@@ -132,54 +152,52 @@ export default {
       lastNameValid: false,
       phoneValid: false,
       householdValid: false,
-      max: false
+      pinCheck: false,
+      usernameCheck: false,
+      usertypeCheck: false,
+      max: false,
+      typeToSend: false
     };
   },
   methods: {
-    maxSubusers(){
-      try {
-        if (this.users.length === parseInt(this.household)){
-          this.dialog = false
-          this.max = true
-        } else {
-          this.max = false
-        }
-      } catch (error){
-        console.log(error)
-      }
-    },
     async setUserLevel(){
-      if (localStorage.getItem("userType") === "false"){
-        this.betaUser = true;
-      } else {
-        this.betaUser = false;
-      }
+      this.betaUser = localStorage.getItem("userType") === "false";
     },
     async getSubusers(){
+      this.users = []
       this.users = await settingsService.getAllSubusers(localStorage.getItem("email"))
     },
     async addSubuser(){
-      if (this.users.length === parseInt(this.household)){
-        console.log("you cannot add more subusers")
-      } else {
-        const subuser = {
-          "name": this.username,
-          "accessLevel": this.userType,
-          "userEmail": localStorage.getItem("email"),
-          "pinCode": this.pinCode
+      if(this.usernameCheck && this.usertypeCheck) {
+        this.typeToSend = this.userType === "Adult"
+        if ((this.typeToSend && this.pinCheck) || !this.typeToSend){
+          const subuser = {
+            "name": this.username,
+            "accessLevel": this.typeToSend,
+            "userEmail": localStorage.getItem("email"),
+            "pinCode": this.pinCode
+          }
+          const feedback = await settingsService.addNewSubuser(subuser)
+          this.text = feedback.data
+          this.snackbar = true
+          if(feedback.status === 201) {
+            await this.getSubusers()
+            this.dialog = false
+          }
+        } else {
+          this.text = "Missing pin code"
+          this.snackbar = true
         }
-        await settingsService.addNewSubuser(subuser)
-        await this.getSubusers()
-        this.dialog = false
-      }
-
+        }else {
+          this.text = "Failed to add user"
+          this.snackbar = true
+        }
     },
     async changeInfo(){
       if(!this.editing){
         this.change = !this.change
         this.editing = !this.editing
         this.picked = "Save your new information"
-        console.log(this.editing)
       } else {
         if(this.nameValid && this.lastNameValid && this.householdValid && this.phoneValid) {
           const firstName = this.firstname
@@ -191,19 +209,22 @@ export default {
             "phoneNumber": this.phone,
             "household": this.household
           }
-          console.log(update)
 
-          await settingsService.updateInformation(update)
+          const feedback = await settingsService.updateInformation(update)
           const updatedInformation = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", updatedInformation.firstName)
           localStorage.setItem("lastname", updatedInformation.lastName)
           localStorage.setItem("phone", updatedInformation.phoneNumber)
           localStorage.setItem("household", updatedInformation.household)
 
-          this.change = !this.change
-          this.editing = !this.editing
-          this.picked = "Change your information"
-          console.log(this.editing)
+          if (feedback.status === 200){
+            this.change = !this.change
+            this.editing = !this.editing
+            this.picked = "Change your information"
+          }
+          this.text = feedback.data
+          this.snackbar = true
+
         }
       }
 
@@ -243,11 +264,43 @@ export default {
         this.householdValid = false
         return 'There must be at least 1 household member.'
       }
+    },
+    checkUsername(value) {
+      if (value?.length > 0) {
+        this.usernameCheck = true
+        return true
+      } else {
+        this.usernameCheck = false
+        return 'Username cannot be empty.'
+      }
+    },
+    checkUsertype(value) {
+      if (value?.length > 0) {
+        this.usertypeCheck = true
+        return true
+      } else {
+        this.usertypeCheck = false
+        return 'Usertype cannot be empty.'
+      }
+    },
+    checkPin(value) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
+        this.pinCheck = true;
+        return true
+      } else {
+        this.pinCheck = false;
+        return 'PIN must be 4 digits and cannot start with 0.'
+      }
     }
   },
   beforeMount() {
     this.getSubusers()
     this.setUserLevel()
+  },
+  mounted(){
+    if (localStorage.getItem("token") === null){
+      router.push("/")
+    }
   }
 }
 </script>
@@ -278,14 +331,6 @@ export default {
 }
 #user-information{
   margin: 10px;
-}
-#title-settings{
-  margin-bottom: 10px;
-}
-
-.settings-text {
-  margin-bottom: 30px;
-  font-size: 25px;
 }
 
 .settings-buttons {

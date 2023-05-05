@@ -3,27 +3,29 @@
       <v-row justify="space-around">
           <v-card class="mx-auto" width="800">
               <v-toolbar color="teal">
-                  <v-toolbar-title id="shoppinglist-title">Shopping list</v-toolbar-title>
+                  <v-toolbar-title id="shoppinglist-title" class="font-weight-bold">Shopping list</v-toolbar-title>
                   <v-spacer></v-spacer>
                   <v-dialog
                     v-model="dialog"
-                    max-width="500px"
+                    max-width="600px"
                   >
                     <template v-slot:activator="{ props }">
                       <v-btn
-                        color="primary"
+                          id="new-item-button"
+                        color=""
                         dark
                         class="mb-2"
                         v-bind="props"
-                      >
-                        New Item
+                        icon
+                      ><v-icon>mdi-cart-arrow-down</v-icon>
+                        <v-tooltip id="add-item-shoppinglist-tooltip" activator="parent" location="start">Add an item to shoppinglist</v-tooltip>
                       </v-btn>
                     </template>
                     <v-card>
                       <v-card-title>
                         <span class="text-h5">{{ formTitle }}</span>
                       </v-card-title>
-                      <v-form v-model="form" @submit.prevent="save">
+                      <v-form v-model="form" @submit.prevent="addItem">
                         <v-card-text>
                           <v-container>
                             <v-row>
@@ -37,8 +39,9 @@
                                   type="text"
                                   label="Food Name"
                                   clearable
+                                  :disabled="disabled"
                                   :items="allItems"
-                                  v-model="editedItem.name"
+                                  v-model="editedItem.itemName"
                                   :rules="[required]"
                               />
                               </v-col>
@@ -59,12 +62,13 @@
                                 sm="6"
                                 md="4"
                               >
-                                <v-text-field
-                                  v-model="editedItem.measurement"
-                                  label="Measurement type"
+                                <v-select
+                                  v-model="editedItem.measurementType"
+                                  :items="measurementTypes"
+                                  label="Measurement"
                                   clearable
                                   :rules="[required]"
-                                ></v-text-field>
+                                ></v-select>
                               </v-col>
                             </v-row>
                           </v-container>
@@ -81,7 +85,6 @@
                           <v-btn
                             color="blue-darken-1"
                             variant="text"
-                            @click="save"
                             type="submit"
                           >
                             Save
@@ -90,18 +93,21 @@
                       </v-form>
                     </v-card>
                   </v-dialog>
-                  <v-spacer></v-spacer>
+
+                  <v-btn icon @click="addRecommendedItems">
+                      <v-icon>mdi-auto-fix</v-icon>
+                      <v-tooltip id="add-recommended-shoppinglist-tooltip" activator="parent" location="start">Add recommended items to shopping list</v-tooltip>
+                  </v-btn>
                   <v-btn icon @click="buy">
                       <v-icon>mdi-fridge</v-icon>
                       <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add selected items to fridge</v-tooltip>
                   </v-btn>
               </v-toolbar>
-              <div id="lists">
+              <div id="lists" >
                   <v-data-table
                     v-model="buyItems"
                     :headers="headers"
                     :items="shoppingList"
-                    item-value="name"
                     show-select
                     class="elevation-1"
                     items-per-page="-1"
@@ -120,7 +126,7 @@
                       </v-icon>
                       <v-icon
                         size="small"
-                        @click="deleteItem(item.raw)"
+                        @click="removeList(item.raw)"
                       >
                         mdi-delete
                       </v-icon>
@@ -132,17 +138,40 @@
           </v-card>
       </v-row>
   </v-container>
+  <v-snackbar
+      v-model="snackbar"
+      color="teal"
+      :timeout="3000"
+  >
+    {{ text }}
+
+    <template v-slot:actions>
+      <v-btn
+          color="white"
+          variant="text"
+          @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
   import shoppingListService from "@/services/shoppingListService";
   import fridgeService from "@/services/fridgeService";
+  import router from "@/router";
   export default {
     data() {
       return {
+        text: '',
+        snackbar: false,
+        betaUser: false,
+        disabled: false,
         form: false,
         shoppingList: [],
         selectedItem: "",
+        measurementTypes: ["KG", "G", "L", "DL", "UNIT"],
         allItems:[],
         buyItems: [],
         headers: [
@@ -154,20 +183,22 @@
           },
           { title: 'Amount', key: 'amount' },
           { title: 'Measurement type', key: 'measurement' },
-          { title: 'Added by super user', key: 'subUser' },
+          { title: 'Added by adult', key: 'subUser' },
           { title: 'Actions', key: 'actions' },
         ],
         editedIndex: -1,
         editedItem: {
-          name: '',
+          itemName: '',
           amount: '1',
-          measurement: 'kg',
-          subUser: '',
+          measurementType: 'KG',
+          subUserId: localStorage.getItem("subUserId"),
+          shoppingListId: '1',
+          itemShoppingListId: '1'
         },
         defaultItem: {
           name: '',
           amount: '1',
-          measurement: 'kg',
+          measurement: 'KG',
           subUser: '',
         },
         dialog: false,
@@ -187,12 +218,14 @@
       async getShoppingList(){
         try {
           const list = await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
-          console.log(list);
+          localStorage.setItem("shoppingListId", list.shoppingListId)
+          console.log(list.items);
           for(let i = 0; i<list.items.length; i++){
             if(!this.buyItems.includes(list.items[i].item.name)){
-              this.shoppingList.push({"name": list.items[i].item.name,"amount": list.items[i].amount, "measurement": list.items[i].measurementType, "subUser": list.items[i].subUserAccessLevel.toString(), 'bannaner': 3})
+              this.shoppingList.push({"name": list.items[i].item.name,"amount": list.items[i].amount, "measurement": list.items[i].measurementType, "subUser": list.items[i].subUserAccessLevel.toString(), "itemShoppingListId": list.items[i].itemShoppingListId})
             }
           }
+          console.log(this.shoppingList)
         } catch(err) {
           console.log(err)
         }
@@ -214,12 +247,20 @@
 
       },
       editItem (item) {
-        this.editedIndex = this.shoppingList.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
+        if(this.betaUser){
+          this.text = "You are not authorized to edit items"
+          this.snackbar = true
+        } else {
+          this.editedIndex = this.shoppingList.indexOf(item)
+          this.editedItem = Object.assign({}, item)
+          this.editedItem.itemName = item.name
+          this.disabled = true
+          this.dialog = true
+        }
+
       },
 
-      async deleteItem (item) {
+      /*async deleteItem (item) {
         this.editedIndex = this.shoppingList.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.shoppingList.splice(this.editedIndex, 1)
@@ -227,31 +268,33 @@
         console.log(localStorage.getItem("subUserId"))
         const itemToDelete = {
           "itemName":this.editedItem.name,
-          "shoppngListId": parseInt(localStorage.getItem("shoppingListId")),
+          "shoppingListId": parseInt(localStorage.getItem("shoppingListId")),
           "amount": this.editedItem.amount,
           "measurementType": 2
         }
         console.log(itemToDelete)
         this.editedIndex = -1
-        //await shoppingListService.deleteItemFromShoppingList(itemToDelete)
-      },
+        await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+      },*/
       close () {
+        this.disabled = false
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         })
       },
-      save () {
-        if (!this.form) return
-        this.editedItem.subUser = localStorage.getItem("userType")
+      async save () {
         if (this.editedIndex > -1) {
           Object.assign(this.shoppingList[this.editedIndex], this.editedItem)
         } else {
-          this.shoppingList.push(this.editedItem)
+          console.log(this.editedItem)
+          await shoppingListService.addShoppingListItems(this.editedItem)
+          //this.shoppingList.push(this.editedItem)
         }
         this.editedItem = Object.assign({}, this.defaultItem)
-        this.close()
+        this.disabled = false
+        this.dialog = false
       },
       required (v) {
         return !!v || 'Field is required'
@@ -264,82 +307,121 @@
       },
 
       async buy(){
-        console.log(this.buyItems);
-      //   for(let i = 0; i<this.buyItems.length; i++){
-      //     const item = {
-      //       "itemName": this.buyItems[i],
-      //       "refrigeratorId": "1",
-      //       "amount": "10",
-      //       "measurementType": "2"
-      //     }
-      //     await fridgeService.addNewItemToFridge(item)
+        if(this.betaUser){
+          this.text = "You are not authorized to buy items"
+          this.snackbar = true
+        } else {
+          console.log(this.buyItems);
+          for (let i = 0; i < this.buyItems.length; i++) {
+            const item = {
+              "itemName": this.buyItems[i].name,
+              "refrigeratorId": localStorage.getItem("fridgeId"),
+              "amount": this.buyItems[i].amount,
+              "measurementType": this.buyItems[i].measurement
+            }
+            await fridgeService.addNewItemToFridge(item)
 
-      //     const itemToDelete = {
-      //       "itemName": this.buyItems[i],
-      //       "shoppingListId": "1",
-      //       "amount": "10",
-      //       "measurementType": "2"
-      //     }
-      //     await shoppingListService.deleteItemFromShoppingList(itemToDelete)
-      //     this.allItems.push(itemToDelete.itemName)
-      //   }
-      //   this.buyItems = []
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
+            const itemToDelete = {
+              "itemName": this.buyItems[i].name,
+              "shoppingListId": localStorage.getItem("shoppingListId"),
+              "amount": this.buyItems[i].amount,
+              "measurementType": this.buyItems[i].measurement,
+              "itemShoppingListId": this.buyItems[i].itemShoppingListId,
+              "subUserId": localStorage.getItem("subUserId")
+            }
+            await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+            //this.removeList(itemToDelete)
+            //this.allItems.push(itemToDelete.itemName)
+          }
+          this.buyItems = []
+          this.shoppingList = []
+          await this.getShoppingList()
+        }
       },
-      // async addItem() {
-      //   const itemToAdd = {
-      //     "itemName": this.selectedItem,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
+       async addItem() { //TODO: FUNKER!! (endre hardkodet)
+         const itemToAdd = {
+           "itemName": this.editedItem.itemName,
+           "shoppingListId": localStorage.getItem("shoppingListId"),
+           "amount": this.editedItem.amount,
+           "measurementType": this.editedItem.measurementType,
+           "subUserId": localStorage.getItem("subUserId")
+         }
 
-      //   await shoppingListService.addShoppingListItems(itemToAdd)
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
-      //   this.selectedItem = "";
-      //   this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
-      // },
-      // async removeList(item) {
-      //   const itemToDelete = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   await shoppingListService.deleteItemFromShoppingList(itemToDelete)
-      //   this.shoppingList = []
-      //   await this.getShoppingList()
-      //   this.allItems.push(itemToDelete.itemName)
-      // },
-      // async addToBuy(item) {
-      //   const itemToBuy = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   this.buyItems.push(itemToBuy.itemName)
-      //   this.shoppingList.splice(this.shoppingList.indexOf(itemToBuy.itemName), 1)
-      // },
-      // async removeFromBuy(item) {
-      //   const itemFromBuy = {
-      //     "itemName": item,
-      //     "shoppingListId": "1",
-      //     "amount": "10",
-      //     "measurementType": "2"
-      //   }
-      //   this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
-      //   this.shoppingList.push(itemFromBuy.itemName)
-      // },
+         await shoppingListService.addShoppingListItems(itemToAdd)
+         this.disabled = false
+         this.dialog = false
+         this.shoppingList = []
+         await this.getShoppingList()
+       },
+       async removeList(item) { //TODO: FUNKER!! (mangler hardkodet ting)
+         if(this.betaUser){
+           this.text = "You are not authorized to remove items"
+           this.snackbar = true
+         } else {
+           const itemToDelete = {
+             "itemName": item.name,
+             "shoppingListId": localStorage.getItem("shoppingListId"),
+             "amount": item.amount,
+             "measurementType": item.measurement,
+             "itemShoppingListId": item.itemShoppingListId,
+             "subUserId": localStorage.getItem("subUserId")
+           }
+           console.log(itemToDelete)
+           await shoppingListService.deleteItemFromShoppingList(itemToDelete)
+           this.shoppingList = []
+           await this.getShoppingList()
+           this.allItems.push(itemToDelete.itemName)
+         }
+       },
+       async addToBuy(item) {
+         const itemToBuy = {
+           "itemName": item,
+           "shoppingListId": localStorage.getItem("shoppingListId"),
+           "amount": "10",
+           "measurementType": "2"
+         }
+         this.buyItems.push(itemToBuy.itemName)
+         this.shoppingList.splice(this.shoppingList.indexOf(itemToBuy.itemName), 1)
+       },
+       async removeFromBuy(item) {
+         const itemFromBuy = {
+           "itemName": item,
+           "shoppingListId": localStorage.getItem("shoppingListId"),
+           "amount": "10",
+           "measurementType": "2"
+         }
+         this.buyItems.splice(this.buyItems.indexOf(itemFromBuy.itemName), 1)
+         this.shoppingList.push(itemFromBuy.itemName)
+       },
       async mount() {
         await this.getShoppingList()
         await this.getAllItems()
-      }
+      },
+      async setUserLevel(){
+        this.betaUser = localStorage.getItem("userType") === "false";
+      },
+      async addRecommendedItems(){
+
+        const shoppingListId = (await shoppingListService.getShoppingListItems(localStorage.getItem("email"))).shoppingListId
+        const subUserId = localStorage.getItem("subUserId")
+
+
+        await shoppingListService.addShoppingPopularItems(shoppingListId, subUserId)
+
+        this.shoppingList = []
+        await this.getShoppingList()
+        this.selectedItem = "";
+        //this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
+      },
     },
     beforeMount(){
       this.mount()
+      this.setUserLevel()
+    },
+    mounted(){
+      if (localStorage.getItem("token") === null){
+        router.push("/")
+      }
     }
   }
 </script>
@@ -347,6 +429,9 @@
 <style>
   #container{
       margin-top: 150px;
+  }
+  #new-item-button{
+    margin-top:6px;
   }
 
 </style>

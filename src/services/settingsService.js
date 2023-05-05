@@ -33,9 +33,10 @@ export default {
         }).then((response) => {
             console.log("Adding subusers")
             console.log(response)
-            return response.data
+            return response
         }).catch(function (err) {
             console.log(err.response)
+            return err.response
         })
     },
     deleteSubuser(subuserID){
@@ -46,9 +47,10 @@ export default {
         }).then((response) => {
             console.log("Deleting subuser")
             console.log(response)
-            return response.data
+            return response
         }).catch(function (err) {
             console.log(err.response)
+            return err.response
         })
     },
     updateSubuser(update){
@@ -72,9 +74,10 @@ export default {
         }).then((response) => {
             console.log("updating master user info")
             console.log(response)
-            return response.data
+            return response
         }).catch(function (err) {
             console.log(err.response)
+            return err.response
         })
     }
 }

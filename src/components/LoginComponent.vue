@@ -1,5 +1,7 @@
 <template>
-  <v-sheet width="300" class="mx-auto" >
+  <div id="login-container">
+  <div><img src="../assets/logo.png" class="login-page-logo"></div>
+  <div id="login-page-form"><v-sheet width="300" class="mx-auto" >
     <v-form ref="form" fast-fail @submit.prevent>
       <div id="input-form">
   <div id="login-form">
@@ -63,28 +65,30 @@
         </v-text-field>
         </div>
     </div>
+      <div id="error-message-container-login"><p id="error-message-submit" class="error-message"></p></div>
     <div id="buttons">
       <div ><v-radio-group inline v-model="value">
         <v-radio
             id="login-radiobutton"
             label="Login"
             value="Login"
-            @click="show=true"
+            @click="resetError"
         >
         </v-radio>
         <v-radio
             id="register-radiobutton"
             label="Register"
             value="Register"
-            @click="show=false"
+            @click="resetError"
         >
         </v-radio>
       </v-radio-group></div>
       <v-btn id="submit-button" type="submit" block class="mt-2" @click="submit">{{ value }}</v-btn>
-      <p id="error-message-submit" class="error-message"></p>
     </div>
     </v-form>
   </v-sheet>
+  </div>
+  </div>
 </template>
 
 <script>
@@ -156,13 +160,13 @@ export default {
         return 'You must be between 16-123 years old to use SmartMat.'
       }
     },
-    checkPin(value){
-      if (/^\d{4}$/.test(value)) {
+    checkPin(value) {
+      if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
         return true
       } else {
         this.pinCheck = false;
-        return 'PIN-CODE must be 4 digits.'
+        return 'PIN must be 4 digits and cannot start with 0.'
       }
     },
     async login(){
@@ -184,12 +188,13 @@ export default {
           const masterUser = await settingsService.getAllSubusers(localStorage.getItem("email"))
           localStorage.setItem("masterUserId",masterUser[0].subUserId)
           router.push("/user")
+        } else if (response.status === 403){
+          document.getElementById("error-message-submit").innerHTML = "Email or password is not correct"
         } else {
-          document.getElementById("error-message-submit").innerHTML = response.data
+          document.getElementById("error-message-submit").innerHTML = "Login failed"
         }
       }).catch(function (err) {
         console.log(err.response)
-        console.log(err)
       })
     },
     async register(){
@@ -250,6 +255,14 @@ export default {
       localStorage.setItem("phone", information.phoneNumber)
       localStorage.setItem("household", information.household)
     },
+    resetError() {
+      try {
+        this.show = !this.show
+        document.getElementById("error-message-submit").innerHTML = ""
+      } catch (err) {
+        console.log(err.response)
+      }
+    }
   },
   data: () => ({
     emailCheck: false,
@@ -275,20 +288,17 @@ export default {
 </script>
 
 <style>
-#container{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 150px;
-}
 #input-form{
   display: grid;
-  height: 700px;
-  float: bottom;
-  margin-top: 10%;
+  max-height: 700px;
+  min-height: 300px;
+  margin: 10px;
   align-content: center;
 }
-#login-form{
+#login-page-form{
+  display: flex;
+  flex-direction: column-reverse;
+  text-align: center;
 }
 #buttons{
   display: flex;
@@ -299,4 +309,18 @@ input{
   margin-bottom: 5px;
 }
 
+#error-message-container-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.login-page-logo{
+  width: 500px;
+  height: 500px;
+  margin-top: 150px;
+}
+#login-container{
+  display: flex;
+  justify-content: center;
+}
 </style>
