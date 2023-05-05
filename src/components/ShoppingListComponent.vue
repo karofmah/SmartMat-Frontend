@@ -93,6 +93,10 @@
                     </v-card>
                   </v-dialog>
                   <v-spacer></v-spacer>
+                  <v-btn icon @click="addRecommendedItems">
+                      <v-icon>mdi-auto-fix</v-icon>
+                      <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add recommended items to shopping list</v-tooltip>
+                  </v-btn>
                   <v-btn icon @click="buy">
                       <v-icon>mdi-fridge</v-icon>
                       <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add selected items to fridge</v-tooltip>
@@ -394,7 +398,20 @@
       },
       async setUserLevel(){
         this.betaUser = localStorage.getItem("userType") === "false";
-      }
+      },
+      async addRecommendedItems(){
+
+        const shoppingListId = (await shoppingListService.getShoppingListItems(localStorage.getItem("email"))).shoppingListId
+        const subUserId = localStorage.getItem("subUserId")
+
+
+        await shoppingListService.addShoppingPopularItems(shoppingListId, subUserId)
+
+        this.shoppingList = []
+        await this.getShoppingList()
+        this.selectedItem = "";
+        this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
+      },
     },
     beforeMount(){
       this.mount()
