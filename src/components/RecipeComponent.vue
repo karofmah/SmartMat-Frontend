@@ -1,10 +1,10 @@
 <template>
   <v-app>
     <div>
-      <v-card 
-        id="menu" 
-        class="mx-auto" 
-        max-width="800" 
+      <v-card
+        id="menu"
+        class="mx-auto"
+        max-width="800"
         :loading="loading"
       >
         <template v-slot:loader="{ isActive }">
@@ -53,7 +53,7 @@ This dialog will close when the process is done</v-card-text>
 
       </v-card>
       <div id="user-level-recipe">
-        <p v-if="betaUser">You are not authorized to create a menu :(</p>
+        <p v-if="betaUser" class="error-message">You are not authorized to create a menu</p>
       </div>
       <div class="card-container">
         <v-card v-for="(card, index) in cards.slice(0, numCards)" :key="index" class="card">

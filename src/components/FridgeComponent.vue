@@ -8,7 +8,7 @@
           <v-toolbar color="teal">
             <v-toolbar-title>Your Fridge</v-toolbar-title>
           </v-toolbar>
-          <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div>
+          <div id="error-fridge" class="error-message"><p v-if="betaUser">You are not authorized add items to the fridge</p></div>
           <div id="topBar">
             <v-dialog v-model="dialog" persistent width="400">
               <template v-slot:activator="{ props }">
