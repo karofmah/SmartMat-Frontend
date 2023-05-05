@@ -415,9 +415,9 @@ export default {
       if (this.amountCheck) {
         this.error = false
         const removeItem = {
-        'itemExpirationDateId': this.editedFoodItem.id,
-        'amount': this.amount,
-        'garbage': (this.waste === 'true')
+        "itemExpirationDateId": this.editedFoodItem.id,
+        "amount": this.amount,
+        "garbage": (this.waste === 'true')
         }
         console.log(removeItem);
         this.message = await fridgeService.deleteItem(removeItem)
