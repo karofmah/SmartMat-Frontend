@@ -11,12 +11,13 @@
                   >
                     <template v-slot:activator="{ props }">
                       <v-btn
+                          id="new-item-button"
                         color=""
                         dark
                         class="mb-2"
                         v-bind="props"
                         icon
-                      ><v-icon>mdi-plus-circle-outline</v-icon>
+                      ><v-icon>mdi-cart-arrow-down</v-icon>
                         <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add an item to shoppinglist</v-tooltip>
                       </v-btn>
                     </template>
@@ -92,7 +93,7 @@
                       </v-form>
                     </v-card>
                   </v-dialog>
-                  <v-spacer></v-spacer>
+
                   <v-btn icon @click="addRecommendedItems">
                       <v-icon>mdi-auto-fix</v-icon>
                       <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add recommended items to shopping list</v-tooltip>
@@ -410,7 +411,7 @@
         this.shoppingList = []
         await this.getShoppingList()
         this.selectedItem = "";
-        this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
+        //this.allItems.splice(this.allItems.indexOf(itemToAdd.itemName), 1)
       },
     },
     beforeMount(){
@@ -428,6 +429,9 @@
 <style>
   #container{
       margin-top: 150px;
+  }
+  #new-item-button{
+    margin-top:6px;
   }
 
 </style>
