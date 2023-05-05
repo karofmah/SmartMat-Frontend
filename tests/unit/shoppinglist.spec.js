@@ -2,7 +2,6 @@ import {describe, it, expect, afterEach} from 'vitest'
 
 import { mount } from '@vue/test-utils'
 import ShoppingListComponent from '../../src/components/ShoppingListComponent.vue'
-import shoppingListService from "@/services/shoppingListService";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 
@@ -17,8 +16,8 @@ describe('ShoppingListView.vue test', () => {
         const wrapper = mount(ShoppingListComponent)
         expect(wrapper.find('#shoppinglist-title').text()).toBe('Shopping list')
         expect(wrapper.find("#input").text()).toBe('')
-        expect(wrapper.find("#shoppinglist-tooltip").text()).toBe('Add selected items to fridge')
-
+        expect(wrapper.find("#buy-shoppinglist-tooltip").text()).toBe('Add selected items to fridge')
+        expect(wrapper.find("#add-recommended-shoppinglist-tooltip").text()).toBe('Add recommended items to shopping list')
     })
 
     it('correctly getting list of all items', async () => {

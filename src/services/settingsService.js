@@ -7,9 +7,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting user info")
-            console.log(response)
             return response.data
+        }).catch(function (err) {
+            return err.response
         })
     },
     getAllSubusers(email){
@@ -18,11 +18,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting subusers")
-            //console.log(response)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     addNewSubuser(subuser){
@@ -31,11 +29,8 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Adding subusers")
-            console.log(response)
             return response
         }).catch(function (err) {
-            console.log(err.response)
             return err.response
         })
     },
@@ -45,11 +40,8 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Deleting subuser")
-            console.log(response)
             return response
         }).catch(function (err) {
-            console.log(err.response)
             return err.response
         })
     },
@@ -59,11 +51,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("updating subuser info")
-            console.log(response)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     updateInformation(update){
@@ -72,11 +62,8 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("updating master user info")
-            console.log(response)
             return response
         }).catch(function (err) {
-            console.log(err.response)
             return err.response
         })
     }

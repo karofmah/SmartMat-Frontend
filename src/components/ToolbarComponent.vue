@@ -2,7 +2,7 @@
   <nav>
     <v-toolbar flat app>
       <v-toolbar-title class="text-uppercase grey--text">
-        <div id="logo-name-toolbar" :elevation="50">
+        <div id="logo-name-toolbar">
           <div>
             <img src="../assets/logo.png" id="logo-image">
           </div>
@@ -53,7 +53,7 @@ import { useTheme, useDisplay } from 'vuetify'
 export default {
   methods: {
     route(){
-      router.push("/user")
+      router.push("/fridge")
     },
     clear(){
       localStorage.clear()

@@ -16,23 +16,18 @@
             </v-sheet>
           </div>
           <div id="buttons">
-            <div class="settings-buttons"><v-btn id="info-button" class="font-weight-bold" color="primary" @click="changeInfo" :disabled="betaUser">{{ picked }}</v-btn></div>
+            <div class="settings-buttons"><v-btn id="info-button" class="font-weight-bold" color="primary" @click="changeAccountInfo" :disabled="childUser">{{ picked }}</v-btn></div>
             <div id="newSubUser" class="settings-buttons">
               <v-row>
-                <v-dialog
-                    v-model="dialog"
-                    persistent
-                    width="400"
-                >
+                <v-dialog v-model="dialog" persistent width="400">
                   <template v-slot:activator="{ props }">
                     <v-btn
                         id="addNewSubuserButton"
                         class="font-weight-bold"
                         color="teal"
                         v-bind="props"
-                        :disabled="betaUser"
-                    >
-                      Add new user
+                        :disabled="childUser"
+                    >Add new user
                     </v-btn>
                   </template>
                   <v-card>
@@ -42,30 +37,23 @@
                     <v-card-text>
                       <v-container>
                         <v-row>
-                          <v-col
-                              cols="12"
-                          >
+                          <v-col cols="12">
                             <v-text-field
-                                v-model="username"
+                                v-model="usernameNewSubuser"
                                 label="Username*"
-                                :rules="[checkUsername]"
-                            ></v-text-field>
+                                :rules="[checkUsername]"></v-text-field>
                           </v-col>
-                          <v-col
-                              cols="12"
-                          >
+                          <v-col cols="12">
                             <v-select
-                                v-model="userType"
+                                v-model="usertypeNewSubuser"
                                 :items="types"
                                 label="User level*"
                                 :rules="[checkUsertype]"
                             ></v-select>
                           </v-col>
-                          <v-col
-                              cols="12"
-                          >
+                          <v-col cols="12">
                             <v-text-field
-                                v-if="userType==='Adult'"
+                                v-if="usertypeNewSubuser==='Adult'"
                                 v-model="pinCode"
                                 label="Pin-Code*"
                                 :rules="[checkPin]"
@@ -77,19 +65,8 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn
-                          color="blue-darken-1"
-                          variant="text"
-                          @click="dialog = false"
-                      >
-                        Close
-                      </v-btn>
-                      <v-btn
-                          color="blue-darken-1"
-                          variant="text"
-                          @click="addSubuser"
-                      >
-                        Save
+                      <v-btn color="blue-darken-1" variant="text" @click="dialog = false">Close</v-btn>
+                      <v-btn color="blue-darken-1" variant="text" @click="addSubuser">Save
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -97,27 +74,22 @@
               </v-row>
             </div>
           </div>
-          <div><p v-if="betaUser">You are not authorized to make changes</p></div>
+          <div><p v-if="childUser">You are not authorized to make changes</p></div>
       </v-card>
       <div id="users">
-        <UserComponent v-on:update-users="getSubusers" v-for="user in users" :key="user.subUserId" :name="user.name" :user="user" :type="user.accessLevel" :id="user.subUserId"/>
+        <UserComponent
+            v-on:update-users="getSubusers"
+            v-for="user in users"
+            :key="user.subUserId"
+            :name="user.name"
+            :user="user"
+            :type="user.accessLevel"
+            :id="user.subUserId"/>
       </div>
     </div>
-    <v-snackbar
-        v-model="snackbar"
-        color="teal"
-        :timeout="2000"
-    >
-      {{ text }}
-
+    <v-snackbar v-model="snackbar" color="teal" :timeout="2000">{{ snackbarText }}
       <template v-slot:actions>
-        <v-btn
-            color="white"
-            variant="text"
-            @click="snackbar = false"
-        >
-          Close
-        </v-btn>
+        <v-btn color="white" variant="text" @click="snackbar = false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-app>
@@ -131,37 +103,36 @@ export default {
   components: {UserComponent},
   data(){
     return {
-      text: "",
-      snackbar: false,
-      betaUser: true,
-      username: null,
-      userType: null,
-      pinCode: '',
-      types: ["Adult", "Child"],
-      dialog: false,
-      picked: "Change your information",
-      change: false,
-      editing: false,
       email: localStorage.getItem("email"),
       firstname: localStorage.getItem("firstname"),
       lastname: localStorage.getItem("lastname"),
       phone: localStorage.getItem("phone"),
       household: localStorage.getItem("household"),
+      types: ["Adult", "Child"],
+      picked: "Change your information",
       users: [],
-      nameValid: false,
-      lastNameValid: false,
-      phoneValid: false,
-      householdValid: false,
+      snackbarText: "",
+      snackbar: false,
+      dialog: false,
+      change: false,
+      editing: false,
+      childUser: true,
+      usernameNewSubuser: null,
+      usertypeNewSubuser: null,
+      pinCode: '',
+      nameCheck: false,
+      lastnameCheck: false,
+      phoneCheck: false,
+      householdCheck: false,
       pinCheck: false,
       usernameCheck: false,
       usertypeCheck: false,
-      max: false,
       typeToSend: false
     };
   },
   methods: {
     async setUserLevel(){
-      this.betaUser = localStorage.getItem("userType") === "false";
+      this.childUser = localStorage.getItem("userType") === "false";
     },
     async getSubusers(){
       this.users = []
@@ -169,37 +140,37 @@ export default {
     },
     async addSubuser(){
       if(this.usernameCheck && this.usertypeCheck) {
-        this.typeToSend = this.userType === "Adult"
+        this.typeToSend = this.usertypeNewSubuser === "Adult"
         if ((this.typeToSend && this.pinCheck) || !this.typeToSend){
           const subuser = {
-            "name": this.username,
+            "name": this.usernameNewSubuser,
             "accessLevel": this.typeToSend,
             "userEmail": localStorage.getItem("email"),
             "pinCode": this.pinCode
           }
           const feedback = await settingsService.addNewSubuser(subuser)
-          this.text = feedback.data
+          this.snackbarText = feedback.data
           this.snackbar = true
           if(feedback.status === 201) {
             await this.getSubusers()
             this.dialog = false
           }
         } else {
-          this.text = "Missing pin code"
+          this.snackbarText = "Missing pin code"
           this.snackbar = true
         }
         }else {
-          this.text = "Failed to add user"
+          this.snackbarText = "Failed to add user"
           this.snackbar = true
         }
     },
-    async changeInfo(){
+    async changeAccountInfo(){
       if(!this.editing){
         this.change = !this.change
         this.editing = !this.editing
         this.picked = "Save your new information"
       } else {
-        if(this.nameValid && this.lastNameValid && this.householdValid && this.phoneValid) {
+        if(this.nameCheck && this.lastnameCheck && this.householdCheck && this.phoneCheck) {
           const firstName = this.firstname
           const lastName = this.lastname
           const update = {
@@ -222,46 +193,44 @@ export default {
             this.editing = !this.editing
             this.picked = "Change your information"
           }
-          this.text = feedback.data
+          this.snackbarText = feedback.data
           this.snackbar = true
-
         }
       }
-
     },
     checkName(value) {
       if (value?.length > 0) {
-        this.nameValid = true
+        this.nameCheck = true
         return true
       } else {
-        this.nameValid = false
+        this.nameCheck = false
         return 'First name cannot be empty.'
       }
     },
     checkLastName(value) {
       if (value?.length > 0) {
-        this.lastNameValid = true
+        this.lastnameCheck = true
         return true
       } else {
-        this.lastNameValid = false
+        this.lastnameCheck = false
         return 'Last name cannot be empty.'
       }
     },
     checkPhoneNumber(value) {
       if (value?.length === 8) {
-        this.phoneValid = true
+        this.phoneCheck = true
         return true
       } else {
-        this.phoneValid = false
+        this.phoneCheck = false
         return 'Number must be 8 digits.'
       }
     },
     checkHousehold(value) {
       if (value > 0) {
-        this.householdValid = true
+        this.householdCheck = true
         return true
       } else {
-        this.householdValid = false
+        this.householdCheck = false
         return 'There must be at least 1 household member.'
       }
     },
