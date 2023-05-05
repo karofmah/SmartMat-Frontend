@@ -1,7 +1,6 @@
 <template>
   <div id="stats-container">
     <div id="stats">
-
       <v-card class="stats-card">
         <v-toolbar color="teal">
           <v-toolbar-title class="font-weight-bold">Personal yearly amount ({{ personalChosenYear }})</v-toolbar-title>
@@ -42,6 +41,7 @@
         <v-card-text class="text-pre-wrap">Average amount of garbage thrown in {{averageChosenYear}} is {{averageYearAmount}}kg</v-card-text>
       </v-card>
     </div>
+
     <div id="button-and-chart">
       <div>
         <v-menu>
@@ -63,7 +63,7 @@
         id="my-chart-id"
         :options="chartOptions"
         :data="chartData"
-    />
+      />
     </div>
   </div>
 </template>
@@ -124,7 +124,6 @@ export default {
         this.personalChosenYear = year
         this.displayPersonal = data.data
       }
-      //this.personalYearAmount = await statsService.getPersonalGarbageYear(localStorage.getItem("fridgeId"), year)
     },
     async getAverageYearAmount(year){
       this.averageYearAmount = await statsService.getAverageGarbageYear(localStorage.getItem("fridgeId"), year)
@@ -176,7 +175,6 @@ export default {
   flex-wrap: wrap;
   flex-direction: column;
   align-content: center;
-  overflow: hidden;
 }
 
 #stats {
