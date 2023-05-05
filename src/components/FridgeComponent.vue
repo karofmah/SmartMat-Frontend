@@ -380,8 +380,6 @@ export default {
             fridgeSubItems.push({ 'id': list[i].itemsInRefrigerator[j].itemExpirationDateId, 'name': list[i].item.name, 'amount': list[i].itemsInRefrigerator[j].amount, 'measurement': list[i].measurementType, 'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')  })
             amount += list[i].itemsInRefrigerator[j].amount
           }
-          // const dates = fridgeSubItems.map(({date}) => new Date(date))
-          // const minDate = new Date(Math.min(...dates))    minDate.toISOString().slice(0,10)
           this.fridgeItems.push({'id': list[i].itemRefrigeratorId, 'name': list[i].item.name, 'amount': amount, 'measurement': list[i].measurementType, 'date': list[i].itemsInRefrigerator[0].date, 'foods': fridgeSubItems, 'category': this.getCategoryById(list[i].item.categoryId)})
         }
         console.log(this.fridgeItems);
@@ -390,6 +388,7 @@ export default {
       }
     },
     async updateFridgeItem(){
+      this.selectedDate.setDate(this.selectedDate.getDate() + 1)
       this.fridgeItems = this.fridgeItems.map(obj => {
         if (obj.id == this.editedFoodId) {
           (obj.date == this.editedFoodItem.date) ? obj.date = new Date(this.selectedDate).toISOString().slice(0,10) : obj.date
@@ -418,7 +417,7 @@ export default {
         const removeItem = {
         'itemExpirationDateId': this.editedFoodItem.id,
         'amount': this.amount,
-        'garbage': this.waste
+        'garbage': (this.waste === 'true')
         }
         console.log(removeItem);
         this.message = await fridgeService.deleteItem(removeItem)
