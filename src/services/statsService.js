@@ -8,9 +8,10 @@ export default {
             }
         }).then((response) => {
             console.log("getting personal amount of garbage for specific year")
-            return response.data
+            return response
         }).catch(function (err) {
             console.log(err.response)
+            return err.response
         })
     },
     getPersonalGarbageMonth(fridgeId, year){
