@@ -102,7 +102,6 @@ export default {
       this.getMenuCards(menuString)
     },
     async getRecipes(email) {
-      this.loading = true
       const menuString = await recipeService.getWeeklyMenu(email)
       this.getMenuCards(menuString)
     },
