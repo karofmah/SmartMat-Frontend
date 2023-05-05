@@ -66,7 +66,7 @@
             <v-text-field
               v-model="search"
               append-inner-icon="mdi-magnify"
-              label="Search"
+              label="Search for item"
               single-line
               hide-details
             ></v-text-field>
@@ -267,7 +267,7 @@ export default {
       },
       {title: 'Amount', value: 'amount'},
       {title: 'Measurement', value: 'measurement'},
-      {title: 'Date', value: 'date'},
+      {title: 'Expiration date', value: 'date'},
     ],
     }
   },
