@@ -7,10 +7,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting all categories")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     getAllItemsByCategory(fridgeId, categoryId){
@@ -19,10 +18,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting all by category")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     getAllItems(){
@@ -31,10 +29,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting all items")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     getAllItemsInFridge(email){
@@ -43,11 +40,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting all items in fridge")
-            console.log(response.data.items)
             return response.data.items
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     addNewItemToFridge(item){
@@ -56,11 +51,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("adding items to fridge")
-            console.log(response.data)
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     deleteItem(item){
@@ -70,11 +63,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("removing item from fridge")
-            console.log(response)
             return response.data
         }).catch(function (err) {
-            console.log(err)
+            return err.response
         })
     },
     updateItemInFridge(item){
@@ -83,11 +74,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("updating fridge")
-            console.log(response)
             return response
         }).catch(function (err) {
-            console.log(err)
+            return err.response
         })
     }
 }

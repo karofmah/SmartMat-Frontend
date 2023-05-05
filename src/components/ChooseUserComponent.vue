@@ -2,7 +2,15 @@
   <div id="choose-user-container">
     <h1>Who's cooking?</h1>
     <div id="choose-users">
-      <UserComponent class="choose-card" v-for="user in users" :key="user.id" :user="user" :name="user.name" :type="user.accessLevel" :id="user.subUserId" :pin="user.pinCode"/>
+      <UserComponent
+          class="choose-card"
+          v-for="user in users"
+          :key="user.id"
+          :user="user"
+          :name="user.name"
+          :type="user.accessLevel"
+          :id="user.subUserId"
+          :pin="user.pinCode"/>
     </div>
   </div>
 </template>

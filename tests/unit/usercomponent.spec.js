@@ -3,10 +3,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { mount } from '@vue/test-utils'
 
 import UserComponent from '../../src/components/UserComponent.vue'
-import ChooseUserComponent from "@/components/ChooseUserComponent.vue";
-import SettingsComponent from "@/components/SettingsComponent.vue";
-
-import settingsService from "@/services/settingsService";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 
@@ -123,11 +119,11 @@ describe('User component tests', () => {
         });
         localStorage.setItem("userType", "false")
         await wrapper.vm.setUserLevel()
-        expect(wrapper.vm.betaUser).toBe(true)
+        expect(wrapper.vm.isChildUser).toBe(true)
 
         localStorage.setItem("userType", "true")
         await wrapper.vm.setUserLevel()
-        expect(wrapper.vm.betaUser).toBe(false)
+        expect(wrapper.vm.isChildUser).toBe(false)
 
     });
 
@@ -137,8 +133,8 @@ describe('User component tests', () => {
                 plugins: [router],
             },
         });
-        wrapper.vm.edit = false
+        wrapper.vm.showEditingWindow = false
         wrapper.vm.editInfo()
-        expect(wrapper.vm.edit).toBe(true)
+        expect(wrapper.vm.showEditingWindow).toBe(true)
     });
 })
