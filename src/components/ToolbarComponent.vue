@@ -2,9 +2,13 @@
   <nav>
     <v-toolbar flat app>
       <v-toolbar-title class="text-uppercase grey--text">
-        <div id="logo-name-toolbar"><div><img src="../assets/logo.png" id="logo-image"></div>
-        <div @click="route" id="toolbar-name"><span class="font-weight-light">Smart</span>
-          <span>Mat</span></div></div>
+        <div id="logo-name-toolbar"><div>
+          <img src="../assets/logo.png" id="logo-image">
+        </div>
+        <div @click="route" id="toolbar-name">
+          <span class="font-weight-light">Smart</span>
+          <span>Mat</span></div>
+        </div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div v-if="!mobile">
