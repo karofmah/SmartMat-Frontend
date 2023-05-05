@@ -97,13 +97,13 @@
                   <v-icon
                         size="small"
                         class="me-2"
-                        @click="editDate(item.raw.id, food.id, food.amount, food.measurement, food.date)"
+                        @click="editDate(item.raw.id, food)"
                       >
                         mdi-calendar
                       </v-icon>
                       <v-icon
                         size="small"
-                        @click="deleteItem(food)"
+                        @click="deleteItem(item.raw.id, food)"
                       >
                         mdi-delete
                       </v-icon>
@@ -164,6 +164,105 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+
+            <v-dialog
+              v-model="deleteDialog"
+              persistent
+              width="400"
+            >
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">Remove item</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                      >
+                        <v-text-field type="text" :readOnly="true">{{this.editedFoodItem.name}}</v-text-field>
+                      </v-col>
+                      <v-col
+                          cols="12"
+                      ><div ><v-radio-group inline v-model="waste">
+                        <v-radio
+                          id="throw-radiobutton"
+                          label="Throw:("
+                          value="true"
+                        >
+                        </v-radio>
+                        <v-radio
+                          id="eat-radiobutton"
+                          label="Eaten:)"
+                          value="false"
+                        >
+                        </v-radio>
+                      </v-radio-group></div>
+
+                      </v-col>
+                      <v-col
+                        cols="12"
+                      ><v-text-field
+                        label="Amount*"
+                        :rules="[ checkAmount ]"
+                        v-model="amount"
+                      ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                  <small>*indicates required field</small>
+                  <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="deleteDialog = false"
+                  >
+                    Close
+                  </v-btn>
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="removeItem"
+                  >
+                    Remove
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
+            <v-dialog
+              v-model="shoppingList"
+              persistent
+              width="auto"
+            >
+              <v-card>
+                <v-card-title class="text-h5">
+                  Add to shopping list
+                </v-card-title>
+                <v-card-text>{{ message }}</v-card-text>
+                <v-card-text>Do you want to add {{ editedFoodItem.name }} to your shopping list?</v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="green-darken-1"
+                    variant="text"
+                    @click="shoppingList = false"
+                  >
+                    No
+                  </v-btn>
+                  <v-btn
+                    color="green-darken-1"
+                    variant="text"
+                    @click="updateFridgeItem"
+                  >
+                    Yes
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
 
         </v-card>
@@ -196,16 +295,17 @@ export default {
       dialog: false,
       picker: false,
       deleteDialog: false,
+      shoppingList: false,
       newItemName: null,
       newItemAmount: null,
       newItemMeasurement: null,
       recipe: "This is your AI powerd dinner generator.\nTo create a recepie using ingredients in your fridge, press the knife and fork icon in the toolbar.",
       show: false,
       editedFoodId: null,
-      editedFoodItemId: null,
-      editedFoodItemDate: null,
-      editedFoodItemAmount: null,
-      editedFoodItemMeasurement: null,
+      editedFoodItem: null,
+      waste: "true",
+      amount: null,
+      message: null,
       items: [],
       myItems: [],
       fridgeItems: [],
@@ -292,9 +392,9 @@ export default {
     async updateFridgeItem(){
       this.fridgeItems = this.fridgeItems.map(obj => {
         if (obj.id == this.editedFoodId) {
-          (obj.date == this.editedFoodItemDate) ? obj.date = new Date(this.selectedDate).toISOString().slice(0,10) : obj.date
+          (obj.date == this.editedFoodItem.date) ? obj.date = new Date(this.selectedDate).toISOString().slice(0,10) : obj.date
           obj.foods.map(m => {
-            if (m.id == this.editedFoodItemId) {
+            if (m.id == this.editedFoodItem.id) {
               m.date = new Date(this.selectedDate).toISOString().slice(0,10)
             }
             return m
@@ -304,13 +404,32 @@ export default {
       })
       this.picker = false
       let item = {
-        'itemExpirationDateId': this.editedFoodItemId,
-        'amount': this.editedFoodItemAmount,
-        'measurementType': this.editedFoodItemMeasurement,
+        'itemExpirationDateId': this.editedFoodItem.id,
+        'amount': this.editedFoodItem.amount,
+        'measurementType': this.editedFoodItem.measurement,
         'date': new Date(this.selectedDate).toISOString().slice(0,10)
       }
       console.log(item);
       await fridgeService.updateItemInFridge(item)
+    },
+    async removeItem() {
+      if (this.amountCheck) {
+        this.error = false
+        const removeItem = {
+        'itemExpirationDateId': this.editedFoodItem.id,
+        'amount': this.amount,
+        'garbage': this.waste
+        }
+        console.log(removeItem);
+        this.message = await fridgeService.deleteItem(removeItem)
+        await this.getAllFridgeItems()
+        this.$emit('update-fridge')
+        this.deleteDialog = false
+        this.shoppingList = true
+      } else {
+        this.error = true
+      }
+
     },
     async getAllItems(){
       try {
@@ -322,6 +441,18 @@ export default {
       } catch(err) {
         console.log(err)
       }
+    },
+    async addToShoppingList(){
+      const itemToAdd = {
+        "itemName": this.editedFoodItem.name,
+        "shoppingListId": localStorage.getItem("shoppingListId"),
+        "subUserId": localStorage.getItem("subUserId"),
+        "amount": this.amount,
+        "measurementType": this.editedFoodItem.measurement
+      }
+      console.log(itemToAdd)
+      await shoppingListService.addShoppingListItems(itemToAdd)
+      this.shoppingList = false
     },
     checkName(value){
       if (value?.length > 0) {
@@ -362,19 +493,30 @@ export default {
       console.log(this.categories[i].description);
       return this.categories[i].description
     },
-    async editDate(itemId, dateId, amount, measurement, date){
+    editDate(itemId, food){
       console.log(itemId);
-      console.log(dateId);
+      console.log(food);
       this.editedFoodId = itemId
-      this.editedFoodItemId = dateId
-      this.editedFoodItemDate = date
-      this.editedFoodItemAmount = amount
-      this.editedFoodItemMeasurement = measurement
+      this.editedFoodItem = food
+      console.log(this.editedFoodItem.date);
       this.picker = true
     },
-    deleteItem(item){
-      console.log(item)
-    }
+    deleteItem(itemId, food){
+      console.log(itemId)
+      this.editedFoodId = itemId
+      this.editedFoodItem = food
+      this.amount = food.amount
+      this.deleteDialog = true
+    },
+    checkAmount(value){
+      if (value > 0) {
+        this.amountCheck = true;
+        return true
+      } else {
+        this.amountCheck = false;
+        return 'Amount cannot be below 0.'
+      }
+    },
   },
   created(){
     this.getAllCategories()
