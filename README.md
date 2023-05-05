@@ -118,10 +118,11 @@ You need both Java and Maven downloaded and installed.
 
 - You can download Java [here](https://www.oracle.com/java/technologies/downloads/#java17)
 - And Maven [here](https://maven.apache.org/download.cgi)
-Once these are installed you are ready to begin. 
-To ensure you have maven correctly installed run:mvn
 
-  mvn --version
+
+Once these are installed you are ready to begin. To ensure you have maven correctly installed run:
+
+    mvn --version
 
 If this returns the version of Maven you just installed, run the following command to clone the project:
 
@@ -289,3 +290,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
