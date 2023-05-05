@@ -256,7 +256,7 @@
                   <v-btn
                     color="green-darken-1"
                     variant="text"
-                    @click="updateFridgeItem"
+                    @click="addToShoppingList"
                   >
                     Yes
                   </v-btn>
@@ -287,6 +287,7 @@ import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
 import Datepicker from 'vue3-datepicker';
 import { ref } from 'vue'
+import shoppingListService from "@/services/shoppingListService";
 
 export default {
   components: {CategoryComponent, Datepicker},
@@ -460,15 +461,6 @@ export default {
       } else {
         this.nameCheck = false;
         return 'Name cannot be empty.'
-      }
-    },
-    checkAmount(value){
-      if (value > 0) {
-        this.amountCheck = true;
-        return true
-      } else {
-        this.amountCheck = false;
-        return 'Amount cannot be below 0.'
       }
     },
     checkMeasurement(value){
