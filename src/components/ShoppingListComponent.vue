@@ -18,7 +18,7 @@
                         v-bind="props"
                         icon
                       ><v-icon>mdi-cart-arrow-down</v-icon>
-                        <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add an item to shoppinglist</v-tooltip>
+                        <v-tooltip id="add-item-shoppinglist-tooltip" activator="parent" location="start">Add an item to shoppinglist</v-tooltip>
                       </v-btn>
                     </template>
                     <v-card>
@@ -96,7 +96,7 @@
 
                   <v-btn icon @click="addRecommendedItems">
                       <v-icon>mdi-auto-fix</v-icon>
-                      <v-tooltip id="shoppinglist-tooltip" activator="parent" location="start">Add recommended items to shopping list</v-tooltip>
+                      <v-tooltip id="add-recommended-shoppinglist-tooltip" activator="parent" location="start">Add recommended items to shopping list</v-tooltip>
                   </v-btn>
                   <v-btn icon @click="buy">
                       <v-icon>mdi-fridge</v-icon>
