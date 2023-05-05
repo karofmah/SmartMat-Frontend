@@ -2,15 +2,16 @@
   <nav>
     <v-toolbar flat app>
       <v-toolbar-title class="text-uppercase grey--text">
-        <div id="logo-name-toolbar"><div>
-          <img src="../assets/logo.png" id="logo-image">
-        </div>
-        <div @click="route" id="toolbar-name">
-          <span class="font-weight-light">Smart</span>
-          <span>Mat</span></div>
+        <div id="logo-name-toolbar">
+          <div>
+            <img src="../assets/logo.png" id="logo-image">
+          </div>
+          <div @click="route" id="toolbar-name">
+            <span class="font-weight-light">Smart</span>
+            <span>Mat</span>
+          </div>
         </div>
       </v-toolbar-title>
-      <v-spacer></v-spacer>
       <div v-if="!mobile">
         <v-tabs v-model="tab" hide-slider="true">
           <v-tab flat color="grey" to="/fridge">Fridge<v-icon icon="mdi-fridge"></v-icon></v-tab>
@@ -52,7 +53,7 @@ import { useTheme, useDisplay } from 'vuetify'
 export default {
   methods: {
     route(){
-      router.push("/user")
+      router.push("/fridge")
     },
     clear(){
       localStorage.clear()
