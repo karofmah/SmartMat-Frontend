@@ -104,7 +104,9 @@
 <script>
 import router from "@/router";
 import loginService from "@/services/loginService.js";
-import settingsService from "@/services/settingsService";
+import settingsService from "@/services/settingsService.js";
+import shoppingListService from "@/services/shoppingListService.js";
+
 export default {
   data: () => ({
     emailCheck: false,
@@ -208,6 +210,7 @@ export default {
         if (response.status === 200){
           localStorage.setItem("email", loginInfo.email)
           await loginService.getFridgeId(localStorage.getItem("email"))
+          await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", information.firstName)
           localStorage.setItem("lastname", information.lastName)
@@ -252,6 +255,7 @@ export default {
             "pinCode": pinCode
           }
           await settingsService.addNewSubuser(accountAdultUser)
+          await shoppingListService.getShoppingListItems(localStorage.getItem("email"))
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", information.firstName)
           localStorage.setItem("lastname", information.lastName)
