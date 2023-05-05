@@ -585,9 +585,7 @@ export default {
   margin-top: 20px;
 
 }
-.textarea{
-  resize: none;
-}
+
 #error-fridge {
   margin: 10px;
 }
