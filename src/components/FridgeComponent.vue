@@ -10,7 +10,6 @@
           </v-toolbar>
           <div id="error-fridge"><p v-if="betaUser">You are not authorized add items to the fridge :(</p></div>
           <div id="topBar">
-          <!-- <div id="search"><v-autocomplete  placeholder="search your fridge..." :items="myItems" ></v-autocomplete></div> -->
             <v-dialog v-model="dialog" persistent width="400">
               <template v-slot:activator="{ props }">
                 <div id="addNewItemButton" >
@@ -27,11 +26,11 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12">
-                        <v-autocomplete 
-                        type="text" 
-                        placeholder="Select food" 
-                        clearable :items="items" 
-                        v-model="newItemName" 
+                        <v-autocomplete
+                        type="text"
+                        placeholder="Select food"
+                        clearable :items="items"
+                        v-model="newItemName"
                         :rules="[ checkName ]">
                       </v-autocomplete>
                       </v-col>
@@ -221,7 +220,6 @@
 
 <script>
 import fridgeService from "@/services/fridgeService";
-import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
 import Datepicker from 'vue3-datepicker';
 import { ref } from 'vue'
@@ -229,7 +227,7 @@ import shoppingListService from "@/services/shoppingListService";
 import router from "@/router"
 
 export default {
-  components: {CategoryComponent, Datepicker},
+  components: {Datepicker},
   data() {
     return {
       dialog: false,
@@ -311,23 +309,23 @@ export default {
           let fridgeSubItems = []
           let amount = 0
           for(let j = 0; j < list[i].itemsInRefrigerator.length; j++){
-            fridgeSubItems.push({ 
-              'id': list[i].itemsInRefrigerator[j].itemExpirationDateId, 
-              'name': list[i].item.name, 
-              'amount': list[i].itemsInRefrigerator[j].amount, 
-              'measurement': list[i].measurementType, 
-              'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')  
+            fridgeSubItems.push({
+              'id': list[i].itemsInRefrigerator[j].itemExpirationDateId,
+              'name': list[i].item.name,
+              'amount': list[i].itemsInRefrigerator[j].amount,
+              'measurement': list[i].measurementType,
+              'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')
             })
             amount += list[i].itemsInRefrigerator[j].amount
           }
-          
+
           this.fridgeItems.push({
-            'id': list[i].itemRefrigeratorId, 
-            'name': list[i].item.name, 
-            'amount': amount, 
-            'measurement': list[i].measurementType, 
-            'date': '', 
-            'foods': fridgeSubItems, 
+            'id': list[i].itemRefrigeratorId,
+            'name': list[i].item.name,
+            'amount': amount,
+            'measurement': list[i].measurementType,
+            'date': '',
+            'foods': fridgeSubItems,
             'category': this.getCategoryById(list[i].item.categoryId)
           })
         }
@@ -494,32 +492,15 @@ export default {
   justify-content: center;
 }
 
-#category-list {
-  float: left;
-}
-
 #searchbar {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
 }
-#search {
-  width: 100%;
-  max-width: 300px;
-  margin: 10px;
-}
-#category-list {
-  list-style-type: none;
-  overflow: hidden;
-}
 #topBar {
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
-#category-component {
-  float: left;
-  margin: 10px;
 }
 #addNewItemButton{
   margin: 10px;

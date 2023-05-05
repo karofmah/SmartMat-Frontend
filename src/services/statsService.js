@@ -20,7 +20,7 @@ export default {
         }).then((response) => {
             return response.data
         }).catch(function (err) {
-            return err.response
+            return err.response.data
         })
     },
     getAverageGarbageYear(fridgeId, year){
