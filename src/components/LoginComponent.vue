@@ -170,14 +170,13 @@ export default {
       }
     },
     async login(){
-      const info = {
+      const loginInfo = {
         "email": this.email,
         "password": this.password
       }
-      await loginService.login(info).then(async function (response) {
-        console.log(response)
+      await loginService.login(loginInfo).then(async function (response) {
         if (response.status === 200){
-          localStorage.setItem("email", info.email)
+          localStorage.setItem("email", loginInfo.email)
           await loginService.getFridgeId(localStorage.getItem("email"))
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", information.firstName)
@@ -194,11 +193,11 @@ export default {
           document.getElementById("error-message-submit").innerHTML = "Login failed"
         }
       }).catch(function (err) {
-        console.log(err.response)
+        console.log(err)
       })
     },
     async register(){
-      const info = {
+      const registerInfo = {
         "email": this.email,
         "password": this.password,
         "firstName": this.firstname,
@@ -211,20 +210,19 @@ export default {
       const firstname = this.firstname
       const pinCode = this.pinCode
 
-      await loginService.registerUser(info).then(async function (response) {
-        console.log(response.status)
+      await loginService.registerUser(registerInfo).then(async function (response) {
         if (response.status === 201){
-          localStorage.setItem("email", info.email)
+          localStorage.setItem("email", registerInfo.email)
           await loginService.getFridgeId(localStorage.getItem("email"))
-          console.log(localStorage.getItem("fridgeId"))
           localStorage.setItem("pin-code", pinCode)
-          const subuser = {
+
+          const accountAdultUser = {
             "name": firstname,
             "accessLevel": true,
             "userEmail": localStorage.getItem("email"),
             "pinCode": pinCode
           }
-          await settingsService.addNewSubuser(subuser)
+          await settingsService.addNewSubuser(accountAdultUser)
           const information = await settingsService.getUserInfo(localStorage.getItem("email"))
           localStorage.setItem("firstname", information.firstName)
           localStorage.setItem("lastname", information.lastName)
@@ -247,14 +245,6 @@ export default {
         await this.register()
       }
     },
-    async getInformation(){
-      console.log(await settingsService.getUserInfo(localStorage.getItem("email")))
-      const information = await settingsService.getUserInfo(localStorage.getItem("email"))
-      localStorage.setItem("firstname", information.firstName)
-      localStorage.setItem("lastname", information.lastName)
-      localStorage.setItem("phone", information.phoneNumber)
-      localStorage.setItem("household", information.household)
-    },
     resetError() {
       try {
         this.show = !this.show
@@ -263,27 +253,7 @@ export default {
         console.log(err.response)
       }
     }
-  },
-  data: () => ({
-    emailCheck: false,
-    passwordCheck: false,
-    firstNameCheck: false,
-    lastNameCheck: false,
-    phoneCheck: false,
-    householdCheck: false,
-    ageCheck: false,
-    pinCheck: false,
-    show: true,
-    value: "Login",
-    email: null,
-    password: null,
-    firstname:'',
-    lastname:'',
-    phoneNumber:'',
-    household:'',
-    age:'',
-    pinCode: ''
-  }),
+  }
 }
 </script>
 
