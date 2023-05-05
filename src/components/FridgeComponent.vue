@@ -444,7 +444,7 @@ export default {
         return true
       } else {
         this.amountCheck = false;
-        return 'Amount cannot be below 0.'
+        return 'Amount has to be a number above 0.'
       }
     },
   },
