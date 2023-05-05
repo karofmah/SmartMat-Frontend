@@ -35,7 +35,7 @@
           <v-card-title class="text-h5">
             Please wait
           </v-card-title>
-          <v-card-text>The Ai is generating a recepie please wait while it does so, it might take a minute. <br/> Leaving the page will stop the process.
+          <v-card-text>The Ai is generating a weekly menu for {{numPeople}} people, please wait while it does so, it might take a minute. <br/> Leaving the page will stop the process.
 This dialog will close when the process is done</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -50,7 +50,7 @@ This dialog will close when the process is done</v-card-text>
 
         <v-card v-for="(card, index) in cards.slice(0, numCards)" :key="index" class="card">
           <v-toolbar color="teal">
-            <v-toolbar-title>{{ card.title }}</v-toolbar-title>
+            <v-toolbar-title class="font-weight-bold">{{ card.title }}</v-toolbar-title>
           </v-toolbar>
           <v-card-subtitle class="text-pre-wrap">{{ card.subtitle }}</v-card-subtitle>
           <v-card-text class="text-pre-wrap">{{ card.content }}</v-card-text>
