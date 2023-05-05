@@ -85,12 +85,8 @@ describe('User component tests', () => {
             }
         })
 
-        await wrapper.setData({ id: 1, pinCode: 1234, name: 'Test User', type: 'super' });
-
+        await wrapper.setData({ id: 1, pinCode: 1234, name: 'John', type: 'super' });
         await wrapper.vm.chooseSuperUser();
-
-        //expect(localStorage.getItem("username")).toBe("Test User")
-        //expect(localStorage.getItem("userType")).toBe("super")
     });
 
     it('saves info when beta user and show dialog if not', async () => {
@@ -104,11 +100,9 @@ describe('User component tests', () => {
 
         await wrapper.vm.chooseUser();
 
-        //expect(localStorage.getItem("username")).toBe("Test User")
         expect(localStorage.getItem("userType")).toBe('false')
         wrapper.vm.type = true
         await wrapper.vm.chooseUser();
-        //expect(wrapper.vm.dialog).toBe(true)
     });
 
     it('should set betaUser variable correct ', async () => {
@@ -136,5 +130,19 @@ describe('User component tests', () => {
         wrapper.vm.showEditingWindow = false
         wrapper.vm.editInfo()
         expect(wrapper.vm.showEditingWindow).toBe(true)
+    });
+
+    it('check update user method ', () => {
+        const wrapper = mount(UserComponent, {
+            global: {
+                plugins: [router],
+            },
+        });
+
+        wrapper.vm.newName = "John"
+        wrapper.vm.newType = "Adult"
+        wrapper.vm.pinCode = 1234
+        wrapper.vm.updateUser()
+        expect(wrapper.vm.typeToSend).toBe(true)
     });
 })
