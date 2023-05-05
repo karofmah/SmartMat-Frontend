@@ -91,7 +91,7 @@
               show-expand
               hide-default-footer
             >
-            <template v-slot:expanded-row="{ item }">   
+            <template v-slot:expanded-row="{ item }">
               <td>
                 <p v-for="food in item.raw.foods">
                   <v-icon
@@ -256,7 +256,7 @@
                   <v-btn
                     color="green-darken-1"
                     variant="text"
-                    @click="updateFridgeItem"
+                    @click="addToShoppingList"
                   >
                     Yes
                   </v-btn>
@@ -287,6 +287,7 @@ import CategoryComponent from "@/components/CategoryComponent.vue";
 import recipeService from "@/services/recipeService.js";
 import Datepicker from 'vue3-datepicker';
 import { ref } from 'vue'
+import shoppingListService from "@/services/shoppingListService";
 import router from "@/router"
 
 export default {
@@ -459,15 +460,6 @@ export default {
         return 'Name cannot be empty.'
       }
     },
-    checkAmount(value){
-      if (value > 0) {
-        this.amountCheck = true;
-        return true
-      } else {
-        this.amountCheck = false;
-        return 'Amount cannot be below 0.'
-      }
-    },
     checkMeasurement(value){
       if (value?.length > 0) {
         this.measurementCheck = true;
@@ -593,7 +585,9 @@ export default {
   margin-top: 20px;
 
 }
-
+.textarea{
+  resize: none;
+}
 #error-fridge {
   margin: 10px;
 }
