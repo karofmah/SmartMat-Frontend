@@ -42,7 +42,7 @@ export default {
         })
     },
     addShoppingPopularItems(shoppingListId, subUserId){
-        return axios.post("http://localhost:8080/api/shoppingList/addMostPopularItems?shoppingListId="+shoppingListId+"&subUserId="+subUserId, {
+        return axios.get("http://localhost:8080/api/shoppingList/addMostPopularItems?shoppingListId="+shoppingListId+"&subUserId="+subUserId, {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
