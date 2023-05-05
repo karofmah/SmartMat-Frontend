@@ -88,8 +88,6 @@ export default {
       averageYearAmount: 0,
       years: ["2023", "2022", "2021","2020"],
       chartYear: new Date().getFullYear(),
-      personalData: [1,2,3,4,5,6,7,8,9,5,2,8],
-      averageData: [1,2,3,4,5,6,7,8,9,9,3,4],
       chartData: null,
       chartOptions: {
         scales:{
