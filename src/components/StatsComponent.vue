@@ -19,7 +19,7 @@
             </v-list>
           </v-menu>
         </v-toolbar>
-        <v-card-text class="text-pre-wrap">In {{personalChosenYear}} you have thrown {{personalYearAmount}}kg food</v-card-text>
+        <v-card-text class="text-pre-wrap">{{displayPersonal}}</v-card-text>
       </v-card>
 
       <v-card class="stats-card">
@@ -80,11 +80,12 @@ export default {
   components: { Bar },
   data(){
     return {
+      displayPersonal: '',
       loaded:  false,
       personalChosenYear: new Date().getFullYear(),
       averageChosenYear: new Date().getFullYear(),
-      personalYearAmount: null,
-      averageYearAmount: null,
+      personalYearAmount: 0,
+      averageYearAmount: 0,
       years: ["2023", "2022", "2021","2020"],
       chartYear: new Date().getFullYear(),
       personalData: [1,2,3,4,5,6,7,8,9,5,2,8],
@@ -115,8 +116,15 @@ export default {
       this.chartYear = year
     },
     async getPersonalYearAmount(year){
-      this.personalYearAmount = await statsService.getPersonalGarbageYear(localStorage.getItem("fridgeId"), year)
-      this.personalChosenYear = year
+      const data = await statsService.getPersonalGarbageYear(localStorage.getItem("fridgeId"), year)
+      if (data.status === 200) {
+        this.personalChosenYear = year
+        this.displayPersonal = "In " + this.personalChosenYear + " you have thrown " + data.data + "kg food"
+      } else {
+        this.personalChosenYear = year
+        this.displayPersonal = data.data
+      }
+      //this.personalYearAmount = await statsService.getPersonalGarbageYear(localStorage.getItem("fridgeId"), year)
     },
     async getAverageYearAmount(year){
       this.averageYearAmount = await statsService.getAverageGarbageYear(localStorage.getItem("fridgeId"), year)
