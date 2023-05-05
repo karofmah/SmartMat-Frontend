@@ -37,7 +37,11 @@ export default {
         }).then((response) => {
             return response
         }).catch(function (err) {
-            return err.response
+            if (err.response.status===404){
+                return err.response
+            } else {
+                return {"data": "Pin code is incorrect"}
+            }
         })
     }
 }
