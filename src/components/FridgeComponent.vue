@@ -27,14 +27,16 @@
                   <v-container>
                     <v-row>
                       <v-col cols="12">
-                        <v-autocomplete type="text" placeholder="Select food" clearable :items="items" v-model="newItemName" :rules="[ checkName ]"></v-autocomplete>
+                        <v-autocomplete 
+                        type="text" 
+                        placeholder="Select food" 
+                        clearable :items="items" 
+                        v-model="newItemName" 
+                        :rules="[ checkName ]">
+                      </v-autocomplete>
                       </v-col>
                       <v-col cols="12">
-                        <v-text-field
-                            label="Amount*"
-                            v-model="newItemAmount"
-                            :rules="[ checkAmount ]"
-                        ></v-text-field>
+                        <v-text-field label="Amount*" v-model="newItemAmount" :rules="[ checkAmount ]"></v-text-field>
                       </v-col>
                       <v-col cols="12">
                         <v-autocomplete
@@ -51,18 +53,10 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                      color="blue-darken-1"
-                      variant="text"
-                      @click="dialog = false"
-                  >
+                  <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
                     Close
                   </v-btn>
-                  <v-btn
-                      color="blue-darken-1"
-                      variant="text"
-                      @click="addToFridge"
-                  >
+                  <v-btn color="blue-darken-1" variant="text" @click="addToFridge">
                     Add
                   </v-btn>
                 </v-card-actions>
@@ -94,17 +88,10 @@
             <template v-slot:expanded-row="{ item }">
               <td>
                 <p v-for="food in item.raw.foods">
-                  <v-icon
-                        size="small"
-                        class="me-2"
-                        @click="editDate(item.raw.id, food)"
-                      >
+                  <v-icon size="small" class="me-2" @click="editDate(item.raw.id, food)">
                         mdi-calendar
                       </v-icon>
-                      <v-icon
-                        size="small"
-                        @click="deleteItem(item.raw.id, food)"
-                      >
+                      <v-icon size="small" @click="deleteItem(item.raw.id, food)">
                         mdi-delete
                       </v-icon>
                 </p>
@@ -128,48 +115,34 @@
             </v-data-table>
 
 
-            <v-dialog
-              v-model="picker"
-              persistent
-              width="300"
-            >
+            <v-dialog v-model="picker" persistent width="300">
               <v-card>
                 <v-card-title class="text-h5">
                   Add expiration date
                 </v-card-title>
-                <div id="datepicker"><datepicker
-                  v-model="selectedDate"
-                  lang="en"
-                  starting-view="day"
-                  placeholder="expiration date"
-                  format="YYYY-MM-dd"
-                  type="date"
-                  :lower-limit="new Date()"
-                ></datepicker></div>
+                <div id="datepicker">
+                  <datepicker
+                    v-model="selectedDate"
+                    lang="en"
+                    starting-view="day"
+                    placeholder="expiration date"
+                    format="YYYY-MM-dd"
+                    type="date"
+                    :lower-limit="new Date()"
+                  ></datepicker>
+                </div>
                 <v-card-actions>
-                  <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="(picker = false)"
-                >
+                  <v-btn color="green-darken-1" variant="text" @click="(picker = false)">
                     Cancel
                   </v-btn>
-                  <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="updateFridgeItem"
-                  >
+                  <v-btn color="green-darken-1" variant="text" @click="updateFridgeItem">
                     Add
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
-            <v-dialog
-              v-model="deleteDialog"
-              persistent
-              width="400"
-            >
+            <v-dialog v-model="deleteDialog" persistent width="400">
               <v-card>
                 <v-card-title>
                   <span class="text-h5">Remove item</span>
@@ -177,67 +150,40 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-col
-                        cols="12"
-                      >
+                      <v-col cols="12">
                         <v-text-field type="text" :readOnly="true">{{this.editedFoodItem.name}}</v-text-field>
                       </v-col>
-                      <v-col
-                          cols="12"
-                      ><div ><v-radio-group inline v-model="waste">
-                        <v-radio
-                          id="throw-radiobutton"
-                          label="Throw:("
-                          value="true"
-                        >
-                        </v-radio>
-                        <v-radio
-                          id="eat-radiobutton"
-                          label="Eaten:)"
-                          value="false"
-                        >
-                        </v-radio>
-                      </v-radio-group></div>
-
+                      <v-col cols="12">
+                        <div>
+                          <v-radio-group inline v-model="waste">
+                            <v-radio id="throw-radiobutton" label="Throw" value="true"></v-radio>
+                            <v-radio id="eat-radiobutton" label="Eaten" value="false"></v-radio>
+                          </v-radio-group>
+                        </div>
                       </v-col>
-                      <v-col
-                        cols="12"
-                      ><v-text-field
-                        label="Amount*"
-                        :rules="[ checkAmount ]"
-                        v-model="amount"
-                      ></v-text-field>
+                      <v-col cols="12">
+                        <v-text-field label="Amount*" :rules="[ checkAmount ]" v-model="amount"></v-text-field>
                       </v-col>
                     </v-row>
                   </v-container>
                   <small>*indicates required field</small>
-                  <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+                  <div>
+                    <small v-if="error" class="error-message">*all required fields are not filled</small>
+                  </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue-darken-1"
-                    variant="text"
-                    @click="deleteDialog = false"
-                  >
+                  <v-btn color="blue-darken-1" variant="text" @click="deleteDialog = false">
                     Close
                   </v-btn>
-                  <v-btn
-                    color="blue-darken-1"
-                    variant="text"
-                    @click="removeItem"
-                  >
+                  <v-btn color="blue-darken-1" variant="text" @click="removeItem">
                     Remove
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
-            <v-dialog
-              v-model="shoppingList"
-              persistent
-              width="auto"
-            >
+            <v-dialog v-model="shoppingList" persistent width="auto">
               <v-card>
                 <v-card-title class="text-h5">
                   Add to shopping list
@@ -246,18 +192,10 @@
                 <v-card-text>Do you want to add {{ editedFoodItem.name }} to your shopping list?</v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="shoppingList = false"
-                  >
+                  <v-btn color="green-darken-1" variant="text" @click="shoppingList = false">
                     No
                   </v-btn>
-                  <v-btn
-                    color="green-darken-1"
-                    variant="text"
-                    @click="addToShoppingList"
-                  >
+                  <v-btn color="green-darken-1" variant="text" @click="addToShoppingList">
                     Yes
                   </v-btn>
                 </v-card-actions>
@@ -356,7 +294,6 @@ export default {
     },
     async getAllCategories(){
       this.categories = await fridgeService.getAllCategories()
-      console.log(this.categories);
     },
     async setUserLevel(){
       this.betaUser = localStorage.getItem("userType") === "false";
@@ -369,18 +306,31 @@ export default {
         this.myItems = []
         this.fridgeItems = []
         const list = await fridgeService.getAllItemsInFridge(localStorage.getItem("email"))
-        console.log(list)
         for(let i = 0; i < list.length; i++){
           this.myItems.push(list[i].item.name + " (" + list[i].amount + ")")
           let fridgeSubItems = []
           let amount = 0
           for(let j = 0; j < list[i].itemsInRefrigerator.length; j++){
-            fridgeSubItems.push({ 'id': list[i].itemsInRefrigerator[j].itemExpirationDateId, 'name': list[i].item.name, 'amount': list[i].itemsInRefrigerator[j].amount, 'measurement': list[i].measurementType, 'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')  })
+            fridgeSubItems.push({ 
+              'id': list[i].itemsInRefrigerator[j].itemExpirationDateId, 
+              'name': list[i].item.name, 
+              'amount': list[i].itemsInRefrigerator[j].amount, 
+              'measurement': list[i].measurementType, 
+              'date': ((list[i].itemsInRefrigerator[j].date != null) ? list[i].itemsInRefrigerator[j].date : '-')  
+            })
             amount += list[i].itemsInRefrigerator[j].amount
           }
-          this.fridgeItems.push({'id': list[i].itemRefrigeratorId, 'name': list[i].item.name, 'amount': amount, 'measurement': list[i].measurementType, 'date': list[i].itemsInRefrigerator[0].date, 'foods': fridgeSubItems, 'category': this.getCategoryById(list[i].item.categoryId)})
+          
+          this.fridgeItems.push({
+            'id': list[i].itemRefrigeratorId, 
+            'name': list[i].item.name, 
+            'amount': amount, 
+            'measurement': list[i].measurementType, 
+            'date': '', 
+            'foods': fridgeSubItems, 
+            'category': this.getCategoryById(list[i].item.categoryId)
+          })
         }
-        console.log(this.fridgeItems);
       } catch(err) {
         console.log(err)
       }
@@ -406,7 +356,6 @@ export default {
         'measurementType': this.editedFoodItem.measurement,
         'date': new Date(this.selectedDate).toISOString().slice(0,10)
       }
-      console.log(item);
       await fridgeService.updateItemInFridge(item)
     },
     async removeItem() {
@@ -417,7 +366,6 @@ export default {
         "amount": this.amount,
         "garbage": (this.waste === 'true')
         }
-        console.log(removeItem);
         this.message = await fridgeService.deleteItem(removeItem)
         await this.getAllFridgeItems()
         this.$emit('update-fridge')
@@ -431,7 +379,6 @@ export default {
     async getAllItems(){
       try {
         const list = await fridgeService.getAllItems()
-        console.log("getting all items")
         for(let i = 0; i < list.length; i++){
           this.items.push(list[i].name)
         }
@@ -447,7 +394,6 @@ export default {
         "amount": this.amount,
         "measurementType": this.editedFoodItem.measurement
       }
-      console.log(itemToAdd)
       await shoppingListService.addShoppingListItems(itemToAdd)
       this.shoppingList = false
     },
@@ -481,19 +427,14 @@ export default {
       const i = this.categories.findIndex(function(Ids) {
         return Ids.categoryId == id
       })
-      console.log(this.categories[i].description);
       return this.categories[i].description
     },
     editDate(itemId, food){
-      console.log(itemId);
-      console.log(food);
       this.editedFoodId = itemId
       this.editedFoodItem = food
-      console.log(this.editedFoodItem.date);
       this.picker = true
     },
     deleteItem(itemId, food){
-      console.log(itemId)
       this.editedFoodId = itemId
       this.editedFoodItem = food
       this.amount = food.amount
