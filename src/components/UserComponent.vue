@@ -13,6 +13,7 @@
         <template v-slot:activator="{ props }">
           <v-btn
               id="changeSubuserInfo"
+              class="font-weight-bold"
               color="teal"
               v-if="$route.name !== 'chooseUser' && !betaUser"
               v-bind="props"
