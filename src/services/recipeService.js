@@ -7,10 +7,8 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Generating recipe...")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
             return err.response.status
         })
     },
@@ -20,10 +18,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Generating recipe...")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     },
     async getWeeklyMenu(email){
@@ -32,10 +29,9 @@ export default {
                 'Authorization': 'Bearer ' + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log("Getting recipe...")
             return response.data
         }).catch(function (err) {
-            console.log(err.response)
+            return err.response
         })
     }
 }

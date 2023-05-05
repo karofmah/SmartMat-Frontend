@@ -2,23 +2,19 @@
   <v-card class="user-card" @click="chooseUser">
     <v-card-title id="name">{{ name }} </v-card-title>
     <v-card-subtitle id="type">{{ typeName }}</v-card-subtitle>
-    <div><img src="../assets/user-logo.png" id="user-image"></div>
+    <div><img src="../assets/user-logo.png" id="user-image" alt="empty"></div>
 
     <v-row id="change-info-button">
-      <v-dialog
-          v-model="edit"
-          persistent
-          width="400"
-      >
+      <v-dialog v-model="showEditingWindow" persistent width="400">
         <template v-slot:activator="{ props }">
           <v-btn
               id="changeSubuserInfo"
               class="font-weight-bold"
               color="teal"
-              v-if="$route.name !== 'chooseUser' && !betaUser"
+              v-if="$route.name !== 'chooseUser' && !isChildUser"
               v-bind="props"
-              :disabled="betaUser"
-              @click="edit = true"
+              :disabled="isChildUser"
+              @click="showEditingWindow = true"
           >
             Change info
           </v-btn>
@@ -30,29 +26,19 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col
-                    cols="12"
-                >
-                  <v-text-field
-                      v-model="newName"
-                      label="Username*"
-                      required
-                  ></v-text-field>
+                <v-col cols="12">
+                  <v-text-field v-model="newName" label="Username*" required></v-text-field>
                 </v-col>
-                <v-col
-                    cols="12"
-                >
+                <v-col cols="12">
                   <v-select
-                      :disabled="masterUser"
+                      :disabled="isOriginalSuperUser"
                       v-model="newType"
-                      :items="types"
+                      :items="userTypes"
                       label="User level*"
                       required
                   ></v-select>
                 </v-col>
-                <v-col
-                    cols="12"
-                >
+                <v-col cols="12">
                   <v-text-field
                       v-if="newType==='Adult'"
                       v-model="pinCode"
@@ -65,32 +51,13 @@
               </v-row>
             </v-container>
             <small>*indicates required field</small>
-            <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+            <div><small v-if="showError" class="error-message">*all required fields are not filled</small></div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="edit = false"
-            >
-              Close
-            </v-btn>
-            <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="updateUser"
-            >
-              Save info
-            </v-btn>
-            <v-btn
-                v-if="!masterUser"
-                color="blue-darken-1"
-                variant="text"
-                @click="deleteSubuser"
-            >
-              Delete user
-            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="showEditingWindow = false">Close</v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="updateUser">Save info</v-btn>
+            <v-btn v-if="!isOriginalSuperUser" color="blue-darken-1" variant="text" @click="deleteSubuser">Delete user</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -98,11 +65,7 @@
 
 
     <v-row justify="center">
-      <v-dialog
-          v-model="dialog"
-          persistent
-          width="400"
-      >
+      <v-dialog v-model="showPinCodeWindow" persistent width="400">
         <template v-slot:activator="{ props }"></template>
         <v-card>
           <v-card-title>
@@ -111,9 +74,7 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col
-                    cols="12"
-                >
+                <v-col cols="12">
                   <v-text-field
                       label="Pin*"
                       v-model="pinCode"
@@ -121,52 +82,26 @@
                       :rules="[ checkPin ]"
                   ></v-text-field>
                 </v-col>
-                <v-col
-                    cols="12"
-                >
+                <v-col cols="12">
                 </v-col>
               </v-row>
             </v-container>
             <small>*indicates required field</small>
-            <div><small v-if="error" class="error-message">*all required fields are not filled</small></div>
+            <div><small v-if="showError" class="error-message">*all required fields are not filled</small></div>
             <div><small class="error-message" id="error-pinCode"></small></div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="dialog = false"
-            >
-              Close
-            </v-btn>
-            <v-btn
-                color="blue-darken-1"
-                variant="text"
-                @click="chooseSuperUser"
-            >
-              Login
-            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="showPinCodeWindow = false">Close</v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="chooseSuperUser">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-row>
   </v-card>
-  <v-snackbar
-      v-model="snackbar"
-      color="teal"
-      :timeout="2000"
-  >
-    {{ text }}
-
+  <v-snackbar v-model="snackbar" color="teal" :timeout="2000">{{ snackbarText }}
     <template v-slot:actions>
-      <v-btn
-          color="white"
-          variant="text"
-          @click="snackbar = false"
-      >
-        Close
-      </v-btn>
+      <v-btn color="white" variant="text" @click="snackbar = false">Close</v-btn>
     </template>
   </v-snackbar>
 </template>
@@ -185,29 +120,33 @@ export default {
   },
   data() {
     return {
-      typeName: null,
-      text: "",
-      snackbar: false,
-      edit: false,
-      betaUser: false,
-      currentUser: false,
-      masterUser: false,
-      dialog: false,
-      pinCheck: false,
-      error: false,
+      showPinCodeWindow: false,
       pinCode: '',
       newName: this.name,
       newType: this.typeName,
-      types: ["Adult", "Child"],
+      typeName: null,
+
+      showEditingWindow: false,
+
+      isChildUser: false,
+      currentUser: false,
+      isOriginalSuperUser: false,
+
+      pinCheck: false,
+      showError: false,
+
+      snackbarText: "",
+      snackbar: false,
+
+      userTypes: ["Adult", "Child"],
       typeToSend: false
     }
   },
   methods:{
     async deleteSubuser(){
       const feedback = await settingsService.deleteSubuser(this.id)
-      console.log(feedback.status)
       if (feedback.status !== 200) {
-        this.text = "Something went wrong, try again later"
+        this.snackbarText = "Something went wrong, try again later"
         this.snackbar = true
       }
       this.$emit('update-users')
@@ -225,19 +164,19 @@ export default {
         "pinCode": pinCode
       }
       if ((type === true && !this.pinCheck) || this.newName === ''){
-        this.error = true
+        this.showError = true
       } else {
-        this.text = await settingsService.updateSubuser(update)
+        this.snackbarText = await settingsService.updateSubuser(update)
         this.$emit('update-users')
         this.snackbar = true
-        this.edit = !this.edit
-        this.error = false
+        this.showEditingWindow = !this.showEditingWindow
+        this.showError = false
       }
     },
     async setUserLevel(){
-      this.betaUser = localStorage.getItem("userType") === "false";
+      this.isChildUser = localStorage.getItem("userType") === "false";
       this.currentUser = parseInt(localStorage.getItem("subUserId")) === this.id;
-      this.masterUser = parseInt(localStorage.getItem("masterUserId")) === this.id;
+      this.isOriginalSuperUser = parseInt(localStorage.getItem("masterUserId")) === this.id;
       if (this.type === true){
         this.typeName = "Adult"
         this.newType = "Adult"
@@ -247,15 +186,15 @@ export default {
       }
     },
     editInfo(){
-      this.edit = true
+      this.showEditingWindow = true
     },
     checkPin(value) {
       if (/^((?!(0))\d{4})$/.test(value)) {
         this.pinCheck = true;
-        this.error = false
+        this.showError = false
         return true
       } else {
-        this.error = true
+        this.showError = true
         this.pinCheck = false;
         return 'PIN must be 4 digits and cannot start with 0.'
       }
@@ -267,7 +206,7 @@ export default {
         localStorage.setItem("subUserId", this.id)
         router.push("/fridge")
       } else if(this.$route.name === "chooseUser" && this.type === true){
-        this.dialog = true
+        this.showPinCodeWindow = true
       }
     },
     async chooseSuperUser() {
@@ -279,8 +218,6 @@ export default {
         "pinCode": this.pinCode
       }
       await loginService.checkPinCode(check).then(function (response) {
-        //TODO: fikse når feil pin-kode
-        console.log(response)
         if (response.status === 200 && pinCheck) {
           localStorage.setItem("username", name)
           localStorage.setItem("userType", type)
