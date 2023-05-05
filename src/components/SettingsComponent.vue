@@ -217,7 +217,7 @@ export default {
       }
     },
     checkPhoneNumber(value) {
-      if (value?.length === 8) {
+      if (/^[0-9]{8}$/.test(value)) {
         this.phoneCheck = true
         return true
       } else {
